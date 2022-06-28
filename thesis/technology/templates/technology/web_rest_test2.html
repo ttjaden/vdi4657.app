@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Rest Test</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+  <!-- your content here... -->
+
+  <h1>Hello World!</h1>
+  
+  <div id="json-container">
+
+  </div>
+
+</body>
+  <script>
+    let jsonsContainer = document.getElementById('json-container')
+
+    let getjsons = async () => {
+        let response = await fetch ('http://127.0.0.1:8000/api/res-api/')
+        let jsons = await response.json()
+        console.log('JSONS:', jsons)
+        for (let i = 0; jsons.length > i; i++) {
+          let json = jsons[i]
+
+          let row = `<div>
+                  <h3>${json}</h3>
+              </div>`                    
+          jsonsContainer.innerHTML += row
+        } 
+    }
+    getjsons();
+  </script>
+
+</html>

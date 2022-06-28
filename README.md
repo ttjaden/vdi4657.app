@@ -1,8 +1,26 @@
-# RE-Lab_template
-Template repository for Python projects
+# PIEG-Strom-Webtool
+Cleaned up code, based on Master Thesis of Darima Motta: https://github.com/darimamotta/thesis_7_ver
 
-## Get started
+## Prepare environment
+Download or clone repository:
 
-Simply click on the green `Use this template` button on the left of the `Clone or download` button.
+- `git clone https://github.com/RE-Lab-Projects/PIEG-Strom-Webtool.git`
 
-The detailed instructions to create a new repository from this template can be found [here](https://re-lab-template-documentation.readthedocs.io/en/latest/index.html).
+Create the environment:
+
+- `conda env create --name PIEG-Strom-Webtool python=3.9`
+
+Install dependencies with pip
+
+- `pip install -r requirements.txt`
+
+Create admin user with
+
+- `cd thesis`
+- `python manage.py createsuperuser`
+
+## Run code
+
+- `python manage.py runserver`
+
+Open http://127.0.0.1:8000 or http://127.0.0.1:8000/admin in your browser

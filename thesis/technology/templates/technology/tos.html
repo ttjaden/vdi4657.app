@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+
+
+    <!---bootsatrap 5.1 collapse-->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+
+
+  <!-- Bootstrap CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+<!--fontsawesome--->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+<!--endfontsawesome-->
+    <!-- Custom CSS-->
+    <link rel="stylesheet" href="/static/style.css">
+    <!--end of custom CSS-->
+    <!--chartsjs.org-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+    <!---end of chartsjs-->
+    <title>  {% block title %} {% endblock %}</title>
+    <script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+<style type="text/css">
+
+body {
+  background-color: #023d6b;
+  font-size:27px;
+  font: Arial, Sans-Serif;
+
+}
+h2,h3
+{color:white;}
+p
+{ color:white;
+  }
+.form-check-label{
+
+  font-size:17px;
+  font: Arial, Sans-Serif;
+
+}
+
+img{
+padding:14px 16px;}
+ ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: white;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: #023d6b;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  padding: 24px 46px;
+ text-decoration: none;
+  font-size: 29px;
+}
+.scheme {
+
+float:right;
+
+
+}
+input [type="radio"]{
+
+ text-align: left;
+
+ text-decoration: none;
+font-family: Arial, sans-serif;
+  padding: 14px 16px;
+ text-decoration: none;
+  font-size:14px;
+}
+}
+p, container, checkbox{
+
+ padding-top: center;
+    padding-left: center;
+}
+form
+{
+padding: 28px 46px;
+}
+
+    </style>
+
+
+
+    <title> "Home Page"</title>
+  </head>
+  <div>
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+  <div id="logo" style="background-image:
+    url('/pict/logo.jpg');
+    width: 50px; height: 50px; background-size: contain;
+    background-repeat:no-repeat; float: left">
+</div>
+<!---nav bar-->
+{% load i18n %}
+
+</div>
+<!--<h1> Calculate cost-effective and environmentally friendly heating options for households and neighbourhoods</h1>-->
+<ul>
+
+    <li><a href="contact.asp">{% trans "Home Page" %}</a></li>
+  <li><a href="contact.asp">{% trans "Admin Profile" %}</a></li>
+  <li><a href="about.asp">{% trans "About" %}</a></li>
+    <li><a href="default.asp">{% trans "Contact" %}</a></li>
+    <li><a href="{% url 'user_manage:logout' %}">{% trans "Log Out" %}</a></li>
+    <li>   <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+    <select class="form-control form-control-sm" id="exampleFormControlSelect1" name="language" onchange="this.form.submit();">
+       {% get_current_language as LANGUAGE_CODE %}
+       {% get_available_languages as LANGUAGES %}
+       {% get_language_info_list for LANGUAGES as languages %}
+       {% for language in languages %}
+         <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+             {{ language.name_local }} ({{ language.code }})
+         </option>
+       {% endfor %}
+    </select>
+</form></li>
+</ul>
+<br>
+<!--
+<container>
+
+  <form class="row g-3">
+
+<h3>{% trans "Location" %}</h3><a href="map.html"></a>
+  <div class="col-sm-3">
+
+  <div class="row mt-4">
+    <div class="col-md-10 offset-md-1">
+      Map {{ m|safe }}
+
+
+  </div></div>
+  </div>
+</container>
+
+-->
+     <br>
+<div class="container"> {% block content %}
+  <h3>{% blocktrans %}Select Energy Technologies{% endblocktrans %}</h3> </div>
+<br>
+
+
+   <form method="POST" action='{% url 'technology:tos' %}'>
+
+            {% csrf_token %}
+       <input type="hidden" name="building_id" id="building_id" value="{{building_id}}">
+       <div class="container">
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+           <h4>{% blocktrans %}Photovoltaik{% endblocktrans %}</h4> 
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+          <div class="container">
+          <div class="row align-items-center">
+          <div class="col">
+              <div class="input-group">
+                  <div class="input-group-prepend">
+                      <span class="input-group-text" >{% trans "Installed generator power in kWp" %}</span>
+                  </div>
+                  <input type="text" class="form-control" name="installedgenpower" id="input_text10" max="200" min='20' value="1" onchange="rangeinstalledgenpower.value = installedgenpower.value"/>
+                  <input type="range" oninput="installedgenpower.value = rangeinstalledgenpower.value" class="form-control-range slider" type="range" min="20" max="200" value="20" id="rangeinstalledgenpower" step="1" onchange="installedgenpower.value = rangeinstalledgenpower.value" >
+              </div>
+          </div>
+      </div>
+              <br>
+        <div class="row align-items-center">
+          <div class="accordion" id="accordionPanelsStayOpenExample">
+              <div class="accordion-item">
+                  <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                          {% trans "Expert Mode" %}</button>
+                  </h2>
+                  <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+                      <div class="accordion-body">
+                          <div class="row align-items-center">
+                              <div class="col"><div class="input-group">
+                      <div class="input-group-prepend">
+                      <span class="input-group-text" >{% trans "Azimut in °" %}</span>
+                  </div>
+                      <input type="text" class="form-control" name="azimut" id="azimut" max="345" min='0' value="180" onchange="rangeazimut.value = azimut.value"/>
+                      <input type="range" oninput="azimut.value = rangeazimut.value" class="form-control-range slider" type="range" min="0" max="345" value="15" id="rangeazimut" step="1" onchange="azimut.value = rangeazimut.value" >
+                  </div>
+              </div>
+          </div>
+          <br>
+          <div class="row align-items-center">
+              <div class="col">
+                  <div class="input-group">
+                      <div class="input-group-prepend">
+                          <span class="input-group-text" >{% trans "Elevation" %}</span>
+                      </div>
+                      <input type="text" class="form-control" name="elevation" id="elevation" max="90" min='0' value="45" onchange="rangeelevation.value = elevation.value"/>
+                      <input type="range" oninput="elevation.value = rangeelevation.value" class="form-control-range slider" type="range" min="0" max="90" value="45" id="rangeelevation" step="10" onchange="elevation.value = rangeelevation.value" >
+                  </div>
+              </div>
+              <br>
+              <div class="col">
+
+<div class="input-group">
+                                                                                                                                                                  <div class="input-group-prepend">
+<span class="input-group-text" >{% trans "Rated inverter power" %}</span></div>
+<input type="text" class="form-control" name="ratedinverterpower" id="ratedinverterpower" max="200" min='1' value="45" onchange="rangeratedinverterpower.value = ratedinverterpower.value"/>
+<input type="range" oninput="ratedinverterpower.value = rangeratedinverterpower.value" class="form-control-range slider" type="range" min="1" max="200" value="45" id="rangeratedinverterpower" step="1" onchange="ratedinverterpower.value = rangeratedinverterpower.value" ></div>
+</div></div></div></div>
+
+    </div>
+  </div>
+
+  </div>
+</div>
+
+</div>
+
+  </div></div><br><container>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingTwo">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          <h4>{% trans "Combined heat and power (CHP)" %}</h4>
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+      <div class="accordion-body"><container>
+        <div class="row align-items-center ml-3">
+   <div class="col">
+       <div class="form-check-label"><h4>{% trans "Combined heat and power" %}</h4></div>
+      <div class="form-check">
+  <input class="form-check-input" type="radio" name="chpcombinedheatpower" id="gasmotor">
+  <label class="form-check-label" for="gasmotor">{% trans "Gas motor" %}
+  </label></div><div class="form-check">
+  <input class="form-check-input" type="radio" name="chpcombinedheatpower" id="fuecellpem" checked>
+  <label class="form-check-label" for="fuecellpem">{% trans "Fuel cell (PEM)" %}
+  </label></div><div class="form-check">
+  <input class="form-check-input" type="radio" name="chpcombinedheatpower" id="fuelcellsofc3" checked>
+  <label class="form-check-label" for="fuelcellsofc3">{% trans "Fuel cell (SOFC)" %}
+  </label></div><div class="form-check">
+  <input class="form-check-input" type="radio" name="chpcombinedheatpower" id="ground/water|on-off" checked>
+  <label class="form-check-label" for="ground/water|on-off">{% trans "ground/water | on-off" %}
+  </label></div></label> <div class="form-check-label">{% trans "Thermal power needed" %}</div></div>
+
+   <div class="col">
+       <div class="form-check-label"><h4>{% trans "Operation Strategy" %}</h4></div>
+  <div class="form-check">
+  <input class="form-check-input" type="radio" name="chpoperationstrategy" id="electricity" checked>
+  <label class="form-check-label" for="electricity">{% trans "Electricity" %}
+  </label></div><div class="form-check">
+  <input class="form-check-input" type="radio" name="chpoperationstrategy" id="heat" checked>
+  <label class="form-check-label" for="heat">{% trans "Heat" %}
+  </label></div><div class="form-check">
+  <input class="form-check-input" type="radio" name="chpoperationstrategy" id="heatandelectricity" checked>
+  <label class="form-check-label" for="heatandelectricity">{% trans "Heat and Electricity" %}
+  </label></div></label></div></div>
+  </div>
+
+  </div>
+</div></div>
+  </container>
+
+
+
+
+
+    <br>
+
+<container>
+
+
+
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingThree">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          <h4>{% trans "Heat pump (HP)" %}</h4>
+      </button>
+    </h2>
+    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <div class="container">
+
+<div class="row align-items-center">
+   <div class="col"><h4>{% trans "Technology" %}</h4>
+
+
+      <div class="form-check">
+  <input class="form-check-input" type="radio" name="heatpumptechnology" id="air/water|regulated">
+  <label class="form-check-label" for="air/water|regulated">{% trans "air/water | regulated" %}
+  </label></div><div class="form-check">
+  <input class="form-check-input" type="radio" name="heatpumptechnology" id="air/water|on/off" checked>
+  <label class="form-check-label" for="air/water|on/off">{% trans "air/water | on/off" %}
+  </label></div><div class="form-check">
+  <input class="form-check-input" type="radio" name="heatpumptechnology" id="ground/water|regulated" checked>
+  <label class="form-check-label" for="ground/water|regulated">{% trans "ground/water | regulated" %}
+  </label></div><div class="form-check">
+  <input class="form-check-input" type="radio" name="heatpumptechnology" id="groundwateronoff" checked>
+  <label class="form-check-label" for="groundwateronoff">{% trans "ground/water | on-off" %}
+  </label></div></div><div class="col">
+    <h4>{% trans "Thermal power needed" %}</h4><br><br>
+
+    <h4>{% trans "Model" %}</h4>
+   <select class="form-select" aria-label="Default select example" name="heatpumpmodel" id="heatpumpmodel">
+  <option selected>{% trans "Choose the value" %}</option>
+  <option value="88"> {% trans "Heat Pump 1" %}</option>
+  <option value="100">{% trans "Heat Pump 2" %}</option>
+  <option value="250">{% trans "Heat Pump 3" %}</option>
+</select> </div></div>
+  <br>
+
+
+</div>
+
+    </div>
+</container></div></div>
+<br>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingFour">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+          <h4>{% trans "Gas Heater (GH)" %}</h4>
+      </button>
+    </h2><div class="container">
+    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+
+
+
+
+
+    <div class="form-check-label"><h4>{% trans "Thermal power needed" %}</h4></div>
+       <div class="form-check-label"><h4>{% trans "Value" %}</h4></div>
+
+
+
+</div>
+
+
+</div>
+
+
+</div></div>
+
+</container>
+
+<br>
+
+
+
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingFive">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+          <h4>{% trans "Battery storage (BS)" %}</h4>
+      </button>
+    </h2><div class="container">
+    <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+          <div class="form-check-label"><h4 class="align-items-center">{% trans "Operation strategy" %}</h4></div>
+          <div class="row align-items-center ml-3">
+              <br>
+              <div class="col">
+                  <a href="photo.html">
+                      <i class="fab fa-sellcast ml-3"></i>
+                      <label>
+                          <div class="form-check-label ml-3">{% trans "Increase of self-sufficiency" %}
+                          </div>
+                      </label>
+                  </a>
+              </div>
+              <br>
+              <div class="col">
+                  <a href="comb.html">
+                      <i class="fab fa-think-peaks ml-3"> </i>
+                      <label>
+                          <div class="form-check-label ml-3">{% trans "Peak shaving of feed in power" %}</div>
+                      </label>
+                  </a>
+              </div>
+              <br>
+              <div class="col">
+              <a href="pump.html">
+                  <i class="fas fa-grip-vertical ml-3"></i>
+                  <label><div class="form-check-label ml-3">{% trans "Peak shaving of grid supply" %}
+                  </div>
+                  </label>
+                  </a></div></div>
+              <br>
+              <div class="row align-items-center">
+                  <div class="col">
+                      <div class="input-group">
+                          <div class="input-group-prepend">
+                          <span class="input-group-text" >{% trans "Feed-in limitation" %}</span>
+                      </div>
+                          <input type="text" class="form-control" name="bsfeedinlimitation" id="bsfeedinlimitation" max="1" min='0' value="0.1" onchange="rangebsfeedinlimitation.value = bsfeedinlimitation.value"/>
+                          <input type="range" oninput="bsfeedinlimitation.value = rangebsfeedinlimitation.value" class="form-control-range slider" type="range" min="0" max="1" value="0.1" id="rangebsfeedinlimitation" step="0.1" onchange="bsfeedinlimitation.value = rangebsfeedinlimitation.value" >
+                      </div>
+                  </div></div>
+                  <br>
+
+
+
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingNine">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNine" aria-expanded="true" aria-controls="collapseNine">
+        {% trans "Expert Mode" %}
+      </button>
+    </h2><div class="container">
+    <div id="collapseNine" class="accordion-collapse collapse" aria-labelledby="headingNine" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+
+ <div class="row align-items-center">
+   <div class="col"><div class="input-group">
+                                                                                                                                                                  <div class="input-group-prepend">
+<span class="input-group-text" >{% trans "Usable Capacity in kWh" %}</span></div>
+<input type="text" class="form-control" name="bsusablecapacity" id="input_text17" max="200" min='0.5' value="0.5" onchange="rangebsusablecapacity.value = bsusablecapacity.value"/>
+<input type="range" oninput="input_text17.value = rangebsusablecapacity.value" class="form-control-range slider" type="range" min="0.5" max="200" value="0.5" id="rangebsusablecapacity" step="20" onchange="bsusablecapacity.value = rangebsusablecapacity.value" ></div>
+   </div><br>
+
+           <div class="col"><div class="input-group">
+                                                                                                                                                                  <div class="input-group-prepend">
+<span class="input-group-text" >{% trans "Rated Power in kWh" %}</span></div>
+<input type="text" class="form-control" name="bsratedpower" id="bsratedpower" max="20" min='0.5' value="0.5" onchange="rangebsratedpower.value = bsratedpower.value"/>
+<input type="range" oninput="bsratedpower.value = rangebsratedpower.value" class="form-control-range slider" type="range" min="0.5" max="20" value="0.5" id="rangebsratedpower" step="5" onchange="bsratedpower.value = rangebsratedpower.value" ></div>
+
+</div>
+  </div>
+</div></div>
+</div>
+  </div></div></div></div></div>
+</div></div><br>
+
+
+
+<div class="row align-items-center">
+<div class="container">
+
+
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingSix">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+          <h4>{% trans "Hydrogen storage (HS)" %}</h4>
+      </button>
+    </h2>
+    <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+
+ <div class="row align-items-center">
+<div class="col"><div class="input-group">
+                                                                                                                                                                  <div class="input-group-prepend">
+<span class="input-group-text">{% trans "Usable Capacity in %" %}</span></div>
+<input type="text" class="form-control" name="hsusablecapacity" id="input_text20" max="200" min='50' value="50" onchange="rangehsusablecapacity.value = hsusablecapacity.value"/>
+<input type="range" oninput="hsusablecapacity.value = rangehsusablecapacity.value" class="form-control-range slider" type="range" min="50" max="200" value="50" id="rangehsusablecapacity" step="20" onchange="hsusablecapacity.value = rangehsusablecapacity.value" ></div>
+</div><br>
+    <div class="col"><div class="input-group">
+                                                                                                                                                                  <div class="input-group-prepend">
+<span class="input-group-text" > {% trans "Rated Power: electrolyseur  in %" %}</span></div>
+<input type="text" class="form-control" name="hsratedpower" id="hsratedpower" max="200" min='50' value="50" onchange="rangehsratedpower.value = hsratedpower.value"/>
+<input type="range" oninput="hsratedpower.value = rangehsratedpower.value" class="form-control-range slider" type="range" min="50" max="200" value="50" id="rangehsratedpower" step="10" onchange="hsratedpower.value = rangehsratedpower.value" ></div>
+</div>
+
+
+ </div></div></div></div></div></div></div>
+
+<br><div class="container">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingSeven">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+          <h4>{% trans "Electric Vehicles" %}</h4>
+      </button>
+    </h2>
+    <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingTen">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
+        {% trans "Expert Mode" %}
+      </button>
+    </h2>
+    <div id="collapseTen" class="accordion-collapse collapse" aria-labelledby="headingTen" data-bs-parent="#accordionTen">
+      <div class="accordion-body">
+
+
+
+        <br><div class="row align-items-center">
+   <div class="col">
+
+
+       <div class="form-check-label">{% trans "Load point count" %}</div><br></div>
+          <div class="col">
+              <div class="form-check-label">{% trans "Total power of loadpoints" %}</div><br></div></div>
+    <div class="row align-items-center">
+   <div class="col">
+       <div class="form-check-label">{% trans "Profile types" %}</div><br></div>
+    <div class="col">
+        <div class="form-check-label">{% trans "Prohability of plugging in" %}</div><br></div></div>
+     <div class="row align-items-center">
+
+
+  </div></div>
+</div></div><br>
+
+
+
+          <div class="row align-items-center">
+              <div class="col">
+                  <div class="input-group"><div class="input-group-prepend">
+                  <span class="input-group-text">{% trans "Distance km per year in km" %}</span></div>
+                  <input type="text" class="form-control" name="elvehiclesdistance" id="elvehiclesdistance" max="20000" min='2000' value="1000" onchange="rangeelvehiclesdistance.value = elvehiclesdistance.value"/>
+                  <input type="range" oninput="elvehiclesdistance.value = rangeelvehiclesdistance.value" class="form-control-range slider" type="range" min="1000" max="20000" value="1000" id="rangeelvehiclesdistance" step="1000" onchange="elvehiclesdistance.value = rangeelvehiclesdistance.value">
+              </div>
+          </div>
+      </div>
+    </div>
+    </div></div>
+
+          <div class="row align-items-right">
+        <div class="col" align="right">
+            <button type="submit" class="btn btn-success mt-3 allign-items-right">{% trans "Send" %}</button></div></div>
+          </form> {% endblock %}</div>
+<br>
+
+  <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-end">
+    <li class="page-item disabled">
+      <a class="page-link">{% trans "Previous" %}</a>
+    </li>
+    <li class="page-item"><a class="page-link" href="/">1</a></li>
+    <li class="page-item"><a class="page-link" href="">2</a></li>
+    <li class="page-item"><a class="page-link" href="page3.html">3</a></li>
+    <li class="page-item">
+      <a class="page-link" href="page3.html">{% trans "Next" %}</a>
+    </li>
+  </ul>
+</nav>
+    <script src="js/jquery-1.11.3.min.js"></script>
+</body>
+</html>

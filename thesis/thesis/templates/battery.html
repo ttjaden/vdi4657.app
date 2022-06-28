@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <!-- Bootstrap CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+<!--fontsawesome--->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+<!--endfontsawesome-->
+    <!-- Custom CSS-->
+    <link rel="stylesheet" href="/static/style.css">
+    <!--end of custom CSS-->
+    <!--chartsjs.org-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+    <!---end of chartsjs-->
+    <title>Title</title>
+    <script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+    <style type="text/css">
+
+body {
+  background-color: #023d6b;
+  font-size:27px;
+  font: Arial, Sans-Serif;
+
+}
+h2,h3
+{color:white;}
+p
+{ color:white;
+  }
+
+
+img{
+padding:14px 16px;}
+ ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: white;
+}
+
+li {
+  float: left;
+}
+form {
+ display: block;
+  color: white;
+  text-align: left;
+  font-family: Arial, sans-serif;
+  padding: 14px 16px;
+ text-decoration: none;
+  font-size: 25px;
+}
+li a {
+  display: block;
+  color: #023d6b;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  padding: 24px 46px;
+ text-decoration: none;
+  font-size: 29px;
+}
+.scheme {
+
+float:right;
+
+
+}
+.form-check-input, input [type="radio"]{
+padding: 16px 16px;
+}
+p, container, checkbox{
+
+ padding-top: center;
+    padding-left: center;
+}
+
+
+    </style>
+    <title>Home Page</title>
+  </head>
+  <body>
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+  <div id="logo" style="background-image:
+    url('/pict/logo.jpg");
+    width: 50px; height: 50px; background-size: contain;
+    background-repeat:no-repeat; float: left">
+</div>
+<!---nav bar--->
+
+
+</div>
+<!--<h1> Calculate cost-effective and environmentally friendly heating options for households and neighbourhoods</h1>-->
+<ul>
+
+    <li><a href="contact.asp">Home Page</a></li>
+  <li><a href="contact.asp">Admin Profile</a></li>
+  <li><a href="about.asp">About</a></li>
+    <li><a href="default.asp">Contact</a></li>
+    <li><a href="default.asp">Log Out</a></li>
+  <li></li>
+</ul>
+<!----
+<container>
+
+  <form class="row g-3">
+
+<h3>Location</h3><a href="map.html"></a>
+  <div class="col-sm-3">
+
+  <div class="row mt-4">
+    <div class="col-md-10 offset-md-1">
+      Map {{ m|safe }}
+
+
+  </div></div>
+  </div></form>
+</container>
+-->
+
+<container>
+
+  <form class="row g-3 needs-validation" novalidate>
+
+<div class="col-md-4">
+  <h3>Operation strategy</h3>
+     <a href="photo.html">
+      <i class="fab fa-sellcast"></i><label><h3>    Increase of self-sufficiency</h3></label>
+</a> <br>
+   <a href="comb.html">
+      <i class="fab fa-think-peaks"></i><label><h3>     Peak shaving of feed in power</h3></label>
+</a> <br>
+        <a href="pump.html">
+ <i class="fas fa-grip-vertical"></i><label><h3>     Peak shaving of grid supply</h3></label>
+</a> <br>
+
+
+      <div class="slidecontainer">
+
+    <label for="customRange4" class="form-label"><h3>Feed-in limitation <span id="value1"></span></h3></label>
+<input type="range" class="form-range" min="0" max="1" step="0.1"  id="customRange4">
+</div> <script>
+    var slider1 = document.getElementById("customRange4");
+    var output1=document.getElementById("value1");
+    output1.innerHTML=slider1.value;
+    slider1.oninput=function(){
+    output1.innerHTML= this.value;
+    }
+</script>
+<div id="slidecontainer1"></div>
+
+    <label for="customRange5" class="form-label"><h3>Usable Capacity <span id="value3"></span> kWh</h3></label>
+<input type="range" class="form-range"  value="0.5" min="0.5" max="200" step="20"  id="customRange5">
+  <script>
+    var slider3 = document.getElementById("customRange5");
+    var output3 = document.getElementById("value3");
+    output3.innerHTML=slider3.value;
+    slider3.oninput=function(){
+    output3.innerHTML= this.value;
+    }
+</script>
+
+        <label for="customRange6" class="form-label"><h3>   Rated Power <span id="value4"></span> kWh</h3></label>
+<input type="range" class="form-range" min="0.5" max="20" step="5"  id="customRange6">
+ <script>
+    var slider4 = document.getElementById("customRange6");
+    var output4=document.getElementById("value4");
+    output4.innerHTML=slider4.value;
+    slider4.oninput=function(){
+    output4.innerHTML= this.value;
+    }
+</script>
+<div id="slidecontainer4"></div>
+
+
+
+</div></div></div>
+  </form></container>
+   <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-end">
+    <li class="page-item disabled">
+      <a class="page-link">Previous</a>
+    </li>
+    <li class="page-item"><a class="page-link" href="/">1</a></li>
+    <li class="page-item"><a class="page-link" href="">2</a></li>
+    <li class="page-item"><a class="page-link" href="page3.html">3</a></li>
+    <li class="page-item">
+      <a class="page-link" href="page3.html">Next</a>
+    </li>
+  </ul>
+</nav>
+</body>
+</html>
+</body>
+</html>

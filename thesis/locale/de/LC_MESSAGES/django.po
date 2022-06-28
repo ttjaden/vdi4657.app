@@ -1,0 +1,645 @@
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-04-25 18:27+0300\n"
+"PO-Revision-Date: 2022-04-02 18:38+0000\n"
+"Last-Translator:   <>\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Translated-Using: django-rosetta 0.9.8\n"
+
+#: .\economic\templates\economic\dashboard.html:238
+#: .\economic\templates\economic\navbar.html:60
+#: .\economic\templates\economic\web_rest_test.html:271
+#: .\map\templates\map\map.html:121
+#: .\technology\templates\technology\create-building.html:109
+#: .\technology\templates\technology\index.html:104
+#: .\technology\templates\technology\page21.html:105
+#: .\technology\templates\technology\tos.html:119
+#: .\thesis\templates\comb.html:117 .\thesis\templates\page1.html:97
+#: .\thesis\templates\page2.html:102
+#, fuzzy
+#| msgid "Home"
+msgid "Home Page"
+msgstr "Zuhause"
+
+#: .\economic\templates\economic\dashboard.html:239
+#: .\economic\templates\economic\navbar.html:61
+#: .\economic\templates\economic\web_rest_test.html:272
+#: .\map\templates\map\map.html:122
+#: .\technology\templates\technology\create-building.html:110
+#: .\technology\templates\technology\index.html:105
+#: .\technology\templates\technology\page21.html:106
+#: .\technology\templates\technology\tos.html:120 .\thesis\partials\nav.html:37
+#: .\thesis\templates\comb.html:118 .\thesis\templates\page1.html:98
+#: .\thesis\templates\page2.html:103
+msgid "Admin Profile"
+msgstr "Verwaltungsprofil"
+
+#: .\economic\templates\economic\dashboard.html:240
+#: .\economic\templates\economic\navbar.html:62
+#: .\economic\templates\economic\web_rest_test.html:273
+#: .\map\templates\map\map.html:123
+#: .\technology\templates\technology\create-building.html:111
+#: .\technology\templates\technology\index.html:106
+#: .\technology\templates\technology\page21.html:107
+#: .\technology\templates\technology\tos.html:121
+#: .\thesis\templates\comb.html:119 .\thesis\templates\page1.html:99
+#: .\thesis\templates\page2.html:104
+msgid "About"
+msgstr "Über"
+
+#: .\economic\templates\economic\dashboard.html:241
+#: .\economic\templates\economic\navbar.html:63
+#: .\economic\templates\economic\web_rest_test.html:274
+#: .\map\templates\map\map.html:124
+#: .\technology\templates\technology\create-building.html:112
+#: .\technology\templates\technology\index.html:107
+#: .\technology\templates\technology\page21.html:108
+#: .\technology\templates\technology\tos.html:122
+#: .\thesis\templates\comb.html:120 .\thesis\templates\page1.html:100
+#: .\thesis\templates\page2.html:105
+msgid "Contact"
+msgstr "Kontakt"
+
+#: .\economic\templates\economic\dashboard.html:242
+#: .\economic\templates\economic\navbar.html:64
+#: .\economic\templates\economic\web_rest_test.html:275
+#: .\map\templates\map\map.html:125
+#: .\technology\templates\technology\create-building.html:113
+#: .\technology\templates\technology\index.html:108
+#: .\technology\templates\technology\page21.html:109
+#: .\technology\templates\technology\tos.html:123
+#: .\thesis\templates\comb.html:121 .\thesis\templates\page1.html:101
+#: .\thesis\templates\page2.html:106
+msgid "Log Out"
+msgstr "Log Out"
+
+#: .\economic\templates\economic\dashboard.html:329
+#, fuzzy
+#| msgid "Grid supply (gas and electricity)"
+msgid "Grid supply (Gas and Electricity)"
+msgstr "Netzversorgung (Gas und Strom)"
+
+#: .\economic\templates\economic\dashboard.html:390
+msgid "Grid feed-in (PV and CHP)"
+msgstr ""
+
+#: .\economic\templates\economic\dashboard.html:444
+#: .\economic\templates\economic\web_rest_test.html:493
+msgid "Economic Results"
+msgstr "Ökonomische Ergebnisse"
+
+#: .\economic\templates\economic\dashboard.html:547
+#: .\economic\templates\economic\web_rest_test.html:620
+msgid "Economic Parameters"
+msgstr "Ökonomische Parameter"
+
+#: .\economic\templates\economic\dashboard.html:560
+#: .\economic\templates\economic\web_rest_test.html:630
+#: .\technology\templates\technology\tos.html:267
+msgid "Electricity"
+msgstr "Elektrizität"
+
+#: .\economic\templates\economic\dashboard.html:568
+#: .\economic\templates\economic\web_rest_test.html:639
+#, fuzzy
+#| msgid "Fixed costs per year in €/year"
+msgid "Fixed costs per year in €/year or €/kW"
+msgstr "Fixe jährliche Kosten in €/Jahr"
+
+#: .\economic\templates\economic\dashboard.html:576
+#: .\economic\templates\economic\web_rest_test.html:647
+msgid "Сosts per kWh in €"
+msgstr "Kosten pro kWh in €"
+
+#: .\economic\templates\economic\dashboard.html:582
+#: .\economic\templates\economic\web_rest_test.html:653
+msgid "Feed-in tariff for photovoltaic in €/kWh"
+msgstr "Einspeisevergütung für Photovoltaik"
+
+#: .\economic\templates\economic\dashboard.html:588
+#: .\economic\templates\economic\web_rest_test.html:659
+msgid "Feed-in tariff for combined heat and power €/kWh"
+msgstr "Einspeisevergütung für Kraft-Wärme-Kopplung"
+
+#: .\economic\templates\economic\dashboard.html:597
+#: .\economic\templates\economic\web_rest_test.html:668
+msgid "Gas"
+msgstr ""
+
+#: .\economic\templates\economic\dashboard.html:604
+#: .\economic\templates\economic\web_rest_test.html:675
+msgid "Fixed costs per year in €/year"
+msgstr "Fixe jährliche Kosten in €/Jahr"
+
+#: .\economic\templates\economic\dashboard.html:620
+#: .\economic\templates\economic\web_rest_test.html:691
+#, fuzzy
+#| msgid "Battery storage (BS)"
+msgid "Battery Storage"
+msgstr "Batteriespeicher"
+
+#: .\economic\templates\economic\dashboard.html:628
+#: .\economic\templates\economic\web_rest_test.html:699
+msgid "Costs per kW inverter power"
+msgstr "Kosten pro kW Wechselrichterleistung"
+
+#: .\economic\templates\economic\dashboard.html:633
+#: .\economic\templates\economic\web_rest_test.html:704
+msgid "Costs per kWh capacity"
+msgstr "Kosten pro kWh Batteriekapazität"
+
+#: .\economic\templates\economic\dashboard.html:641
+#: .\economic\templates\economic\dashboard.html:686
+#: .\economic\templates\economic\web_rest_test.html:712
+#: .\economic\templates\economic\web_rest_test.html:757
+msgid "Costs for maintenance and operations in €/year"
+msgstr "Wartungs- und Betriebskosten in €/Jahr"
+
+#: .\economic\templates\economic\dashboard.html:646
+#: .\economic\templates\economic\dashboard.html:694
+#: .\economic\templates\economic\web_rest_test.html:717
+#: .\economic\templates\economic\web_rest_test.html:765
+msgid "Lifetime"
+msgstr "Lebensdauer"
+
+#: .\economic\templates\economic\dashboard.html:656
+#: .\economic\templates\economic\web_rest_test.html:727
+msgid "Hydrogen storage"
+msgstr "Wasserstoffspeicher"
+
+#: .\economic\templates\economic\dashboard.html:664
+#: .\economic\templates\economic\web_rest_test.html:735
+msgid "Costs per kW electrolyseur power"
+msgstr "Kosten pro kW Elektrolyseurleistung"
+
+#: .\economic\templates\economic\dashboard.html:670
+#: .\economic\templates\economic\web_rest_test.html:741
+msgid "Costs per kW fuel cell power"
+msgstr "Kosten pro kW Brennstoffzellenleistung"
+
+#: .\economic\templates\economic\dashboard.html:678
+#: .\economic\templates\economic\web_rest_test.html:749
+msgid "Costs per kWh hydrogen capacity"
+msgstr "Kosten pro kWh Wasserstoffspeicherkapazität"
+
+#: .\economic\templates\economic\dashboard.html:703
+#: .\economic\templates\economic\web_rest_test.html:774
+msgid "Interest rate"
+msgstr "Zinssatz"
+
+#: .\economic\templates\economic\dashboard.html:708
+#: .\economic\templates\economic\web_rest_test.html:780
+#: .\technology\templates\technology\create-building.html:203
+#: .\technology\templates\technology\tos.html:535
+msgid "Send"
+msgstr "Senden"
+
+#: .\economic\templates\economic\mytest_web_rest_test.html:22
+msgid "Grid supply (gas and electricity)"
+msgstr "Netzversorgung (Gas und Strom)"
+
+#: .\economic\templates\economic\web_rest_test tail.html:1
+msgid "Grid supply gas and electricity"
+msgstr "Netzversorgung (Gas und Strom)"
+
+#: .\economic\templates\economic\web_rest_test.html:310
+msgid "Summary"
+msgstr "Zusammenfassung"
+
+#: .\economic\templates\economic\web_rest_test.html:328
+msgid "Energetic Results"
+msgstr "Energetische Ergebnisse mit Zusammenfassung"
+
+#: .\economic\templates\economic\web_rest_test.html:595
+msgid "Total investment costs for smallest storage"
+msgstr "Gesamtinvestitionskosten für kleinsten Speicher"
+
+#: .\economic\templates\economic\web_rest_test.html:606
+msgid "Total investment costs for biggest storages"
+msgstr "Gesamtinvestitionskosten für größten Speicher"
+
+#: .\economic\templates\economic\web_rest_test.html:789
+msgid "Tips & Tricks for your building energy system"
+msgstr "Tips & Tricks für Ihr Gebäude-Energiesystem"
+
+#: .\economic\templates\economic\web_rest_test.html:860
+#: .\map\templates\map\map.html:167
+#: .\technology\templates\technology\create-building.html:227
+#: .\technology\templates\technology\index.html:277
+#: .\technology\templates\technology\page21.html:173
+#: .\technology\templates\technology\tos.html:548
+msgid "Next"
+msgstr "Weiter"
+
+#: .\map\templates\map\map.html:144
+msgid "Search"
+msgstr "Suchen Sie"
+
+#: .\map\templates\map\map.html:151
+msgid "Map"
+msgstr "Karte"
+
+#: .\map\templates\map\map.html:160
+#: .\technology\templates\technology\create-building.html:221
+#: .\technology\templates\technology\index.html:270
+#: .\technology\templates\technology\tos.html:542
+msgid "Previous"
+msgstr "Zurück"
+
+#: .\technology\templates\technology\create-building.html:136
+msgid "Choose Building Type:"
+msgstr "Wählen Sie den Gebäudetyp:"
+
+#: .\technology\templates\technology\create-building.html:140
+msgid "SFH"
+msgstr "EFH"
+
+#: .\technology\templates\technology\create-building.html:144
+msgid "MFH"
+msgstr "MFH"
+
+#: .\technology\templates\technology\create-building.html:148
+msgid "Commercial"
+msgstr "Kommerziell"
+
+#: .\technology\templates\technology\create-building.html:160
+msgid "Number of users"
+msgstr "Anzahl der Personen"
+
+#: .\technology\templates\technology\create-building.html:168
+msgid "Electrical energy consumption"
+msgstr "Stromverbrauch"
+
+#: .\technology\templates\technology\create-building.html:180
+#: .\technology\templates\technology\tos.html:194
+#: .\technology\templates\technology\tos.html:422
+#: .\technology\templates\technology\tos.html:493
+msgid "Expert Mode"
+msgstr "Experten-Modus"
+
+#: .\technology\templates\technology\create-building.html:188
+msgid "DHW energy consumption"
+msgstr "Warmwasserverbrauch"
+
+#: .\technology\templates\technology\create-building.html:195
+msgid "Building size in m²"
+msgstr "Gebäudegröße"
+
+#: .\technology\templates\technology\index.html:129
+msgid ""
+"Calculate cost-effective and environmentally friendly heating options for "
+"households and neighbourhoods"
+msgstr ""
+"Berechnung kosteneffizienter und umweltfreundlicher Heizoptionen für "
+"Haushalte und Stadtviertel"
+
+#: .\technology\templates\technology\index.html:130
+msgid "Get Started"
+msgstr "Los geht's"
+
+#: .\technology\templates\technology\index.html:141
+msgid "Choose your own scenario"
+msgstr "Wählen Sie Ihr eigenes Szenario"
+
+#: .\technology\templates\technology\index.html:142
+msgid "Calculate right now."
+msgstr "Rechnen Sie jetzt"
+
+#: .\technology\templates\technology\index.html:143
+msgid ""
+"Follow the link right now and make a plan for your personal energy "
+"transition!"
+msgstr ""
+"Folgen Sie jetzt dem Link und machen Sie einen Plan für Ihre persönliche "
+"Energiewende!"
+
+#: .\technology\templates\technology\index.html:158
+msgid "Shoreline"
+msgstr "Küstenlinie"
+
+#: .\technology\templates\technology\index.html:159
+msgid ""
+"Grayscale is open source and MIT licensed. This means you can use it for any "
+"project - even commercial projects! Download it, customize it, and publish "
+"your website!"
+msgstr ""
+"Grayscale ist Open Source und MIT-lizenziert. Das bedeutet, dass Sie es für "
+"jedes Projekt verwenden können - sogar für kommerzielle Projekte! Laden Sie "
+"es herunter, passen Sie es an, und veröffentlichen Sie Ihre Website!"
+
+#: .\technology\templates\technology\index.html:171
+msgid "Subscribe to receive updates!"
+msgstr "Abonnieren, um Updates zu erhalten!"
+
+#: .\technology\templates\technology\index.html:183
+msgid "Notify Me!"
+msgstr "Benachrichtigen Sie mich!"
+
+#: .\technology\templates\technology\index.html:185
+msgid "An email is required."
+msgstr "Eine E-Mail ist erforderlich."
+
+#: .\technology\templates\technology\index.html:186
+msgid "Email is not valid."
+msgstr "E-Mail ist nicht gültig."
+
+#: .\technology\templates\technology\index.html:193
+msgid "Form submission successful!"
+msgstr "Formularübermittlung erfolgreich!"
+
+#: .\technology\templates\technology\index.html:194
+msgid "To activate this form, sign up at"
+msgstr "Um dieses Formular zu aktivieren, melden Sie sich an unter"
+
+#: .\technology\templates\technology\index.html:203
+msgid "Error sending message!"
+msgstr "Fehler beim Senden der Nachricht!"
+
+#: .\technology\templates\technology\index.html:218
+msgid "Address"
+msgstr "Adresse"
+
+#: .\technology\templates\technology\index.html:220
+msgid "4923 Market Street, Orlando FL"
+msgstr "923 Market Street, Orlando FL"
+
+#: .\technology\templates\technology\index.html:228
+msgid "Email"
+msgstr "E-Mail"
+
+#: .\technology\templates\technology\index.html:230
+msgid "hello@yourdomain.com"
+msgstr "hello@yourdomain.com"
+
+#: .\technology\templates\technology\index.html:238
+msgid "Phone"
+msgstr "Telefon"
+
+#: .\technology\templates\technology\index.html:253
+msgid "Website 2021"
+msgstr "Website 2021"
+
+#: .\technology\templates\technology\page21.html:178
+msgid "hello world"
+msgstr "Hallo Welt"
+
+#: .\technology\templates\technology\page21.html:180
+msgid "Home"
+msgstr "Zuhause"
+
+#: .\technology\templates\technology\page21.html:182
+msgid "Techology"
+msgstr "Technologie"
+
+#: .\technology\templates\technology\tos.html:143
+#: .\thesis\templates\page1.html:123 .\thesis\templates\page2.html:114
+msgid "Location"
+msgstr "Standort"
+
+#: .\technology\templates\technology\tos.html:158
+msgid "Select Energy Technologies"
+msgstr ""
+"\t\n"
+"Technologieauswahl"
+
+#: .\technology\templates\technology\tos.html:171
+msgid "Photovoltaik"
+msgstr "Photovoltaik"
+
+#: .\technology\templates\technology\tos.html:181
+msgid "Installed generator power in kWp"
+msgstr "Installierte Leistung in kWp"
+
+#: .\technology\templates\technology\tos.html:201
+msgid "Azimut in °"
+msgstr "Azimut in °"
+
+#: .\technology\templates\technology\tos.html:213
+msgid "Elevation"
+msgstr "Dachneigung in °"
+
+#: .\technology\templates\technology\tos.html:224
+msgid "Rated inverter power"
+msgstr "Nennleistung des Wechselrichters in kWp"
+
+#: .\technology\templates\technology\tos.html:241
+msgid "Combined heat and power (CHP)"
+msgstr "Kraft-Wärme-Kopplung"
+
+#: .\technology\templates\technology\tos.html:248
+msgid "Combined heat and power"
+msgstr "Kraft-Wärme-Kopplung"
+
+#: .\technology\templates\technology\tos.html:251
+msgid "Gas motor"
+msgstr "Gas Motor"
+
+#: .\technology\templates\technology\tos.html:254
+msgid "Fuel cell (PEM)"
+msgstr "Brennstoffzelle (PEM)"
+
+#: .\technology\templates\technology\tos.html:257
+msgid "Fuel cell (SOFC)"
+msgstr ""
+"\t\n"
+"Brennstoffzelle (SOFC)"
+
+#: .\technology\templates\technology\tos.html:260
+#: .\technology\templates\technology\tos.html:316
+msgid "ground/water | on-off"
+msgstr "Erdreich/Wasser | Ein-Aus"
+
+#: .\technology\templates\technology\tos.html:261
+#: .\technology\templates\technology\tos.html:318
+#: .\technology\templates\technology\tos.html:348
+msgid "Thermal power needed"
+msgstr "Benötigte thermische Leistung"
+
+#: .\technology\templates\technology\tos.html:264
+msgid "Operation Strategy"
+msgstr "Betriebsstrategie"
+
+#: .\technology\templates\technology\tos.html:270
+msgid "Heat"
+msgstr ""
+"\t\n"
+"Wärme"
+
+#: .\technology\templates\technology\tos.html:273
+msgid "Heat and Electricity"
+msgstr "Wärme und Strom"
+
+#: .\technology\templates\technology\tos.html:294
+msgid "Heat pump (HP)"
+msgstr "Wärmepumpe"
+
+#: .\technology\templates\technology\tos.html:302
+#, fuzzy
+#| msgid "Techology"
+msgid "Technology"
+msgstr "Technologie"
+
+#: .\technology\templates\technology\tos.html:307
+msgid "air/water | regulated"
+msgstr "Luft/Wasser | reguliert"
+
+#: .\technology\templates\technology\tos.html:310
+msgid "air/water | on/off"
+msgstr "Luft/Wasser | ein/aus"
+
+#: .\technology\templates\technology\tos.html:313
+msgid "ground/water | regulated"
+msgstr "Erdreich/Wasser | geregelt"
+
+#: .\technology\templates\technology\tos.html:320
+msgid "Model"
+msgstr "Modell"
+
+#: .\technology\templates\technology\tos.html:322
+msgid "Choose the value"
+msgstr "Wählen Sie den Wert aus"
+
+#: .\technology\templates\technology\tos.html:323
+msgid "Heat Pump 1"
+msgstr "Wärmepumpe 1"
+
+#: .\technology\templates\technology\tos.html:324
+msgid "Heat Pump 2"
+msgstr "Wärmepumpe 2"
+
+#: .\technology\templates\technology\tos.html:325
+msgid "Heat Pump 3"
+msgstr "Wärmepumpe 3"
+
+#: .\technology\templates\technology\tos.html:338
+msgid "Gas Heater (GH)"
+msgstr "Gas-Brennwertkessel"
+
+#: .\technology\templates\technology\tos.html:349
+msgid "Value"
+msgstr "Wert"
+
+#: .\technology\templates\technology\tos.html:370
+msgid "Battery storage (BS)"
+msgstr "Batteriespeicher"
+
+#: .\technology\templates\technology\tos.html:375
+msgid "Operation strategy"
+msgstr "Betriebsstrategie"
+
+#: .\technology\templates\technology\tos.html:382
+msgid "Increase of self-sufficiency"
+msgstr "Erhöhung der Eigenversorgung"
+
+#: .\technology\templates\technology\tos.html:392
+msgid "Peak shaving of feed in power"
+msgstr "Peak Shaving der Netzeinspeisung"
+
+#: .\technology\templates\technology\tos.html:400
+msgid "Peak shaving of grid supply"
+msgstr "Peak Shaving des Netzbezugs"
+
+#: .\technology\templates\technology\tos.html:409
+msgid "Feed-in limitation"
+msgstr "Einspeisebegrenzung"
+
+#: .\technology\templates\technology\tos.html:431
+msgid "Usable Capacity in kWh"
+msgstr "Nutzbare Kapazität in kWh"
+
+#: .\technology\templates\technology\tos.html:438
+msgid "Rated Power in kWh"
+msgstr "Nennleistung in kWh"
+
+#: .\technology\templates\technology\tos.html:458
+msgid "Hydrogen storage (HS)"
+msgstr "Wasserstoffspeicher"
+
+#: .\technology\templates\technology\tos.html:467
+#, python-format
+msgid "Usable Capacity in %%"
+msgstr "Nutzbare Kapazität in %"
+
+#: .\technology\templates\technology\tos.html:473
+#, python-format
+msgid "Rated Power: electrolyseur  in %%"
+msgstr "Nennleistung: Elektrolyseur in %"
+
+#: .\technology\templates\technology\tos.html:485
+msgid "Electric Vehicles"
+msgstr "Elektroautos"
+
+#: .\technology\templates\technology\tos.html:505
+msgid "Load point count"
+msgstr "Anzahl der Ladepunkte"
+
+#: .\technology\templates\technology\tos.html:507
+msgid "Total power of loadpoints"
+msgstr "Gesamtleistung der Ladepunkte"
+
+#: .\technology\templates\technology\tos.html:510
+msgid "Profile types"
+msgstr "Profiltypen"
+
+#: .\technology\templates\technology\tos.html:512
+msgid "Prohability of plugging in"
+msgstr "Ladeverhalten"
+
+#: .\technology\templates\technology\tos.html:524
+msgid "Distance km per year in km"
+msgstr "Fahrstrecke in km pro Jahr"
+
+#: .\thesis\partials\nav.html:23
+msgid "Jülich"
+msgstr "Jülich"
+
+#: .\thesis\partials\nav.html:31
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: .\thesis\partials\nav.html:40
+#, fuzzy
+#| msgid "Log Out"
+msgid "Log out"
+msgstr "Log Out"
+
+#: .\thesis\settings.py:128
+msgid "German"
+msgstr "Deutsch"
+
+#: .\thesis\settings.py:129
+msgid "English"
+msgstr "Englisch"
+
+#: .\thesis\templates\page1.html:123
+msgid "Choose on the Map"
+msgstr "Wählen Sie auf der Karte"
+
+#, python-format
+#~ msgid ""
+#~ "\n"
+#~ "Electricity grid demand can be reduced by \"ElecSaved\" kWh per year 1000 "
+#~ "by local PV/CHP generation. Remaining demand can be reduced from "
+#~ "%(toGraph.WithOut_ElectricityFromGrid)s to  "
+#~ "%(toGraph.With_ElectricityFromGrid)s kWh  per year with battery storages "
+#~ "between ??? and ??? kWh and hydrogen storages between ??? and ??? kWh "
+#~ "usable capacity."
+#~ msgstr ""
+#~ "\n"
+#~ "Der Netzstrombedarf kann durch lokale PV/CHP-Erzeugung um \"ElecSaved\" "
+#~ "kWh pro Jahr 1000 reduziert werden. Der verbleibende Bedarf kann von "
+#~ "%(toGraph.WithOut_ElectricityFromGrid)s auf "
+#~ "%(toGraph.With_ElectricityFromGrid)s kWh pro Jahr mit Batteriespeichern "
+#~ "zwischen ??? und ??? kWh und Wasserstoffspeichern zwischen ??? und ??? "
+#~ "kWh nutzbarer Kapazität reduziert werden."
+
+#, fuzzy
+#~ msgid "Julich"
+#~ msgstr "Jülich"

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <!-- Bootstrap CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+<!--fontsawesome--->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+<!--endfontsawesome-->
+    <!-- Custom CSS-->
+    <link rel="stylesheet" href="/static/style.css">
+    <!--end of custom CSS-->
+    <!--chartsjs.org-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+    <!---end of chartsjs-->
+    <title>Title</title>
+    <script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+    <style type="text/css">
+
+body {
+  background-color: #023d6b;
+  font-size:27px;
+  font: Arial, Sans-Serif;
+
+}
+h2,h3
+{color:white;}
+p
+{ color:white;
+  }
+
+
+img{
+padding:14px 16px;}
+ ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: white;
+}
+
+li {
+  float: left;
+}
+form {
+ display: block;
+  color: white;
+  text-align: left;
+  font-family: Arial, sans-serif;
+  padding: 14px 16px;
+ text-decoration: none;
+  font-size: 25px;
+}
+li a {
+  display: block;
+  color: #023d6b;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  padding: 24px 46px;
+ text-decoration: none;
+  font-size: 29px;
+}
+.scheme {
+
+float:right;
+
+
+}
+.form-check-input, input [type="radio"]{
+padding: 16px 16px;
+}
+p, container, checkbox{
+
+ padding-top: center;
+    padding-left: center;
+}
+
+
+    </style>
+    <title>Home Page</title>
+  </head>
+  <body>
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+  <div id="logo" style="background-image:
+    url('/pict/logo.jpg");
+    width: 50px; height: 50px; background-size: contain;
+    background-repeat:no-repeat; float: left">
+</div>
+<!---nav bar--->
+
+
+</div>
+<!--<h1> Calculate cost-effective and environmentally friendly heating options for households and neighbourhoods</h1>-->
+<ul>
+
+    <li><a href="contact.asp">Home Page</a></li>
+  <li><a href="contact.asp">Admin Profile</a></li>
+  <li><a href="about.asp">About</a></li>
+    <li><a href="default.asp">Contact</a></li>
+    <li><a href="default.asp">Log Out</a></li>
+  <li></li>
+</ul>
+<!----
+<container>
+
+  <form class="row g-3">
+
+<h3>Location</h3><a href="map.html"></a>
+  <div class="col-sm-3">
+
+  <div class="row mt-4">
+    <div class="col-md-10 offset-md-1">
+      Map {{ m|safe }}
+
+
+  </div></div>
+  </div></form>
+</container>
+-->
+<container>
+
+  <form >
+
+
+ <container>
+<div class="row align-items-center mt-3">
+
+
+
+      <div class="col">
+              <div class="input-group">
+                  <div class="input-group-prepend">
+                      <span class="input-group-text" >Installed generator power in kWp</span></div>
+                  <input type="text" class="form-control" name="installed_generator_power" id="installed_generator_powerr" max="200" min='1' step="20" value="101" onchange="rangeinstalled_generator_power.value = installed_generator_power.value"/>
+                  <input type="range" oninput="installed_generator_power.value = rangeinstalled_generator_power.value" class="form-control-range slider" type="range" min="1" max="200" value="101" id="rangeinstalled_generator_power" step="5" onchange="installed_generator_power.value = rangeinstalled_generator_power.value" >
+              </div>
+      </div>
+    <div class="col">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text" >Azimut  in °</span>
+            </div>
+            <input type="text" class="form-control" name="Azimut" id="Azimut" max="345" min='0' value="180" step="15" onchange="rangeAzimut.value = Azimut.value"/>
+            <input type="range" oninput="Azimut.value = rangeAzimut.value" class="form-control-range slider" type="range" min="0" max="345" value="180" id="rangeAzimut" step="15" onchange="Azimut.value = rangeAzimut.value" >
+        </div>
+    </div>
+  </div>
+
+<div class="row align-items-center mt-3">
+      <div class="col">
+          <div class="input-group">
+              <div class="input-group-prepend">
+              <span class="input-group-text" >Elevation</span>
+          </div>
+              <input type="text" class="form-control" name="Elevation" id="Elevation" max="90" min='0' value="50" step="10" onchange="rangeElevation.value = Elevation.value"/>
+              <input type="range" oninput="Elevation.value = rangeElevation.value" class="form-control-range slider" type="range" min="0" max="90" value="50" id="rangeElevation" step="10" onchange="Elevation.value = rangeElevation.value" >
+          </div>
+      </div>
+     <div class="col">
+         <div class="input-group">
+             <div class="input-group-prepend">
+             <span class="input-group-text" >Rated inverter power in kW</span>
+         </div>
+             <input type="text" class="form-control" name="Rated_inverter_power" id="Rated_inverter_power" max="200" min='1' value="101" step="10" onchange="rangeRated_inverter_power.value = Rated_inverter_power.value"/>
+             <input type="range" oninput="Rated_inverter_power.value = rangeRated_inverter_power.value" class="form-control-range slider" type="range" min="1" max="200" value="101" id="rangeRated_inverter_power" step="10" onchange="Rated_inverter_power.value = rangeRated_inverter_power.value" >
+         </div>
+     </div>
+  </div>
+     </div>
+     </div>
+      <div class="row align-items-right">
+        <div class="col" align="right">
+            <button type="submit" class="btn btn-success mt-3">Submit
+            </button>
+        </div>
+    </div>
+  </form>
+</container>
+
+<div class="row align-items-center mx-md-auto">
+   <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-end">
+    <li class="page-item disabled">
+      <a class="page-link">Previous</a>
+    </li>
+    <li class="page-item"><a class="page-link" href="/">1</a></li>
+    <li class="page-item"><a class="page-link" href="">2</a></li>
+    <li class="page-item"><a class="page-link" href="page3.html">3</a></li>
+    <li class="page-item">
+      <a class="page-link" href="page3.html">Next</a>
+    </li>
+  </ul>
+</nav>
+</div>
+
+</body>
+</html>

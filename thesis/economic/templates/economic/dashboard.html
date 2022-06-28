@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Tailwind Admin Starter Template : Tailwind Toolbox</title>
+    <meta name="author" content="name">
+    <meta name="description" content="description here">
+    <meta name="keywords" content="keywords,here">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- JavaScript Bundle with Popper -->
+    <!--CSS Boostrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+     <!--JS Boostrap-->
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"/> <!--Replace with your tailwind.css once created-->
+    <link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet"> <!--Totally optional :) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js" integrity="sha256-xKeoJ50pzbUGkpQxDYHD7o7hxe0LaOGeguUidbq6vis=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.3/Chart.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
+  <script src="https://unpkg.com/frappe-charts@latest"></script>
+<!-- or -->
+<script src="https://unpkg.com/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
+<script src="./TW-ELEMENTS-PATH/dist/js/index.min.js"></script>
+<canvas id="creditSat"></canvas>
+
+  <style>
+    canvas {
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+    }
+  </style>
+    <style type="text/css">
+
+        body {
+          background-color: #023d6b;
+          font-size:27px;
+          font: Arial, Sans-Serif;
+        }
+        h1{
+            color:white;
+        }
+        .col-md-6:first-child {
+          background-color: #adbde3;
+        }
+        img{
+        padding:14px 16px;}
+         ul {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          background-color: white;
+        }
+        
+        li {
+          float: left;
+        }
+        form {
+         display: block;
+        text-align: left;
+          font-family: Arial, sans-serif;
+          padding: 184px 46px;
+         text-decoration: none;
+          font-size: 25px;
+        }
+        li a {
+          display: block;
+          color: #023d6b;
+          text-align: center;
+          font-family: Arial, sans-serif;
+          padding: 24px 46px;
+         text-decoration: none;
+          font-size: 29px;
+        }
+        .scheme {
+        
+        float:right;
+        
+        
+        }
+        
+        /* Change the link color to #adbde3 (blue) on hover */
+        li a:hover {
+          background-color: #ebebeb;
+        }
+        .card-columns {
+          @include media-breakpoint-only(lg) {
+            column-count: 4;
+          }
+          @include media-breakpoint-only(xl) {
+            column-count: 5;
+          }
+        }
+        body {
+          background-color: #023d6b;
+          font-size:27px;
+          font: Arial, Sans-Serif;
+        
+        }
+       
+        
+        
+        img{
+        padding:14px 16px;}
+         ul {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          background-color: white;
+        }
+        
+        li {
+          float: left;
+        }
+        form {
+         display: block;
+          
+          text-align: left;
+          font-family: Arial, sans-serif;
+          padding: 28px 46px;
+         text-decoration: none;
+          font-size: 25px;
+        }
+        li a {
+          display: block;
+          color: #023d6b;
+          text-align: center;
+          font-family: Arial, sans-serif;
+          padding: 24px 46px;
+         text-decoration: none;
+          font-size: 29px;
+        }
+        .scheme {
+        
+        float:right;
+        
+        
+        }
+        .form-check-input, input [type="radio"]{
+        text-color:black;
+        padding: 16px 16px;
+        }
+        p, container, checkbox{
+        
+         padding-top: center;
+            padding-left: center;
+        }
+        .navbar {
+            position: relative;
+        }
+        .brand {
+            position: absolute;
+            left: 50%;
+            margin-left: -50px !important;  /* 50% of your logo width */
+            display: block;
+        }
+        
+        
+        {
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        .top-container {
+          background-color: #f1f1f1;
+          padding: 30px;
+          text-align: center;
+        }
+        
+        .header {
+          padding: 10px 16px;
+          background: #555;
+          color: #f1f1f1;
+        }
+        
+        .content {
+          padding: 16px;
+        }
+        
+        .sticky {
+          position: fixed;
+          top: 0;
+          width: 100%;
+        }
+        
+        .sticky + .content {
+          padding-top: 102px;
+        }
+        .tab-content>.tab-pane {
+          display: block;
+          height: 0;
+          overflow: hidden;
+        }
+        .tab-content>.tab-pane.active {
+          height: auto;
+        }
+        .collapse {
+            &:not(.show) {
+              display: none;
+            }
+          }
+          
+          .collapsing {
+            height: 0;
+            overflow: hidden;
+            @include transition($transition-collapse);
+          
+            &.collapse-horizontal {
+              width: 0;
+              height: auto;
+              @include transition($transition-collapse-width);
+            }
+            input [type="range"], input [type="text"]{
+                width:50%;
+                height:50%%;
+                }
+          }
+    </style>
+</head>
+
+<body>
+    {% load i18n %}
+    <!--<h1> Calculate cost-effective and environmentally friendly heating options for households and neighbourhoods</h1>-->
+   <ul>
+   
+       <li><a href="contact.asp">{% trans "Home Page" %}</a></li>
+     <li><a href="contact.asp">{% trans "Admin Profile" %}</a></li>
+     <li><a href="about.asp">{% trans "About" %}</a></li>
+       <li><a href="default.asp">{% trans "Contact" %}</a></li>
+       <li><a href="{% url 'user_manage:logout' %}">{% trans "Log Out" %}</a></li>
+       <li>   <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+       <select class="form-control form-control-sm" id="exampleFormControlSelect1" name="language" onchange="this.form.submit();">
+          {% get_current_language as LANGUAGE_CODE %}
+          {% get_available_languages as LANGUAGES %}
+          {% get_language_info_list for LANGUAGES as languages %}
+          {% for language in languages %}
+            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                {{ language.name_local }} ({{ language.code }})
+            </option>
+          {% endfor %}
+       </select>
+   </form></li>
+   </ul>
+   <br>
+<header>
+   
+
+        <section>
+            <div id="main" class="main-content flex-1  mt-12 md:mt-2 pb-24 md:pb-5">
+
+                <div class="pt-3">
+                    <div >
+                      
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap">
+                    <div class="w-full md:w-1/2 xl:w-1/3 p-6">
+                        <!--Metric Card-->
+                        <div class="bg-gradient-to-b from-gray-400 to-gray-100 border-b-4 border-gray-100 rounded-lg shadow-xl p-5">
+                            <div class="flex flex-row items-center">
+                                <div class="flex-shrink pr-4">
+                                    <div class="rounded-full p-5 bg-gray-400"><i class="fa fa-wallet fa-2x fa-inverse"></i></div>
+                                </div>
+                                <div class="flex-1 text-right md:text-center">
+                                    <h2 class="font-bold uppercase text-gray-600">Total Revenue</h2>
+                                   <p class="font-bold text-3xl">$3249 <span class="text-green-500"><i class="fas fa-caret-up"></i></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/Metric Card-->
+               
+                    
+                  
+                    
+                        <!--/Metric Card-->
+                    </div>
+                    <div class="w-full md:w-1/2 xl:w-1/3 p-6">
+                        <!--Metric Card-->
+                        <div class="bg-gradient-to-b from-gray-400 to-gray-100 border-b-4 border-gray-100 rounded-lg shadow-xl p-5">
+                            <div class="flex flex-row items-center">
+                                <div class="flex-shrink pr-4">
+                                    <div class="rounded-full p-5 bg-gray-400"><i class="fas fa-tasks fa-2x fa-inverse"></i></div>
+                                </div>
+                                <div class="flex-1 text-right md:text-center">
+                                    <h2 class="font-bold uppercase text-gray-600">To Do List</h2>
+                                    <p class="font-bold text-3xl">7 tasks <span class="text-red-500"><i class="fas fa-caret-up"></i></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/Metric Card-->
+                    </div>
+                    <div class="w-full md:w-1/2 xl:w-1/3 p-6">
+                        <!--Metric Card-->
+                        <div class="bg-gradient-to-b from-gray-400 to-gray-100 border-b-4 border-gray-100 rounded-lg shadow-xl p-5">
+                            <div class="flex flex-row items-center">
+                                <div class="flex-shrink pr-4">
+                                    <div class="rounded-full p-5 bg-gray-400"><i class="fas fa-inbox fa-2x fa-inverse"></i></div>
+                                </div>
+                                <div class="flex-1 text-right md:text-center">
+                                    <h2 class="font-bold uppercase text-gray-600">Issues</h2>
+                                    <p class="font-bold text-3xl">3 <span class="text-red-500"><i class="fas fa-caret-up"></i></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <!--/Metric Card-->
+                    </div>
+                </div>
+
+
+                <div class="flex flex-row flex-wrap flex-grow mt-2">
+
+                <div class="w-full md:w-1/2 xl:w-1/3 p-6">
+                    <!--Graph Card--> variable {{ toGraph.With_GridSupplyCosts_TotalGasFlowFromGrid }}
+                    <div class="bg-white border-transparent rounded-lg shadow-xl">
+                        <div class="bg-gradient-to-b from-gray-300 to-gray-100 uppercase text-gray-800 border-b-2 border-gray-300 rounded-tl-lg rounded-tr-lg p-2">
+                            <h class="font-bold uppercase text-gray-600">{% trans "Grid supply (Gas and Electricity)" %}</h>
+                        </div>
+                        <div class="p-5">
+                           
+
+                                <div id="frost-chart"></div>
+                            
+                            
+                            <canvas id="chart"></canvas></div>
+                            <script>
+                            
+                            
+                            let page_chart = function(){
+                            let chart = new frappe.Chart( "#frost-chart", { // or DOM element
+                            data: {
+                            labels: ['Without electric storages', ' With electric storages', ],
+                            
+                            datasets: [
+                            {
+                              name: "TotalGasFlowFromGrid", chartType: 'bar',
+                              values: [1000, 1200 ]
+                            },
+                            {
+                              name: "ElectricityFromGrid", chartType: 'bar',
+                              values: [1200, 1100]
+                            
+                            },
+                            {
+                              name: "Autarky", chartType: 'line',
+                              values: [ 400, 500]
+                            }
+                            ],
+                            
+                            yMarkers: [{ label: "# Grid supply (gas and electricity) in kWh/a'", value: 1200,
+                            options: { labelPos: 'left' }}],
+                            yRegions: [{ label: "# Degree of self-sufficiency", start: 800, end: 1500,
+                            options: { labelPos: 'right' }}]
+                            },
+                            
+                            title:  "Electricity grid demand",
+                            type: 'axis-mixed', // or 'bar', 'line', 'pie', 'percentage'
+                            height: 300,
+                            colors: ['#e11d48', '#023d6b', '#059669'],
+                            
+                            tooltipOptions: {
+                            formatTooltipX: d => (d + '').toUpperCase(),
+                            formatTooltipY: d => d + ' pts',
+                            }
+                            });
+                            
+                            chart.export();}
+                            page_chart();
+                        </script>                        
+                    </div>
+                    <!--/Graph Card-->
+                </div>
+
+                <div class="w-full md:w-1/2 xl:w-1/3 p-6">
+                    <!--Graph Card-->
+                    <div class="bg-white border-transparent rounded-lg shadow-xl">
+                        <div class="bg-gradient-to-b from-gray-300 to-gray-100 uppercase text-gray-800 border-b-2 border-gray-300 rounded-tl-lg rounded-tr-lg p-2">
+                            <h2 class="font-bold uppercase text-gray-600">{% trans "Grid feed-in (PV and CHP)" %}</h2>
+                        </div>
+                        <div class="p-5">
+                           
+
+                                <div id="frost-chart1"></div>
+                                   <script>
+                                let page_chart1 = function(){
+                                let chart1 = new frappe.Chart( "#frost-chart1", { // or DOM element
+                                  data: {
+                                  labels: [' Without electric storages', ' With electric storages'],
+                                
+                                  datasets: [
+                                    {
+                                      name: "ElectrictyIntoGrid", chartType: 'bar',
+                                      values: [1000, 1100]
+                                    },
+                                
+                                    {
+                                      name: "SelfConsumption", chartType: 'line',
+                                      values: [300, 400]
+                                    }
+                                  ],
+                                
+                                  yMarkers: [{ label: "Grid feed-in (PV and CHP)'", value: 1500,
+                                    options: { labelPos: 'left' }}],
+                                  yRegions: [{ label: "self-consumption rate.", start: 500, end: 2200,
+                                    options: { labelPos: 'right' }}]
+                                  },
+                                
+                                  title: "Electricity grid demand",
+                                  type: 'axis-mixed', // or 'bar', 'line', 'pie', 'percentage'
+                                  height: 300,
+                                  width: 500,
+                                  colors: ['#023d6b', '#059669', '#1c213f'],
+                                
+                                  tooltipOptions: {
+                                    formatTooltipX: d => (d + '').toUpperCase(),
+                                    formatTooltipY: d => d + ' pts',
+                                  }
+                                  });
+                                
+                                  chart1.export();}
+                                  page_chart1();
+                                </script>
+                        </div>
+                    </div>
+                    <!--/Graph Card-->
+                </div>
+
+                <div class="w-full md:w-1/2 xl:w-1/3 p-6">
+                    <!--Graph Card-->
+                    <div class="bg-white border-transparent rounded-lg shadow-xl">
+                        <div class="bg-gradient-to-b from-gray-300 to-gray-100 uppercase text-gray-800 border-b-2 border-gray-300 rounded-tl-lg rounded-tr-lg p-2">
+                            <h2 class="font-bold uppercase text-gray-600">{% trans "Economic Results" %}</h2>
+                        </div>
+                        <div class="p-5"><canvas id="myChart4" width="400" height="400"></canvas>
+  
+                            <script>var ctx = document.getElementById("myChart4").getContext('2d');
+                    
+                    
+                    var myChart4 = new Chart(ctx, {
+                      type: 'bar',
+                      data: {
+                        labels: ["With Electricity Storage","WithOut Electricity Storage",'With_Electricity_ElectricityIntoGridFromPV&CHP','Without_Electricity_IntoGridFromPV&CHP',],
+                        datasets: [{
+                          label: 'ElectricityFromGrid',
+                          backgroundColor: "#023d6b",
+                          data: [ 341, 372, 50, 50 ],
+                        }, {
+                          label: 'TotalGasFlowFromGrid',
+                          backgroundColor: "#e11d48",
+                          data: [76.8,64,25,25],
+                        }
+                    
+                    
+                        ],
+                      },
+                    options: {
+                        tooltips: {
+                          displayColors: true,
+                          callbacks:{
+                            mode: 'x',
+                          },
+                        },
+                        scales: {
+                          xAxes: [{
+                            stacked: true,
+                            gridLines: {
+                              display: false,
+                            }
+                          }],
+                          yAxes: [{
+                            stacked: true,
+                            ticks: {
+                              beginAtZero: true,
+                            },
+                            type: 'linear',
+                          }]
+                        },
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        legend: { position: 'bottom' },
+                      }
+                    });</script>
+                        </div>
+                    </div>
+                 
+                </div>
+
+   <!--/Graph Card-->
+                    <div class="w-full md:w-1/2 xl:w-1/3 p-6">
+                        <!--Table Card-->
+                        <div class="bg-white border-transparent rounded-lg shadow-xl">
+                            <div class="bg-gradient-to-b from-gray-300 to-gray-100 uppercase text-gray-800 border-b-2 border-gray-300 rounded-tl-lg rounded-tr-lg p-2">
+                                <h2 class="font-bold uppercase text-gray-600">Graph</h2>
+                            </div>
+                            <div class="p-5">
+                                <table class="w-full p-5 text-gray-700">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-left text-blue-900">Name</th>
+                                        <th class="text-left text-blue-900">Side</th>
+                                        <th class="text-left text-blue-900">Role</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    <tr>
+                                        <td>Obi Wan Kenobi</td>
+                                        <td>Light</td>
+                                        <td>Jedi</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Greedo</td>
+                                        <td>South</td>
+                                        <td>Scumbag</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Darth Vader</td>
+                                        <td>Dark</td>
+                                        <td>Sith</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                                <p class="py-2"><a href="#">See More issues...</a></p>
+
+                            </div>
+                        </div>
+                        <!--/table Card-->
+                    </div>
+                    {% block content %}
+                <div class="w-full md:w-2/3 xl:w-2/3 p-6">
+                    <!--Advert Card-->
+                    <div class="bg-white border-transparent rounded-lg shadow-xl"> 
+                        <div class="bg-gradient-to-b from-gray-300 to-gray-100 uppercase text-gray-800 border-b-2 border-gray-300 rounded-tl-lg rounded-tr-lg p-2">
+                            <h2 class="font-bold uppercase text-gray-600">{% trans "Economic Parameters" %}</h2>
+                        </div>
+                        <div class="p-5 text-center">
+
+                           
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="flush-headingOne">
+                                  <button class="accordion-button collapsed " type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                           
+                            
+                                
+                         
+                                    <p class="text-sky-300 text-3xl font-bold">{% trans "Electricity" %}</p>
+                                       </button>
+                                                 
+                                  </h2> <form method="POST"  action="{% url 'economic:dashboard' %}">{% csrf_token %}
+                                         <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                                                    <div class="accordion-body"><div class="row align-items-center">
+                                                        <div class="col">
+                                                                  <div class="input-group">                                                                                                                                                                 <div class="input-group-prepend">
+                              <span class="input-group-text" >{% trans "Fixed costs per year in €/year or €/kW" %}</span></div> {{ form.electricity_fixed_costs_per_year }}
+                              <input type="text" class="form-control" name="electricity_fixed_costs_per_year" id="electricity_fixed_costs_per_year" max="1000" min='10' value="15" onchange="rangeelectricity_fixed_costs_per_year.value = electricity_fixed_costs_per_year.value"/>
+                              <input type="range" oninput="electricity_fixed_costs_per_year.value = rangeelectricity_fixed_costs_per_year.value" class="form-control-range slider" type="range" min="10" max="1000" value="20" id="rangeelectricity_fixed_costs_per_year" step="1" onchange="electricity_fixed_costs_per_year.value = rangeelectricity_fixed_costs_per_year.value" ></div>
+                                 </div> <div class="col">
+                              
+                              
+                                      <div class="input-group">
+                                                                                                                                                                                                <div class="input-group-prepend">
+                              <span class="input-group-text" >    {% trans "Сosts per kWh in €" %}</span></div> {{ form.electricity_costs_per_kWh }}
+                              <input type="text" class="form-control" name="electricity_costs_per_kWh" id="electricity_costs_per_kWh" max="1" min='0.01' value="0.05" onchange="rangeelectricity_costs_per_kWh.value = electricity_costs_per_kWh.value"/>
+                              <input type="range" oninput="electricity_costs_per_kWh.value = rangeelectricity_costs_per_kWh.value" class="form-control-range slider" type="range" min="0.01" max="1" value="0.05" id="rangeelectricity_costs_per_kWh" step="0.01" onchange="input_text14.value = rangeelectricity_costs_per_kWh.value" ></div>
+                                    </div></div><div><br> <div class="row align-items-center"> <div class="col">
+                                      <div class="input-group">
+                                                                                                                                                                                                <div class="input-group-prepend">
+                              <span class="input-group-text" >    {% trans "Feed-in tariff for photovoltaic in €/kWh" %}</span></div> {{ form.electricity_feed_in_tariff_for_photovoltaic }}
+                              <input type="text" class="form-control" name="electricity_feed_in_tariff_for_photovoltaic" id="electricity_feed_in_tariff_for_photovoltaic" max="0.5" min='0' value="0.2" onchange="rangeelectricity_feed_in_tariff_for_photovoltaic.value = electricity_feed_in_tariff_for_photovoltaic.value"/>
+                              <input type="range" oninput="electricity_feed_in_tariff_for_photovoltaic.value = rangeelectricity_feed_in_tariff_for_photovoltaic.value" class="form-control-range slider" type="range" min="0" max="0.5" value="0.2" id="rangeelectricity_feed_in_tariff_for_photovoltaic" step="0.1" onchange="electricity_feed_in_tariff_for_photovoltaic.value = rangeelectricity_feed_in_tariff_for_photovoltaic.value" ></div>
+                                    </div><br>  <div class="col">
+                                                        <div class="input-group">
+                                                                                                                                                                                                <div class="input-group-prepend">
+                              <span class="input-group-text" >    {% trans "Feed-in tariff for combined heat and power €/kWh" %}</span></div> {{ form.electricity_feed_in_tariff_chp }}
+                              <input type="text" class="form-control" name="electricity_feed_in_tariff_chp" id="input_text16" max="0.5" min='0' value="0.2" onchange="rangeelectricity_feed_in_tariff_chp.value = electricity_feed-in_tariff_chp.value"/>
+                              <input type="range" oninput="electricity_feed_in_tariff_chp.value = rangeelectricity_feed_in_tariff_chp.value" class="form-control-range slider" type="range" min="0.00" max="0.5" value="0.2" id="rangeelectricity_feed_in_tariff_chp" step="0.1" onchange="electricity_feed-in_tariff_chp.value = rangeelectricity_feed_in_tariff_chp.value"></div>
+                                                    </div></div></div></div></div></div>
+                              
+                              
+                                <div class="accordion-item">
+                                  <h2 class="accordion-header" id="flush-headingTwo">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                                        <p class="text-sky-300 text-3xl font-bold"> {% trans "Gas" %} </p>
+                                    </button>
+                                  </h2>
+                                  <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+                                    <div class="accordion-body"><div class="row align-items-center">   <div class="col">
+                                                                  <div class="input-group">
+                                                                                                                                                                                                <div class="input-group-prepend">
+                              <span class="input-group-text" >    {% trans "Fixed costs per year in €/year" %}</span></div>{{ form.gas_fixed_costs_per_year }}
+                              <input type="text" class="form-control" name="gas_fixed_costs_per_year" id="gas_fixed_costs_per_year" max="100" min='5' value="15" onchange="rangegas_fixed_costs_per_year.value = gas_fixed_costs_per_year.value"/>
+                              <input type="range" oninput="gas_fixed_costs_per_year.value = rangegas_fixed_costs_per_year.value" class="form-control-range slider" type="range" min="5" max="100" value="20" id="rangegas_fixed_costs_per_year" step="1" onchange="gas_fixed_costs_per_year.value = rangegas_fixed_costs_per_year.value" ></div>
+                                  </div><br><div class="col">
+                                   <div class="input-group"> <div class="input-group-prepend"><span class="input-group-text" >Costs per kWh in €</span></div>{{ form.gas_costs_per_kwh }}
+                              <input type="text" class="form-control" name="gas_costs_per_kwh" id="gas_costs_per_kwh" max="100" min='5' value="15" onchange="rangegas_costs_per_kwh.value = gas_costs_per_kwh.value"/>
+                              
+                              <input type="range" oninput="gas_costs_per_kwh.value = rangegas_costs_per_kwh.value" class="form-control-range slider" type="range" min="5" max="100" value="20" id="rangegas_costs_per_kwh" step="1" onchange="gas_costs_per_kwh.value = rangegas_costs_per_kwh.value" ></div>
+                              
+                              </div></div></div>
+                                  </div>
+                                </div>
+                              
+                                <div class="accordion-item">
+                                  <h2 class="accordion-header" id="flush-headingThree">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                                        <p class="text-sky-300 text-3xl font-bold">{% trans "Battery Storage" %}</p>
+                                    </button>
+                                  </h2>
+                                  <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
+                                    <div class="accordion-body"><div class="row align-items-center">
+                                 <div class="col">
+                                  <div class="input-group">
+                                                                                                                                                                                                <div class="input-group-prepend">
+                              <span class="input-group-text" >    {% trans "Costs per kW inverter power" %}</span></div>{{ form.battery_costs_perkW_inverter_power }}
+                              <input type="text" class="form-control" name="battery_costs_perkW_inverter_power" id="battery_costs_perkW_inverter_power" max="100" min='5' value="15" onchange="rangebattery_costs_perkW_inverter_power.value = battery_costs_perkW_inverter_power.value"/>
+                              <input type="range" oninput="battery_costs_perkW_inverter_power.value = rangebattery_costs_perkW_inverter_power.value" class="form-control-range slider" type="range" min="5" max="100" value="20" id="rangebattery_costs_perkW_inverter_power" step="1" onchange="battery_costs_perkW_inverter_power.value = rangebattery_costs_perkW_inverter_power.value" ></div>
+                                  </div><br><div class="col">
+                                                                                                                 <div class="input-group"><div class="input-group-prepend">
+                              <span class="input-group-text" >    {% trans "Costs per kWh capacity" %}</span></div>{{ form.battery_costs_perkWh_capacity }}
+                              <input type="text" class="form-control" name="battery_costs_perkWh_capacity" id="battery_costs_perkWh_capacity" max="100" min='5' value="15" onchange="rangebattery_costs_perkWh_capacity.value = battery_costs_perkWh_capacity.value" />
+                              <input type="range" oninput="battery_costs_perkWh_capacity.value = rangebattery_costs_perkWh_capacity.value" class="form-control-range slider" type="range" min="5" max="100" value="20" id="rangebattery_costs_perkWh_capacity" step="1" onchange="battery_costs_perkWh_capacity.value = rangebattery_costs_perkWh_capacity.value" ></div>
+                                  </div></div><br><div class="row align-items-center">
+                               <div class="col">
+                              
+                                                                                                                  <div class="input-group">
+                              <div class="input-group-prepend">
+                              <span class="input-group-text" >    {% trans "Costs for maintenance and operations in €/year" %}</span></div>{{ form.battery_costs_for_maintenance_and_operations }}
+                              <input type="text" class="form-control" name="battery_costs_for_maintenance_and_operations" id="battery_costs_for_maintenance_and_operations" max="100" min='5' value="15" onchange="rangebattery_costs_for_maintenance_and_operations.value = battery_costs_for_maintenance_and_operations.value" />
+                              <input type="range" oninput="battery_costs_for_maintenance_and_operations.value = rangebattery_costs_for_maintenance_and_operations.value" class="form-control-range slider" type="range" min="5" max="100" value="20" id="rangebattery_costs_for_maintenance_and_operations" step="1" onchange="battery_costs_for_maintenance_and_operations.value = rangebattery_costs_for_maintenance_and_operations.value" ></div>
+                              </div><br><div class="col"><div class="input-group">
+                              <div class="input-group-prepend">
+                              <span class="input-group-text" >    {% trans "Lifetime" %}</span></div>{{ form.battery_lifetime }}
+                              <input type="text" class="form-control" name="battery_lifetime" id="battery_lifetime" max="100" min='5' value="15" onchange="rangebattery_lifetime.value =battery_lifetime.value" />
+                              <input type="range" oninput="battery_lifetime.value = rangebattery_lifetime.value" class="form-control-range slider" type="range" min="5" max="100" value="20" id="rangebattery_lifetime" step="1" onchange="battery_lifetime.value = rangebattery_lifetime.value" ></div>
+                              </div></div></div>
+                                  </div>
+                                </div>
+                              
+                                        <div class="accordion-item">
+                                  <h2 class="accordion-header" id="flush-headingFour">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
+                                        <p class="text-sky-300 text-3xl font-bold"> {% trans "Hydrogen storage" %}</p>
+                                    </button>
+                                  </h2>
+                                  <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour" data-bs-parent="#accordionFlushExample">
+                                    <div class="accordion-body"><div class="row align-items-center">
+                                 <div class="col">
+                               <div class="input-group"><br>
+                              <div class="input-group-prepend">
+                              <span class="input-group-text" > {% trans "Costs per kW electrolyseur power" %}</span></div>{{ form.hydrogen_costs_perkw_electrolyseur_power }}
+                              <input type="text" class="form-control" name="hydrogen_costs_perkw_electrolyseur_power" id="hydrogen_costs_perkw_electrolyseur_power"  max="10000000" value="2500000" onchange="rangehydrogen_costs_perkw_electrolyseur_power.value = hydrogen_costs_perkw_electrolyseur_power.value" />
+                              <input type="range" oninput="hydrogen_costs_perkw_electrolyseur_power.value = rangehydrogen_costs_perkw_electrolyseur_power.value" class="form-control-range slider" type="range" min="5000" max="10000000" value="2500000" id="rangehydrogen_costs_perkw_electrolyseur_power" step="50000" onchange="hydrogen_costs_perkw_electrolyseur_power.value = rangehydrogen_costs_perkw_electrolyseur_power.value" ></div>
+                                 </div><br><div class="col">
+                                  <div class="input-group ">
+                              <div class="input-group-prepend">
+                              <span class="input-group-text" > {% trans "Costs per kW fuel cell power" %}</span></div>{{ form.hydrogen_costs_perkw_fuel_cellpower }}
+                              <input type="text" class="form-control" name="hydrogen_costs_perkw_fuel_cellpower" id="hydrogen_costs_perkw_fuel_cellpower" max="10000000" value="2500000" onchange="rangehydrogen_costs_perkw_fuel_cellpower.value = hydrogen_costs_perkw_fuel_cellpower.value" />
+                              <input type="range" oninput="hydrogen_costs_perkw_fuel_cellpower.value = rangehydrogen_costs_perkw_fuel_cellpower.value" class="form-control-range slider" type="range" min="5000" max="10000000" value="2500000" id="rangehydrogen_costs_perkw_fuel_cellpower" step="50000" onchange="hydrogen_costs_perkw_fuel_cellpower.value = rangehydrogen_costs_perkw_fuel_cellpower.value" ></div>
+                              </div></div><br><div class="row align-items-center">
+                                 <div class="col">
+                              
+                                                                                                               <div class="input-group ">
+                              <div class="input-group-prepend">
+                              <span class="input-group-text" > {% trans "Costs per kWh hydrogen capacity" %}</span>{{ form.hydrogen_costsperkWh_hydrogencapacity }}</div>
+                              <input type="text" class="form-control" name="hydrogen_costsperkWh_hydrogencapacity" id="hydrogen_costsperkWh_hydrogencapacity" max="10000000" value="2500000" onchange="rangehydrogen_costsperkWh_hydrogencapacity.value = hydrogen_costsperkWh_hydrogencapacity.value" />
+                              <input type="range" oninput="hydrogen_costsperkWh_hydrogencapacity.value = rangehydrogen_costsperkWh_hydrogencapacity.value" class="form-control-range slider" type="range" min="5000" max="10000000" value="2500000" id="rangehydrogen_costsperkWh_hydrogencapacity" step="50000" onchange="hydrogen_costsperkWh_hydrogencapacity.value = rangehydrogen_costsperkWh_hydrogencapacity.value" ></div>
+                                 </div><br><div class="col">
+                              
+                              
+                                  <div class="input-group ">
+                              <div class="input-group-prepend">
+                              <span class="input-group-text" > {% trans "Costs for maintenance and operations in €/year" %}</span></div>{{ form.hydrogen_costs_for_maintenance_and_operations }}
+                              <input type="text" class="form-control" name="hydrogen_costs_for_maintenance_and_operations" id="hydrogen_costs_for_maintenance_and_operations" max="10000000" value="2500000" onchange="rangehydrogen_costs_for_maintenance_and_operations.value = hydrogen_costs_for_maintenance_and_operations.value" />
+                              <input type="range" oninput="hydrogen_costs_for_maintenance_and_operations.value = rangehydrogen_costs_for_maintenance_and_operations.value" class="form-control-range slider" type="range" min="5000" max="10000000" value="2500000" id="rangehydrogen_costs_for_maintenance_and_operations" step="50000" onchange="hydrogen_costs_for_maintenance_and_operations.value = rangehydrogen_costs_for_maintenance_and_operations.value" ></div>
+                              
+                                 </div></div><br><div class="row align-items-center"><div class="col">
+                              
+                                   <div class="input-group ">
+                              <div class="input-group-prepend">
+                              <span class="input-group-text" >{% trans "Lifetime" %}</span></div>{{ form.hydrogen_lifetime }}
+                              <input type="text" class="form-control" name="hydrogen_lifetime" id="hydrogen_lifetime" max="100" min='5' value="20" onchange="rangehydrogen_lifetime.value = hydrogen_lifetime.value" />
+                              <input type="range" oninput="hydrogen_lifetime.value = rangehydrogen_lifetime.value" class="form-control-range slider" type="range" min="5" max="100" value="20" id="rangehydrogen_lifetime" step="1" onchange="hydrogen_lifetime.value = rangehydrogen_lifetime.value" ></div>
+                              
+                              
+                              </div><br><div class="col">
+                              
+                                   <div class="input-group ">
+                              <div class="input-group-prepend">
+                              <span class="input-group-text" >{% trans "Interest rate" %}</span></div> {{ form.hydrogen_interest_rate }}
+                              <input type="text" class="form-control" name="hydrogen_interest_rate" id="hydrogen_interest_rate" max="100" min='5' value="20" onchange="rangehydrogen_interest_rate.value = hydrogen_interest_rate.value" />
+                              <input type="range" oninput="hydrogen_interest_rate.value = rangehydrogen_interest_rate.value" class="form-control-range slider" type="range" min="5" max="100" value="20" id="rangehydrogen_interest_rate" step="1" onchange="hydrogen_interest_rate.value = rangehydrogen_interest_rate.value" ></div>
+                                </h3></div></div></div></div></div><div class="row align-items-right">
+                                      <div class="col" align="right">
+                                          <button type="submit" class="btn btn-success mt-3">{% trans "Send" %}
+                                          </button>{% endblock %}</div>
+                              
+                                      </div></div></div>
+                                     </div>
+                                  </div>
+                              </form>
+                            
+
+
+                        </div>
+                    </div>
+                    <!--/Advert Card-->
+                </div>
+
+
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+
+
+
+<script>
+    /*Toggle dropdown list*/
+    function toggleDD(myDropMenu) {
+        document.getElementById(myDropMenu).classList.toggle("invisible");
+    }
+    /*Filter dropdown options*/
+    function filterDD(myDropMenu, myDropMenuSearch) {
+        var input, filter, ul, li, a, i;
+        input = document.getElementById(myDropMenuSearch);
+        filter = input.value.toUpperCase();
+        div = document.getElementById(myDropMenu);
+        a = div.getElementsByTagName("a");
+        for (i = 0; i < a.length; i++) {
+            if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+    // Close the dropdown menu if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('.drop-button') && !event.target.matches('.drop-search')) {
+            var dropdowns = document.getElementsByClassName("dropdownlist");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (!openDropdown.classList.contains('invisible')) {
+                    openDropdown.classList.add('invisible');
+                }
+            }
+        }
+    }
+</script>
+
+
+</body>
+
+</html>

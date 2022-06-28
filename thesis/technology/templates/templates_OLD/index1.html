@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+<!--fontsawesome--->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+<!--endfontsawesome-->
+    <!-- Custom CSS-->
+    <link rel="stylesheet" href="/static/style.css">
+    <!--end of custom CSS-->
+    <!--chartsjs.org-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+    <!---end of chartsjs-->
+    <title>Home Page</title>
+  </head>
+  <body>
+  {% extends 'partials/base.html' %}
+  {% block title %} Home Page {% endblock %}
+
+
+   #{% block content %}
+
+    <!--Graphs-->
+
+
+  <div class="container">
+    <div class="row my-5">
+      <div class="col-md-6">
+        <div class="bg-white">
+<canvas id="myChart1" width="400" height="300"></canvas>
+<script>
+
+var ctx = document.getElementById('myChart1').getContext('2d');
+var myChart1 = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: [{% for order in orders %} `{{ order.product.name }}`, {% endfor %}],
+        datasets: [{
+            label: 'Orders',
+            data: [{% for order in orders %} {{ order.order_quantity }}, {% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235,1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+    </div>
+      </div>
+
+
+           <div class="col-md-6">
+            <div class="bg-white">
+                <canvas id="myChart2" width="400" height="300"></canvas>
+           <script>
+var ctx = document.getElementById('myChart2').getContext('2d');
+var myChart2 = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [{% for product in products %} '{{ product.name }}', {% endfor %}],
+        datasets: [{
+            label: 'Products',
+            data: [{% for product in products %} {{ product.quantity }}, {% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235,1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+</script>
+            </div>
+
+
+    </div>
+
+ <div class="container">
+    <div class="row my-5">
+      <div class="col-md-6">
+<div class="bg-white">
+<canvas id="myChart3" width="400" height="300"></canvas>
+<script>
+var ctx = document.getElementById('myChart3').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Germany', 'Italy', 'France', 'Spain', 'Poland', 'Denmark'],
+        datasets: [{
+            label: '# of Votes',
+            data: [19, 13, 15, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+ </div>
+</div><div class="col-md-6">
+<div class="bg-white">
+<canvas id="myChart4" width="400" height="300"></canvas>
+<script>
+var ctx = document.getElementById('myChart4').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'polarArea',
+    data: {
+        labels: ['Berlin', 'Baden-Würtemberg ', 'Bayern', 'Brandenburg', 'Niedersachsen', 'Hamburg'],
+        datasets: [{
+            label: '# of City',
+            data: [12, 16, 13, 15, 2, 1],
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+</div></div>
+  </div></div>
+
+     <div class="container">
+    <div class="row my-5">
+      <div class="col-md-15">
+<div class="bg-white">
+<canvas id="myChart5" width="900" height="300"></canvas>
+<script>
+var ctx = document.getElementById('myChart5').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Germany', 'Italy', 'France', 'Spain', 'Poland', 'Denmark'],
+        datasets: [{
+            label: '# of Votes',
+            data: [19, 13, 15, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+ </div>
+</div>
+         <div class="container">
+    <div class="row my-5">
+      <div class="col-md-15">
+<div class="bg-white">
+<canvas id="myChart6" width="900" height="300"></canvas>
+<script>
+var ctx = document.getElementById('myChart6').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+        labels: ['Germany', 'Italy', 'France', 'Spain', 'Poland', 'Denmark'],
+        datasets: [{
+            label: '# of Votes',
+            data: [19, 13, 15, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 3
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+ </div>
+</div>
+
+
+<h4>
+  <div class="container">
+      <div class="row my-5">
+           <div class="col-md-15">
+
+
+
+        </form></div>
+        <form action="add_res" method="POST">
+            <table>
+                {{ form }}
+            </table>
+            {% csrf_token %}
+
+            <!--<p>Enter number a <input type="number" name="a"><br></p>
+            <p> Enter number b <input type="number" name="b"><br></p>-->
+
+            <input type="submit" value="Send"></p>
+           </form>
+
+           </div></div>
+</h4>
+
+<!--<a href="http://127.0.0.1:8000/resultlist.html"> Results </a>-->
+  </div></div>
+  </div></div>
+{% endblock %}
+
+
+
+
+
+  <!---end of Graphs-->
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+    -->
+  </body>
+
+</html>

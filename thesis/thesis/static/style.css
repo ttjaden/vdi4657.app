@@ -1,0 +1,20 @@
+p,body{
+background:rgb(230, 227, 227);
+text-size:19px;
+font: Arial;
+font-color:white;
+}
+
+.my-card:hover{
+transform: scale(1.1);
+transition:0.2s ease-in-out;
+}
+.slideContainer {
+width:75%;
+margin-top:200px;
+}
+form.range {-webkit-appearance:none;
+width:500px;
+height:50px;
+border-radius:12px;
+box-shadow:0px 1px 10px 1px black; }

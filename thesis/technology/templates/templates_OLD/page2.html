@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <!-- Bootstrap CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+<!--fontsawesome--->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+<!--endfontsawesome-->
+    <!-- Custom CSS-->
+    <link rel="stylesheet" href="/static/style.css">
+    <!--end of custom CSS-->
+    <!--chartsjs.org-->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+    <!---end of chartsjs-->
+    <title>Title</title>
+    <script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+    <style type="text/css">
+
+body {
+  background-color: #023d6b;
+  font-size:27px;
+  font: Arial, Sans-Serif;
+
+}
+h2,h3
+{color:white;}
+p
+{ color:white;
+  }
+
+
+img{
+padding:14px 16px;}
+ ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: white;
+}
+
+li {
+  float: left;
+}
+form {
+ display: block;
+  color: white;
+  text-align: left;
+  font-family: Arial, sans-serif;
+  padding: 14px 16px;
+ text-decoration: none;
+  font-size: 25px;
+}
+li a {
+  display: block;
+  color: #023d6b;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  padding: 24px 46px;
+ text-decoration: none;
+  font-size: 29px;
+}
+.scheme {
+
+float:right;
+
+
+}
+.form-check-input, input [type="radio"]{
+padding: 16px 16px;
+}
+p, container, checkbox{
+
+ padding-top: center;
+    padding-left: center;
+}
+
+
+    </style>
+    <title>Home Page</title>
+  </head>
+  <body>
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+  <div id="logo" style="background-image:
+    url('/pict/logo.jpg");
+    width: 50px; height: 50px; background-size: contain;
+    background-repeat:no-repeat; float: left">
+</div>
+<!---nav bar--->
+
+
+</div>
+<!--<h1> Calculate cost-effective and environmentally friendly heating options for households and neighbourhoods</h1>-->
+<ul>
+
+    <li><a href="contact.asp">Home Page</a></li>
+  <li><a href="contact.asp">Admin Profile</a></li>
+  <li><a href="about.asp">About</a></li>
+    <li><a href="default.asp">Contact</a></li>
+    <li><a href="default.asp">Log Out</a></li>
+  <li></li>
+</ul>
+<!----
+<container>
+
+  <form class="row g-3">
+
+<h3>Location</h3><a href="map.html"></a>
+  <div class="col-sm-3">
+
+  <div class="row mt-4">
+    <div class="col-md-10 offset-md-1">
+      Map {{ m|safe }}
+
+
+  </div></div>
+  </div></form>
+</container>
+-->
+<container>
+
+  <form class="row g-3 needs-validation" novalidate>
+
+
+  <div class="col-md-4"><h3>Location</h3> <a href="map.html">Choose on the Map</a><h3>Selection of building type?</h3>
+  <div class="col-sm-3">
+</div>
+  <div class="form-check form-check-inline">
+  <input class="form-check-input" name="myradio" type="radio" id="inlineCheckbox1" value="option1">
+  <label class="form-check-label" for="inlineCheckbox1"><h3>SFH</h3></label>
+</div>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" name="myradio" type="radio" id="inlineCheckbox2" value="option2">
+  <label class="form-check-label" for="inlineCheckbox2"><h3>MFH</h3></label>
+</div></div>
+<div class="col-md-4">
+  <h3>Number of persons in household</h3>
+<div class="input-group">
+  <input  class="form-control" type="integer" class="form-control" aria-label="bi-person-plus">
+  <span class="input-group-text" type="number" value="1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+  <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+  <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+</svg>
+</div></div><br>
+   <div class="col-md-12"><h3>Electrical energy consumption</h3>
+
+<div class="col-sm-3">
+<div class="form-check">
+  <input  class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+  <label class="form-check-label" for="flexRadioDefault1">
+ <h3> E-Vehicle</h3>
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+  <div class="form-check-label" for="flexRadioDefault2">
+  </div>
+        <h3> Heat Pump</h3><div class="col-sm-10">
+    <select class="form-select" aria-label="Default select example">
+  <option selected>Choose the value</option>
+  <option value="1">7920 kWh</option>
+  <option value="2">9000 kWh</option>
+  <option value="3">10920 kWh</option>
+</select>
+</div></div></div></div>
+     <div class="col-md-12"><h3>Thermal energy consumption</h3>
+
+<div class="col-sm-3">
+<div class="form-check">
+  <input  class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+  <label class="form-check-label" for="flexRadioDefault1">
+ <h3>Standard</h3>
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+  <div class="form-check-label" for="flexRadioDefault2">
+  </div>
+        <h3>Suggestions of nominal supply temperature</h3><div class="col-sm-10">
+    <select class="form-select" aria-label="Default select example">
+  <option selected>Choose the value</option>
+  <option value="1">7920 kWh</option>
+  <option value="2">9000 kWh</option>
+  <option value="3">10920 kWh</option>
+</select></div></div></div></div>
+<div class="form-check"><h3>Selection of technologies</h3>
+<div class="col-sm-3">
+<div class="form-check">
+  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+  <label class="form-check-label" for="defaultCheck1">
+    Photovoltaic (PV)
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
+  <label class="form-check-label" for="defaultCheck2">
+    Combined heat and power (CHP)
+  </label>
+</div>
+    <div class="form-check">
+  <input class="form-check-input" type="checkbox" value="" id="defaultCheck2" >
+  <label class="form-check-label" for="defaultCheck2">
+    Heat pump (HP)
+  </label>    </div>
+    <div class="form-check">
+  <input class="form-check-input" type="checkbox" value="" id="defaultCheck2" >
+  <label class="form-check-label" for="defaultCheck2">
+    Gas-Heater
+  </label>
+</div>
+
+     <div class="form-check">
+  <input class="form-check-input" type="checkbox" value="" id="defaultCheck2" >
+  <label class="form-check-label" for="defaultCheck2">
+    Battery
+  </label>
+</div>
+
+     <div class="form-check">
+  <input class="form-check-input" type="checkbox" value="" id="defaultCheck2" >
+  <label class="form-check-label" for="defaultCheck2">
+    Seasonal Storage
+  </label>
+    <div class="form-
+    check">
+  <input class="form-check-input" type="checkbox" value="" id="defaultCheck2" >
+  <label class="form-check-label" for="defaultCheck2">
+    Heat storage
+  </label></div></div></div></div>
+
+<div class="col-md-4">
+  <h3>Hot Water demand per day in liter</h3>
+    <select class="form-select" aria-label="Default select example">
+  <option selected>Choose the value </option>
+  <option value="1">66 liter</option>
+  <option value="2">100 liter</option>
+  <option value="3">120 liter</option>
+</select>
+</div>
+ <div class="col-md-8"><div>
+    <h3>Building size in sqm</h3>
+   <select class="form-select" aria-label="Default select example">
+  <option selected>Choose the value</option>
+  <option value="88">88 sqm</option>
+  <option value="100">100 sqm</option>
+  <option value="250">150 sqm</option>
+</select> </div></div>
+  <br>
+<div class="col-md-4"><h3>Battery capacity in kWh</h3>
+  <select class="form-select" aria-label="Default select example">
+  <option selected>Open this select menu</option>
+  <option value="1">6</option>
+  <option value="2">8</option>
+  <option value="3">10</option>
+</select>
+</div>
+</div></div></form>
+</container>
+<div><container><form class="row g-3 needs-validation" novalidate>
+  <div class="col-md-4">
+    <label for="validationCustom01" class="form-label">First name</label>
+    <input type="text" class="form-control" id="validationCustom01" value="Mark" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  <div class="col-md-3">
+    <label for="validationCustom02" class="form-label">Last name</label>
+    <input type="text" class="form-control" id="validationCustom02" value="Otto" required>
+    <div class="valid-feedback">
+      Looks good!
+    </div>
+  </div>
+  <div class="col-md-4">
+    <label for="validationCustomUsername" class="form-label">Username</label>
+    <div class="input-group has-validation">
+      <span class="input-group-text" id="inputGroupPrepend">@</span>
+      <input type="text" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required>
+      <div class="invalid-feedback">
+        Please choose a username.
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <label for="validationCustom03" class="form-label">City</label>
+    <input type="text" class="form-control" id="validationCustom03" required>
+    <div class="invalid-feedback">
+      Please provide a valid city.
+    </div>
+  </div>
+  <div class="col-md-3">
+    <label for="validationCustom04" class="form-label">State</label>
+    <select class="form-select" id="validationCustom04" required>
+      <option selected disabled value="">Choose...</option>
+      <option>...</option>
+    </select>
+    <div class="invalid-feedback">
+      Please select a valid state.
+    </div>
+  </div>
+  <div class="col-md-3">
+    <label for="validationCustom05" class="form-label">Zip</label>
+    <input type="text" class="form-control" id="validationCustom05" required>
+    <div class="invalid-feedback">
+      Please provide a valid zip.
+    </div>
+  </div>
+  <div class="col-12"> <div class="col-sm-3">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+      <label class="form-check-label" for="invalidCheck">
+        Agree to terms and conditions
+      </label>
+      <div class="invalid-feedback">
+        You must agree before submitting.
+      </div>
+    </div>
+  </div></div>
+  <div class="col-12">
+    <button class="btn btn-primary" type="submit">Calculate</button>
+  </div>
+</form>
+</container></div>
+</nav>
+    <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-end">
+    <li class="page-item disabled">
+      <a class="page-link">Previous</a>
+    </li>
+    <li class="page-item"><a class="page-link" href="/">1</a></li>
+    <li class="page-item"><a class="page-link" href="">2</a></li>
+    <li class="page-item"><a class="page-link" href="page3.html">3</a></li>
+    <li class="page-item">
+      <a class="page-link" href="#">Next</a>
+    </li>
+  </ul>
+</nav>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  {% load i18n %}
+     <form action="{% url 'set_language' %}" method="post" style="width:300px;">{% csrf_token %}
+    <select class="form-control form-control-sm" id="exampleFormControlSelect1" name="language" onchange="this.form.submit();">
+       {% get_current_language as LANGUAGE_CODE %}
+       {% get_available_languages as LANGUAGES %}
+       {% get_language_info_list for LANGUAGES as languages %}
+       {% for language in languages %}
+         <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+             {{ language.name_local }} ({{ language.code }})
+         </option>
+       {% endfor %}
+    </select>
+</form>
+    <nav class="navbar navbar-expand-lg navbar-light bg-info">
+      <div class="container">
+  <a class="navbar-brand text-white" href="{% url 'dashboard-index' %}">{% trans "Jülich" %}</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link text-white" href="{% url 'dashboard-index' %}">{% trans "Dashboard" %} <span class="sr-only">(current)</span></a>
+      </li>
+      </ul>
+
+<ul class="navbar-nav ml-left">
+      <li class="nav-item active">
+        <a class="nav-link text-white" href="{% url 'dashboard-profile' %}">{% trans "Admin Profile" %} <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-white" href="#">{% trans "Log out" %}</a>
+      </li>
+    </ul>
+  </div>
+        </div>
+</nav>
+</body>
+</html>
