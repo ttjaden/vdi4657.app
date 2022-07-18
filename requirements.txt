@@ -1,5 +1,9 @@
-folium
-geocoder
+channels_redis
+dash
+dash_daq
+dash_iconify
+dash_renderer
+dash_trich_components
 django
 django-cors-headers
 django-crispy-forms
@@ -9,5 +13,9 @@ django-admin-tools
 django-translation-manager
 django-modeltranslation
 django-rosetta
-channels_redis
-dash_renderer
+folium
+geocoder
+geopy
+ipython
+pandas
+pyzmq
