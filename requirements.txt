@@ -16,6 +16,9 @@ django-rosetta
 folium
 geocoder
 geopy
+ipykernel
 ipython
 pandas
+plotly
+plotly_express
 pyzmq
