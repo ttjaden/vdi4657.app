@@ -14,9 +14,7 @@ def getregion(plz):
     geolocator=Nominatim(user_agent="Hauke", timeout=10)
     location=geolocator.geocode(str(plz)+ ', Germany')
     # read weather zones
-    print(os.getcwd())
-    wzones = pd.read_csv(os.getcwd()+"/functions/T_zones_Ger_final.csv",
-        index_col=0,)
+    wzones = pd.read_csv(os.getcwd()+"/PIEG-Strom_Webtool/functions/T_zones_Ger_final.csv",index_col=0,)
     # get distance to all reference weather station points
     dist = ((wzones["Lat"] - location.latitude) ** 2 + (wzones["Lng"] - location.longitude) ** 2) ** 0.5
 
