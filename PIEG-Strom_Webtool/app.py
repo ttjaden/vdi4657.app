@@ -31,7 +31,7 @@ efh_content=html.Div(children=[
     html.Div('Bewohneranzahl'),
     dcc.Slider(min=1,max=6,step=1,value=4,id='n_bewohner_efh'),
     html.Div('Stromverbrauch in kWh'),
-    dcc.Slider(min=2000,max=8000,step=500,value=4000,id='stromverbrauch_efh'),
+    dcc.Slider(min=2000,max=8000,step=500,value=4000,marks={2000:'2000',8000:'8000'},id='stromverbrauch_efh',tooltip={"placement": "bottom", "always_visible": False}),
 ])
 mfh_content=html.Div(children=[
     html.H4('Mehrfamilienhaus'),
@@ -39,13 +39,13 @@ mfh_content=html.Div(children=[
     dcc.Input(id='standort',placeholder='Postleitzahl oder Adresse',persistence='local'),
     html.Div('Nordsee',id='region'),
     html.Div('Anzahl an Wohnungen'),
-    dcc.Slider(2,25,1,value=7,id='n_wohnungen',),
-    html.Div('Gebäudegröße in m²'),
-    dcc.Slider(140,1750,70,value=140,id='wohraum_mfh',),
+    dcc.Slider(2,25,1,value=7,marks={2:'2',25:'25'},id='n_wohnungen',tooltip={"placement": "bottom", "always_visible": False}),
+    html.Div('Gebäudegröße in m²:'),
+    dcc.Slider(140,1750,70,value=700,marks={140:'140',1750:'1750'},id='wohraum_mfh',tooltip={"placement": "bottom", "always_visible": False}),
     html.Div('Baustandard in kWh/(m² Jahr)'),
     dcc.Dropdown([25,75,200],value=75,id='baustandard_mfh'),
-    html.Div('Stromverbrauch in kWh'),
-    dcc.Slider(min=8000,max=74000,step=2000,id='stromverbrauch_mfh'),
+    html.Div('Stromverbrauch in kWh:'),
+    dcc.Slider(min=8000,max=74000,step=2000,marks={8000:'8000',74000:'74000'},id='stromverbrauch_mfh',tooltip={"placement": "bottom", "always_visible": False}),
 ])
 industrie_content=html.Div(children=[
     html.H4('Industriegebäude'),
@@ -55,9 +55,7 @@ industrie_content=html.Div(children=[
     html.Div('Industriezweig'),
     dcc.Dropdown(['office','Schule'],value='office',id='industriezweig',),
     html.Div('Stromverbrauch in kWh'),
-    dcc.Slider(min=8000,max=74000,step=2000,id='stromverbrauch_industrie'),
-    html.Div('Batteriestrategie'),
-    dcc.RadioItems(['Eigenverbrauchserhöhung', 'Lastspitzenkappung']),
+    dcc.Slider(min=8000,max=74000,step=2000,marks={8000:'8000',74000:'74000'},id='stromverbrauch_industrie',tooltip={"placement": "bottom", "always_visible": False}),
 ])
 PV=[]
 pv_dict=dict()
@@ -83,8 +81,9 @@ pv_content=html.Div(children=[
     dcc.Slider(min=0,max=len(PV)-1,step=1,marks=pv_dict, id='pv_slider',value=10),
     #html.Div(id='pv_value'),
     html.H6('PV-Ausrichtung: '),
-    dcc.RadioItems(['Ost-West','Süd'],'Süd',id='pv_ausrichtung')
+    dcc.RadioItems(options={'Ost-West':'Ost-West','Süd':'Süd'},value='Süd',id='pv_ausrichtung')
     ])
+
 EFH_container = dbc.Container(
                     [
                     dbc.Row(
@@ -123,8 +122,8 @@ technology=html.Div(children=[html.Button(html.Div([DashIconify(icon="fa-solid:s
 html.Button(html.Div([DashIconify(icon="mdi:gas-burner",width=50,height=50,),html.Br(),'KWK-Brenner']),id='n_chp',n_clicks=0),
 html.Button(html.Div([DashIconify(icon="mdi:heat-pump-outline",width=50,height=50,),html.Br(),'Wärmepumpe']),id='n_hp',n_clicks=0),
 html.Button(html.Div([DashIconify(icon="material-symbols:mode-heat",width=50,height=50,),html.Br(),'Gasheizung']),id='n_gas',n_clicks=0),
-html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Elektrische Batterie']),id='n_bat',n_clicks=0),
-html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'Wasserstoffspeicher']),id='n_hyd',n_clicks=0),
+html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Batterie']),id='n_bat',n_clicks=0),
+html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0),
 html.Div(id='technology')])
 technology_1=dbc.Container(
                     [
@@ -160,7 +159,7 @@ technology_1=dbc.Container(
                     ),
                     dbc.Row(
                         [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=230,height=230,),html.Br(),'Wasserstoffspeicher']),id='n_hyd',n_clicks=0), md=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=230,height=230,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0), md=4),
                         dbc.Col(html.Div(id='technology'),md=8)
                         ],
                     align="top",
@@ -181,34 +180,32 @@ content_3 = html.Div(
                     dbc.Row(
                         [
                         dbc.Col(html.Div(id='scroll',className='scroll',children=[
-                        dcc.Tabs(id='forna-tabs',value='what-is', children=[
-                        dcc.Tab(label='About',value='what-is',children=[html.Div(className='control-tab', children=[
-                                html.H4(className='what-is', children='What is FornaContainer?'),
-                                dcc.Markdown('''
-                                FornaContainer is a force-directed graph that is
-                                used to represent the secondary structure of nucleic
-                                acids (i.e., DNA and RNA).
-                                In the "Add New" tab, you can enter a sequence
-                                by specifying the nucleotide sequence and the
-                                dot-bracket representation of the secondary
-                                structure.
-                                In the "Sequences" tab, you can select which
-                                sequences will be displayed, as well as obtain
-                                information about the sequences that you have
-                                already created.
-                                In the "Colors" tab, you can choose to color each
-                                nucleotide according to its base, the structural
-                                feature to which it belongs, or its position in
-                                the sequence; you can also specify a custom color
-                                scheme.
-                                '''),
-                                html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Autarkie erhöhen']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
-                                html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Lastspitzenkappung']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
-                            ])]),
-                        dcc.Tab(label='Parameter',className='parameter',value='parameter',
-                        ),
-                        dcc.Tab(label='Ökonomie', value='show-sequences',
-                        ),             
+                        dcc.Tabs(id='forna-tabs',className='forna-tabs',value='what-is', children=[
+                            dcc.Tab(label='About',value='what-is',children=[html.Div(className='control-tab', children=[
+                                    html.H4(className='what-is', children='What is FornaContainer?'),
+                                    dcc.Markdown('''
+                                    FornaContainer is a force-directed graph that is
+                                    used to represent the secondary structure of nucleic
+                                    acids (i.e., DNA and RNA).
+                                    In the "Add New" tab, you can enter a sequence
+                                    by specifying the nucleotide sequence and the
+                                    dot-bracket representation of the secondary
+                                    structure.
+                                    In the "Sequences" tab, you can select which
+                                    sequences will be displayed, as well as obtain
+                                    information about the sequences that you have
+                                    already created.
+                                    In the "Colors" tab, you can choose to color each
+                                    nucleotide according to its base, the structural
+                                    feature to which it belongs, or its position in
+                                    the sequence; you can also specify a custom color
+                                    scheme.
+                                    '''),
+                                    html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Autarkie erhöhen']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                    html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Lastspitzenkappung']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                ])]),
+                            dcc.Tab(label='Parameter',className='parameter',value='parameter',),
+                            dcc.Tab(label='Ökonomie', value='show-sequences',),             
                         ]),html.Div(id='humi')
                         ]),md=4),
                         dbc.Col(html.Div(children=[html.Div(
