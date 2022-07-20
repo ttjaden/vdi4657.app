@@ -1,17 +1,16 @@
-from turtle import width
-import dash_trich_components as dtc
 from dash.dependencies import Input, Output
 import pandas as pd
 from dash import Dash, html, dcc, Input, Output, State, callback_context
 import dash_bootstrap_components as dbc
 from dash_iconify import DashIconify
 import plotly_express as px
+
 from functions.PLZtoWeatherRegion import getregion
 
 df_sfh=pd.read_pickle('PIEG-Strom_Webtool/dummy.pkl')
 app = Dash(__name__,
           suppress_callback_exceptions=True, 
-          external_stylesheets=[{'href': 'https://use.fontawesome.com/releases/v5.8.1/css/all.css','rel': 'stylesheet','integrity': 'sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf','crossorigin': 'anonymous'}],
+          external_stylesheets=[dbc.themes.BOOTSTRAP,{'href': 'https://use.fontawesome.com/releases/v5.8.1/css/all.css','rel': 'stylesheet','integrity': 'sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf','crossorigin': 'anonymous'}],
           meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"},
           ],
           )
@@ -60,10 +59,32 @@ industrie_content=html.Div(children=[
     html.Div('Batteriestrategie'),
     dcc.RadioItems(['Eigenverbrauchserhöhung', 'Lastspitzenkappung']),
 ])
+PV=[]
+pv_dict=dict()
+pv_dict[0]=str(0)
+for i in range(0,10,1):
+    PV.append(i)
+pv_dict[len(PV)]=str(i+1)
+for i in range(10,20,2):
+    PV.append(i)
+pv_dict[len(PV)]=str(i+2)
+for i in range(20,50,5):
+    PV.append(i)
+pv_dict[len(PV)]=str(i+5)
+for i in range(50,100,10):
+    PV.append(i)
+pv_dict[len(PV)]=str(i+10)
+for i in range(100,220,20):
+    PV.append(i)
+pv_dict[len(PV)-1]=str(i)
 pv_content=html.Div(children=[
     html.Div(html.H4('Photovoltaik')),
-    dcc.Input(type='number',min=1,max=200)
-])
+    html.H6('PV-Leistung in kWp: '),
+    dcc.Slider(min=0,max=len(PV)-1,step=1,marks=pv_dict, id='pv_slider',value=10),
+    #html.Div(id='pv_value'),
+    html.H6('PV-Ausrichtung: '),
+    dcc.RadioItems(['Ost-West','Süd'],'Süd',id='pv_ausrichtung')
+    ])
 EFH_container = dbc.Container(
                     [
                     dbc.Row(
@@ -97,59 +118,71 @@ Industrie_container = dbc.Container(
                     ],
                     fluid=True,
                     )
-content_1 = """Hier stehen Details wofür das Tool ist und was gemacht werden kann!"""
-content_2 = html.Div(html.Div(
-        children=[
-            html.Div(
-                children=[
-                    dcc.Tabs(children=[
-                        dcc.Tab(label='Gebäude',
-                        children=(
-                            html.Div(html.H3('Gebäudewahl:'),
-                            ),
-                            html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=230,height=230,),html.Br(),'Einfamilienhaus']),id='efh_click',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="bxs:building-house",width=230,height=230,),html.Br(),'Mehrfamilienhaus']),id='mfh_click',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="la:industry",width=230,height=230,),html.Br(),'Industrie']),id='industry_click',n_clicks=0),
-                            html.Div(id='bulding_container'),
-                            ),
-                        ),
-                        dcc.Tab(label='Technologie',
-                        children=(
-                            html.Div(html.H3('Technologiewahl')),
-                            html.Button(html.Div([DashIconify(icon="fa-solid:solar-panel",width=230,height=230,),html.Br(),'Photovoltaik']),id='n_solar',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="mdi:gas-burner",width=230,height=230,),html.Br(),'KWK-Brenner']),id='n_chp',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="mdi:heat-pump-outline",width=230,height=230,),html.Br(),'Wärmepumpe']),id='n_hp',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="material-symbols:mode-heat",width=230,height=230,),html.Br(),'Gasheizung']),id='n_gas',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="cil:battery-3",width=230,height=230,),html.Br(),'Elektrische Batterie']),id='n_bat',n_clicks=0),#cc0
-                            html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=230,height=230,),html.Br(),'Wasserstoffspeicher']),id='n_hyd',n_clicks=0),#MIT
-                            html.Div(id='technology')
-                        )                                
-                        ),
-                    ]),
-                
-                ]
-            
-            ),
-        ], 
-))
 
-
+technology=html.Div(children=[html.Button(html.Div([DashIconify(icon="fa-solid:solar-panel",width=50,height=50,),html.Br(),'Photovoltaik']),id='n_solar',n_clicks=0),
+html.Button(html.Div([DashIconify(icon="mdi:gas-burner",width=50,height=50,),html.Br(),'KWK-Brenner']),id='n_chp',n_clicks=0),
+html.Button(html.Div([DashIconify(icon="mdi:heat-pump-outline",width=50,height=50,),html.Br(),'Wärmepumpe']),id='n_hp',n_clicks=0),
+html.Button(html.Div([DashIconify(icon="material-symbols:mode-heat",width=50,height=50,),html.Br(),'Gasheizung']),id='n_gas',n_clicks=0),
+html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Elektrische Batterie']),id='n_bat',n_clicks=0),
+html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'Wasserstoffspeicher']),id='n_hyd',n_clicks=0),
+html.Div(id='technology')])
+technology_1=dbc.Container(
+                    [
+                    dbc.Row(
+                        [
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="fa-solid:solar-panel",width=230,height=230,),html.Br(),'Photovoltaik']),id='n_solar',n_clicks=0), md=4),
+                        ],
+                    align="top",
+                    ),
+                    dbc.Row(
+                        [
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="mdi:gas-burner",width=230,height=230,),html.Br(),'KWK-Brenner']),id='n_chp',n_clicks=0), md=4),
+                        ],
+                    align="top",
+                    ),
+                    dbc.Row(
+                        [
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="mdi:heat-pump-outline",width=230,height=230,),html.Br(),'Wärmepumpe']),id='n_hp',n_clicks=0), md=4),
+                        ],
+                    align="top",
+                    ),
+                    dbc.Row(
+                        [
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="material-symbols:mode-heat",width=230,height=230,),html.Br(),'Gasheizung']),id='n_gas',n_clicks=0), md=4),
+                        ],
+                    align="top",
+                    ),
+                    dbc.Row(
+                        [
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="cil:battery-3",width=230,height=230,),html.Br(),'Elektrische Batterie']),id='n_bat',n_clicks=0), md=4),
+                        ],
+                    align="top",
+                    ),
+                    dbc.Row(
+                        [
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=230,height=230,),html.Br(),'Wasserstoffspeicher']),id='n_hyd',n_clicks=0), md=4),
+                        dbc.Col(html.Div(id='technology'),md=8)
+                        ],
+                    align="top",
+                    ),
+                    ],
+                    fluid=True,
+                    )
 
 content_3 = html.Div(
         id='main_page',
         children=[
             dcc.Location(id='url', refresh=False),
             html.Div(
-                id='app-page-content',
+                id='app-page',
                 children=html.Div(
         children=[dbc.Container(
                     [
                     dbc.Row(
                         [
-                        dbc.Col(html.Div(children=[
-                        dcc.Tabs(id='forna-tabs', value='what-is', children=[
-                        dcc.Tab(label='About',value='what-is',
-                            children=html.Div(className='control-tab', children=[
+                        dbc.Col(html.Div(id='scroll',className='scroll',children=[
+                        dcc.Tabs(id='forna-tabs',value='what-is', children=[
+                        dcc.Tab(label='About',value='what-is',children=[html.Div(className='control-tab', children=[
                                 html.H4(className='what-is', children='What is FornaContainer?'),
                                 dcc.Markdown('''
                                 FornaContainer is a force-directed graph that is
@@ -171,105 +204,42 @@ content_3 = html.Div(
                                 '''),
                                 html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Autarkie erhöhen']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
                                 html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Lastspitzenkappung']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
-                            ])
+                            ])]),
+                        dcc.Tab(label='Parameter',className='parameter',value='parameter',
                         ),
-                        dcc.Tab(label='Gebäude',className='parameter',value='parameter',
-                        children=(
-                            html.Div(html.H3('Gebäudewahl:'),
-                            ),
-                            html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=100,height=100,),html.Br(),'Einfamilienhaus']),id='efh_click',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="bxs:building-house",width=100,height=100,),html.Br(),'Mehrfamilienhaus']),id='mfh_click',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="la:industry",width=100,height=100,),html.Br(),'Industrie']),id='industry_click',n_clicks=0),
-                            html.Div(id='bulding_container'),
-                            ),
-                        ),
-                        dcc.Tab(
-                            label='Ökonomie',
-                            value='show-sequences',
-                            children=html.Div(className='control-tab', children=[
-                                html.Div(
-                                    className='app-controls-block',
-                                    children=[
-                                        html.Div(
-                                            className='fullwidth-app-controls-name',
-                                            children='Sequences to display'
-                                        ),
-                                        html.Div(
-                                            className='app-controls-desc',
-                                            children='Choose the sequences to display by ID.'
-                                        ),
-                                        html.Br(),
-                                        dcc.Dropdown(
-                                            id='forna-sequences-display',
-                                            multi=True,
-                                            clearable=True,
-                                            value=['PDB_01019']
-                                        )
-                                    ]
-                                ),
-                                html.Hr(),
-                                html.Div(
-                                    className='app-controls-block',
-                                    children=[
-                                        html.Div(
-                                            className='app-controls-block',
-                                            children=[
-                                                html.Div(
-                                                    className='fullwidth-app-controls-name',
-                                                    children='Sequence information by ID'
-                                                ),
-                                                html.Div(
-                                                    className='app-controls-desc',
-                                                    children='Search for a sequence by ID ' +
-                                                    'to get more information.'
-                                                ),
-                                                html.Br(),
-                                                dcc.Dropdown(
-                                                    id='forna-sequences-info-search',
-                                                    clearable=True
-                                                ),
-                                                html.Br(),
-                                                html.Div(id='forna-sequence-info')
-                                            ]
-                                        )
-                                    ]
-                                )
-                            ])
-                        ),
-                    ]),
-            ]),md=4),
-                    dbc.Col(html.Div(children=[html.Div(
-                        dcc.Graph(id='forna-container')),
-            dcc.Store(id='forna-custom-colors')]),md=8)#row
-            ],align="top",
+                        dcc.Tab(label='Ökonomie', value='show-sequences',
+                        ),             
+                        ]),html.Div(id='humi')
+                        ]),md=4),
+                        dbc.Col(html.Div(children=[html.Div(
+                            dcc.Graph(id='forna-container')),
+                            dcc.Store(id='forna-custom-colors')]),md=8)#row
+                    ],align="top",
                     ),
                     ],
-                    fluid=True,)]))])
+                fluid=True)]))])
 
-layout = html.Div([
-    dtc.SideBar([
-        dtc.SideBarItem(id='id_1', label="Info", icon="fas fa-info"),
-        dtc.SideBarItem(id='id_2', label="Gebäude", icon="fas fa-home"),
-        dtc.SideBarItem(id='id_3', label="Ergebnis", icon="far fa-list-alt"),
-    ]),
-    html.Div([
-    ], id="page_content"),
-])
+layout = html.Div(id='app-page-content',children=[html.Header(children='PIEG-Stom Webtool'),content_3])
 app.layout=layout
 
 @app.callback(
-    Output('forna-tabs', 'value'), 
+    Output('forna-tabs', 'value'),
+    Output('autakie_click', 'n_clicks'),
+    Output('LSK_click', 'n_clicks'),
     Input('autakie_click', 'n_clicks'),
     Input('LSK_click', 'n_clicks'),
     )
 def next_Tab(autarkie,LSK):
+    if (autarkie==0) & (LSK==0):
+        return 'what-is',0,0
     changed_id = [p['prop_id'] for p in callback_context.triggered][0]
     if changed_id.startswith('aut'):
-        return 'parameter'
+        return 'parameter',1,0
     elif changed_id.startswith('LSK'):
-        return 'parameter'
+        return 'parameter',0,1
     else:
-        return 'what-is'
+        return 'what-is',0,0
+        
 
 @app.callback(
     Output('region', 'children'),
@@ -344,6 +314,11 @@ def change_hyd_style(n_clicks):
         return {'background-color': 'green','color': 'white',}
     else:
         return {'background-color': 'white','color': 'black'}
+@app.callback(
+    Output('pv_value', 'children'), 
+    Input('pv_slider', 'value'),)
+def change_hyd_style(pv_slider):
+    return (PV[pv_slider])
 
 @app.callback(
     Output('technology','children'), 
@@ -383,7 +358,6 @@ def show_results(standort,baustandart_sfh,wohraum_efh,n_bewohner_efh,stromverbra
     fig=px.scatter(dff,x='personen',y='Kosten')
     return fig
 
-
 @app.callback(
     Output('bulding_container','children'),
     Output('efh_click', 'style'), 
@@ -404,30 +378,79 @@ def getcontainer(efh_click,mfh_click,industy_click):
     else:
         return 'Press a Housing option',{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
 
-"""@app.callback(
-    Output("page_content", "children"),
-    Input("forna-tabs", "value"),
-)"""
-
 @app.callback(
-    Output("page_content", "children"),
-    Input("id_1", "n_clicks_timestamp"),
-    Input("id_2", "n_clicks_timestamp"),
-    Input("id_3", "n_clicks_timestamp"),
-    
+    Output("humi", "children"),
+    Input("forna-tabs", "value"),
+    State('LSK_click','n_clicks')
 )
-def toggle_collapse(input1, input2, input3):
-    btn_df = pd.DataFrame({"input1": [input1], "input2": [input2],
-                           "input3": [input3]})
-    
-    btn_df = btn_df.fillna(0)
-
-    if btn_df.idxmax(axis=1).values == "input1":
-        return content_1
-    if btn_df.idxmax(axis=1).values == "input2":
-        return content_2
-    if btn_df.idxmax(axis=1).values == "input3":
-        return content_3
+def render_content(tab,LSK):
+    if tab=='parameter':
+        if LSK==0:
+            return html.Div(children=[
+                            html.Div(html.H3('Gebäudewahl:'),
+                            ),
+                            html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=100,height=100,),html.Br(),'Einfamilienhaus']),id='efh_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="bxs:building-house",width=100,height=100,),html.Br(),'Mehrfamilienhaus']),id='mfh_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="la:industry",width=100,height=100,),html.Br(),'Industrie']),id='industry_click',n_clicks=0),
+                            html.Div(id='bulding_container'),
+                            html.Br(),
+                            html.Div(html.H3('Technologiewahl:')),
+                            html.Div(technology),
+                            ]),
+        else:
+            return html.Div(children='LSK')
+    elif tab=='show-sequences':
+        return html.Div(className='control-tab', children=[
+                                html.Div(
+                                    className='app-controls-block',
+                                    children=[
+                                        html.Div(
+                                            className='fullwidth-app-controls-name',
+                                            children='Sequences to display'
+                                        ),
+                                        html.Div(
+                                            className='app-controls-desc',
+                                            children='Choose the sequences to display by ID.'
+                                        ),
+                                        html.Br(),
+                                        dcc.Dropdown(
+                                            id='forna-sequences-display',
+                                            multi=True,
+                                            clearable=True,
+                                            value=['PDB_01019']
+                                        )
+                                    ]
+                                ),
+                                html.Hr(),
+                                html.Div(
+                                    className='app-controls-block',
+                                    children=[
+                                        html.Div(
+                                            className='app-controls-block',
+                                            children=[
+                                                html.Div(
+                                                    className='fullwidth-app-controls-name',
+                                                    children='Sequence information by ID'
+                                                ),
+                                                html.Div(
+                                                    className='app-controls-desc',
+                                                    children='Search for a sequence by ID ' +
+                                                    'to get more information.'
+                                                ),
+                                                html.Br(),
+                                                dcc.Dropdown(
+                                                    id='forna-sequences-info-search',
+                                                    clearable=True
+                                                ),
+                                                html.Br(),
+                                                html.Div(id='forna-sequence-info')
+                                            ]
+                                        )
+                                    ]
+                                )
+                            ])
+    else:
+        return html.Div()
 
 if __name__ == '__main__':
     app.run_server(debug=True)

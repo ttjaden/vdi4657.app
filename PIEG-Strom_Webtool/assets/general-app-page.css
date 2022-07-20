@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400');
+
+
+/* Scrollbar */
+#app-page-content ::-webkit-scrollbar {
+    width: 4px;
+    height: 0px;
+    background-color: #f6f6f6; /* Change in individual app stylesheet */
+}
+
+#app-page-content ::-webkit-scrollbar-thumb {
+    width: 2px;
+    border-radius: 15px;
+    padding-right: 5px;
+    background-color: #119dff; /* Change in individual app stylesheet */
+}
+
+#app-page-content .scroll {
+    height: 600px;
+    overflow-y: auto;
+    padding-right: 20px;
+    margin: 10px;
+    margin-right: 0px;
+}
+
+#app-page-content .forna-tabs .tab {
+    font-weight: 200;
+    font-size: 9pt;
+    height: 50px;
+    padding: 15px;
+    background-color: #ffffff; /* Change in individual app stylesheet */
+    border: solid 1px #d3d3d3; /* Change in individual app stylesheet */
+}
+
+#app-page-content .forna-tabs .tab--selected {
+    font-weight: bolder;
+    border: none;
+    border-top: solid 2px;
+    color: #119dff; /* Change in individual app stylesheet */
