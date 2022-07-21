@@ -81,9 +81,40 @@ pv_content=html.Div(children=[
     dcc.Slider(min=0,max=len(PV)-1,step=1,marks=pv_dict, id='pv_slider',value=10),
     #html.Div(id='pv_value'),
     html.H6('PV-Ausrichtung: '),
-    dcc.RadioItems(options={'Ost-West':'Ost-West','Süd':'Süd'},value='Süd',id='pv_ausrichtung')
+    dcc.RadioItems(options={'Ost-West':'Ost-West','Süd':'Süd'},value='Süd',id='pv_ausrichtung',inline=False)
     ])
-
+chp_content=html.Div(children=[
+    html.Div(html.H4('KWK-Anlage')),
+    html.H6('Technologie: '),
+    dcc.RadioItems(options={'Gas':'Erdas','PEM':'Brennstoffzelle (PEM)','SOFC':'Brennstoffzelle (SOFC)'},id='chp_tech',),
+    html.Div(id='chp_elec',children=[html.Div(html.H6('Elektische Leistung')),dcc.Slider(min=0.5,max=2,step=0.1, id='chp_electric_slider',value=1)]),
+    html.H6('Betriebsstrategie: '),
+    dcc.RadioItems(options={'el':'elektisch','heat':'Wärme','el_heat':'elektisch & Wärme'},value='el_heat',id='chp_operation'),   
+    ])
+hp_content=html.Div(children=[
+    html.Div(html.H4('Wärmepumpe')),
+    html.H6('Wärmepumpen-Typ: '),
+    dcc.RadioItems(options={'air':'Luft/Wasser','brine':'Sole/Wasser'},value='air',id='hp_typ')
+    ])
+gas_content=html.Div(children=[
+    html.Div(html.H4('Gasheizung')),
+    html.Div(id='gas_power',children=[html.Div('bsp: Thermische Leistung: 500 kW')]),
+    ])
+bat_content=html.Div(children=[
+    html.Div(html.H4('Batterie')),
+    html.H6('Batterie-Größe in kWh: '),
+    html.Div(dcc.Slider(min=0.5,max=2,step=0.1,marks=pv_dict, id='bat_size')),
+    html.H6('Batterieleistung in kW: '),
+    html.Div(dcc.Slider(min=0.5,max=2,step=0.1, id='bat_power')),
+    html.H6('Einspeisegrenze in kW/kWp: '),
+    html.Div(dcc.Slider(min=0,max=1,step=0.1, id='bat_lim')),
+    ])
+hyd_content=html.Div(children=[
+    html.Div(html.H4('H2-Speicher')),
+    html.H6('Elektolyseur-Leistung in kW: '),
+    html.Div(id='electrolyseur_slider',children=dcc.Slider(min=0.5,max=2,step=0.1, id='electrolyseur_power',value=10)),
+    #html.Div(id='pv_value'),
+    ])
 EFH_container = dbc.Container(
                     [
                     dbc.Row(
@@ -119,47 +150,48 @@ Industrie_container = dbc.Container(
                     )
 
 technology=html.Div(children=[html.Button(html.Div([DashIconify(icon="fa-solid:solar-panel",width=50,height=50,),html.Br(),'Photovoltaik']),id='n_solar',n_clicks=0),
-html.Button(html.Div([DashIconify(icon="mdi:gas-burner",width=50,height=50,),html.Br(),'KWK-Brenner']),id='n_chp',n_clicks=0),
-html.Button(html.Div([DashIconify(icon="mdi:heat-pump-outline",width=50,height=50,),html.Br(),'Wärmepumpe']),id='n_hp',n_clicks=0),
-html.Button(html.Div([DashIconify(icon="material-symbols:mode-heat",width=50,height=50,),html.Br(),'Gasheizung']),id='n_gas',n_clicks=0),
-html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Batterie']),id='n_bat',n_clicks=0),
-html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0),
-html.Div(id='technology')])
+        html.Button(html.Div([DashIconify(icon="mdi:gas-burner",width=50,height=50,),html.Br(),'KWK-Brenner']),id='n_chp',n_clicks=0),
+        html.Button(html.Div([DashIconify(icon="mdi:heat-pump-outline",width=50,height=50,),html.Br(),'Wärmepumpe']),id='n_hp',n_clicks=0),
+        html.Button(html.Div([DashIconify(icon="material-symbols:mode-heat",width=50,height=50,),html.Br(),'Gasheizung']),id='n_gas',n_clicks=0),
+        html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Batterie']),id='n_bat',n_clicks=0),
+        html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0),
+        html.Div(id='technology')])
 technology_1=dbc.Container(
                     [
                     dbc.Row(
                         [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="fa-solid:solar-panel",width=230,height=230,),html.Br(),'Photovoltaik']),id='n_solar',n_clicks=0), md=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="fa-solid:solar-panel",width=50,height=50,),html.Br(),'Photovoltaik']),id='n_solar',n_clicks=0), md=4),
+                        dbc.Col(html.Div(pv_content),md=8),
                         ],
                     align="top",
                     ),
                     dbc.Row(
                         [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="mdi:gas-burner",width=230,height=230,),html.Br(),'KWK-Brenner']),id='n_chp',n_clicks=0), md=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="mdi:gas-burner",width=50,height=50,),html.Br(),'KWK-Brenner']),id='n_chp',n_clicks=0), md=4),
                         ],
                     align="top",
                     ),
                     dbc.Row(
                         [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="mdi:heat-pump-outline",width=230,height=230,),html.Br(),'Wärmepumpe']),id='n_hp',n_clicks=0), md=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="mdi:heat-pump-outline",width=50,height=50,),html.Br(),'Wärmepumpe']),id='n_hp',n_clicks=0), md=4),
                         ],
                     align="top",
                     ),
                     dbc.Row(
                         [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="material-symbols:mode-heat",width=230,height=230,),html.Br(),'Gasheizung']),id='n_gas',n_clicks=0), md=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="material-symbols:mode-heat",width=50,height=50,),html.Br(),'Gasheizung']),id='n_gas',n_clicks=0), md=4),
                         ],
                     align="top",
                     ),
                     dbc.Row(
                         [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="cil:battery-3",width=230,height=230,),html.Br(),'Elektrische Batterie']),id='n_bat',n_clicks=0), md=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Elektrische Batterie']),id='n_bat',n_clicks=0), md=4),
                         ],
                     align="top",
                     ),
                     dbc.Row(
                         [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=230,height=230,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0), md=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0), md=4),
                         dbc.Col(html.Div(id='technology'),md=8)
                         ],
                     align="top",
@@ -330,15 +362,15 @@ def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd):
     if n_solar['color']=='white':
         technology_list.append(pv_content)
     if n_chp['color']=='white':
-        technology_list.append(html.Div('n_chp'))
+        technology_list.append(chp_content)
     if n_hp['color']=='white':
-        technology_list.append(html.Div('n_hp'))
+        technology_list.append(hp_content)
     if n_gas['color']=='white':
-        technology_list.append(html.Div('n_gas'))
+        technology_list.append(gas_content)
     if n_bat['color']=='white':
-        technology_list.append(html.Div('n_bat'))
+        technology_list.append(bat_content)
     if n_hyd['color']=='white':
-        technology_list.append(html.Div('n_hyd'))
+        technology_list.append(hyd_content)
     return html.Div(children=technology_list)
 
 @app.callback(
