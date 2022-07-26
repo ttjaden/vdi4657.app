@@ -4,6 +4,7 @@ from dash import Dash, html, dcc, Input, Output, State, callback_context
 import dash_bootstrap_components as dbc
 from dash_iconify import DashIconify
 import plotly_express as px
+from dash.exceptions import PreventUpdate
 
 from functions.PLZtoWeatherRegion import getregion
 
@@ -18,20 +19,108 @@ region=['Nordseeküste','Ostseeküste','Nordwestdeutsches Tiefland','Nordostdeut
 'Nördliche und westliche Mittelgebirge, zentrale Bereiche','Oberharz und Schwarzwald (mittlere Lagen)','Thüringer Becken und Sächsisches Hügelland','Südöstliche Mittelgebirge bis 1000 m',
 'Erzgebirge, Böhmer- und Schwarzwald oberhalb 1000 m','Oberrheingraben und unteres Neckartal','Schwäbisch-fränkisches Stufenland und Alpenvorland','Schwäbische Alb und Baar',
 'Alpenrand und -täler']
+
+howto_md='''Hello World''' 
+modal_overlay = dbc.Modal(
+    [
+        dbc.ModalBody(html.Div([dcc.Markdown(howto_md)], id="howto-md")),
+        dbc.ModalFooter(dbc.Button("Close", id="howto-close", className="howto-bn")),
+    ],
+    id="modal",
+    size="lg",
+)
+
+button_howto = dbc.Button(
+    "Learn more",
+    id="howto-open",
+    outline=True,
+    color="info",
+    # Turn off lowercase transformation for class .button in stylesheet
+    style={"textTransform": "none"},
+)
+
+button_github = dbc.Button(
+    "Copyright",
+    outline=True,
+    color="primary",
+    href="https://github.com/plotly/dash-sample-apps/tree/master/apps/dash-image-segmentation",
+    id="gh-link",
+    style={"text-transform": "none"},
+)
+
+header=dbc.Navbar(
+    dbc.Container(
+        [
+            dbc.Row(
+                [
+                    dbc.Col(
+                        html.Img(
+                            id="logo",
+                            src=app.get_asset_url("plotly-dash-bio-logo.png"),
+                            height="30px",
+                        ),
+                        md="auto",
+                    ),
+                    dbc.Col(
+                        [
+                            html.Div(
+                                [
+                                    html.H4("PIEG-Strom Webtool"),
+                                    html.P("Auslegung von Batteriespeichern"),
+                                ],
+                                id="app-title",
+                            )
+                        ],
+                        md=True,
+                        align="center",
+                    ),
+                ],
+                align="center",
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
+                            dbc.NavbarToggler(id="navbar-toggler"),
+                            dbc.Collapse(
+                                dbc.Nav(
+                                    [
+                                        dbc.NavItem(button_howto),
+                                        dbc.NavItem(button_github),
+                                    ],
+                                    navbar=True,
+                                ),
+                                id="navbar-collapse",
+                                navbar=True,
+                            ),
+                            modal_overlay,
+                        ],
+                        md=2,
+                    ),
+                ],
+                align="center",
+            ),
+        ],
+        fluid=True,
+    ),
+    dark=True,
+    color="dark",
+    sticky="top",
+)
 efh_content=html.Div(children=[
     html.H4('Einfamilienhaus'),
     html.Div('Standort'),
     dcc.Input(id='standort',placeholder='Postleitzahl oder Adresse',persistence='local'),
     html.Div('Nordsee',id='region'),
     html.Div('Baustandard'),
-    dcc.Dropdown(['kfW100','kfW50'],id='baustandart_sfh',value='kfW100',),
+    dcc.Dropdown(['kfW100','kfW50'],id='baustandart',value='kfW100',),
     html.Div('Wohnraum in qm'),
-    dcc.Slider(50,250,50,value=150,id='wohraum_efh',),
+    dcc.Slider(50,250,50,value=150,id='wohraum',persistence='local'),
     html.H4('Verbrauchskennzahlen'),
     html.Div('Bewohneranzahl'),
-    dcc.Slider(min=1,max=6,step=1,value=4,id='n_bewohner_efh'),
+    dcc.Slider(min=1,max=6,step=1,value=4,id='n_wohn',persistence='local'),
     html.Div('Stromverbrauch in kWh'),
-    dcc.Slider(min=2000,max=8000,step=500,value=4000,marks={2000:'2000',8000:'8000'},id='stromverbrauch_efh',tooltip={"placement": "bottom", "always_visible": False}),
+    dcc.Slider(min=2000,max=8000,step=500,value=4000,marks={2000:'2000',8000:'8000'},id='stromverbrauch',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
 ])
 mfh_content=html.Div(children=[
     html.H4('Mehrfamilienhaus'),
@@ -39,13 +128,13 @@ mfh_content=html.Div(children=[
     dcc.Input(id='standort',placeholder='Postleitzahl oder Adresse',persistence='local'),
     html.Div('Nordsee',id='region'),
     html.Div('Anzahl an Wohnungen'),
-    dcc.Slider(2,25,1,value=7,marks={2:'2',25:'25'},id='n_wohnungen',tooltip={"placement": "bottom", "always_visible": False}),
+    dcc.Slider(2,25,1,value=7,marks={2:'2',25:'25'},id='n_wohn',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
     html.Div('Gebäudegröße in m²:'),
-    dcc.Slider(140,1750,70,value=700,marks={140:'140',1750:'1750'},id='wohraum_mfh',tooltip={"placement": "bottom", "always_visible": False}),
+    dcc.Slider(140,1750,70,value=700,marks={140:'140',1750:'1750'},id='wohraum',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
     html.Div('Baustandard in kWh/(m² Jahr)'),
-    dcc.Dropdown([25,75,200],value=75,id='baustandard_mfh'),
+    dcc.Dropdown([25,75,200],value=75,id='baustandart'),
     html.Div('Stromverbrauch in kWh:'),
-    dcc.Slider(min=8000,max=74000,step=2000,marks={8000:'8000',74000:'74000'},id='stromverbrauch_mfh',tooltip={"placement": "bottom", "always_visible": False}),
+    dcc.Slider(min=8000,max=74000,step=2000,value=10000,marks={8000:'8000',74000:'74000'},id='stromverbrauch',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
 ])
 industrie_content=html.Div(children=[
     html.H4('Industriegebäude'),
@@ -53,9 +142,9 @@ industrie_content=html.Div(children=[
     dcc.Input(id='standort',placeholder='Postleitzahl oder Adresse',persistence='local'),
     html.Div('Nordsee',id='region'),
     html.Div('Industriezweig'),
-    dcc.Dropdown(['office','Schule'],value='office',id='industriezweig',),
+    dcc.Dropdown(['office','Schule'],value='office',id='industriezweig',persistence='local'),
     html.Div('Stromverbrauch in kWh'),
-    dcc.Slider(min=8000,max=74000,step=2000,marks={8000:'8000',74000:'74000'},id='stromverbrauch_industrie',tooltip={"placement": "bottom", "always_visible": False}),
+    dcc.Slider(min=8000,max=74000,step=2000,marks={8000:'8000',74000:'74000'},id='stromverbrauch',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
 ])
 PV=[]
 pv_dict=dict()
@@ -78,7 +167,7 @@ pv_dict[len(PV)-1]=str(i)
 pv_content=html.Div(children=[
     html.Div(html.H4('Photovoltaik')),
     html.H6('PV-Leistung in kWp: '),
-    dcc.Slider(min=0,max=len(PV)-1,step=1,marks=pv_dict, id='pv_slider',value=10),
+    dcc.Slider(min=0,max=len(PV)-1,step=1,marks=pv_dict, id='pv_slider',value=10,persistence='local'),
     #html.Div(id='pv_value'),
     html.H6('PV-Ausrichtung: '),
     dcc.RadioItems(options={'Ost-West':'Ost-West','Süd':'Süd'},value='Süd',id='pv_ausrichtung',inline=False)
@@ -87,7 +176,7 @@ chp_content=html.Div(children=[
     html.Div(html.H4('KWK-Anlage')),
     html.H6('Technologie: '),
     dcc.RadioItems(options={'Gas':'Erdas','PEM':'Brennstoffzelle (PEM)','SOFC':'Brennstoffzelle (SOFC)'},id='chp_tech',),
-    html.Div(id='chp_elec',children=[html.Div(html.H6('Elektische Leistung')),dcc.Slider(min=0.5,max=2,step=0.1, id='chp_electric_slider',value=1)]),
+    html.Div(id='chp_elec',children=[html.Div(html.H6('Elektische Leistung')),dcc.Slider(min=0.5,max=2,step=0.1, id='chp_electric_slider',value=1,persistence='local')]),
     html.H6('Betriebsstrategie: '),
     dcc.RadioItems(options={'el':'elektisch','heat':'Wärme','el_heat':'elektisch & Wärme'},value='el_heat',id='chp_operation'),   
     ])
@@ -103,16 +192,18 @@ gas_content=html.Div(children=[
 bat_content=html.Div(children=[
     html.Div(html.H4('Batterie')),
     html.H6('Batterie-Größe in kWh: '),
-    html.Div(dcc.Slider(min=0.5,max=2,step=0.1,marks=pv_dict, id='bat_size')),
+    html.Div(id='E_bat_slider',children=dcc.Slider(min=0.5,max=2,step=0.1,marks=pv_dict, id='E_bat',persistence='local')),
     html.H6('Batterieleistung in kW: '),
-    html.Div(dcc.Slider(min=0.5,max=2,step=0.1, id='bat_power')),
+    html.Div(id='P_bat_slider',children=dcc.Slider(min=0.5,max=2,step=0.1, id='P_bat',persistence='local')),
     html.H6('Einspeisegrenze in kW/kWp: '),
-    html.Div(dcc.Slider(min=0,max=1,step=0.1, id='bat_lim')),
+    html.Div(dcc.Slider(min=0,max=1,step=0.1, id='bat_lim',persistence='local')),
     ])
 hyd_content=html.Div(children=[
     html.Div(html.H4('H2-Speicher')),
+    html.H6('H2-Speicherkapazität in kWhel: '),
+    html.Div(id='hyd_cap',children=[dcc.Slider(0.5,2,0.1,id='hyd_cap_slider',persistence='local')]),
     html.H6('Elektolyseur-Leistung in kW: '),
-    html.Div(id='electrolyseur_slider',children=dcc.Slider(min=0.5,max=2,step=0.1, id='electrolyseur_power',value=10)),
+    html.Div(id='electrolyseur_slider',children=dcc.Slider(min=0.5,max=2,step=0.1, id='electrolyseur_power',value=10,persistence='local')),
     #html.Div(id='pv_value'),
     ])
 EFH_container = dbc.Container(
@@ -156,49 +247,6 @@ technology=html.Div(children=[html.Button(html.Div([DashIconify(icon="fa-solid:s
         html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Batterie']),id='n_bat',n_clicks=0),
         html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0),
         html.Div(id='technology')])
-technology_1=dbc.Container(
-                    [
-                    dbc.Row(
-                        [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="fa-solid:solar-panel",width=50,height=50,),html.Br(),'Photovoltaik']),id='n_solar',n_clicks=0), md=4),
-                        dbc.Col(html.Div(pv_content),md=8),
-                        ],
-                    align="top",
-                    ),
-                    dbc.Row(
-                        [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="mdi:gas-burner",width=50,height=50,),html.Br(),'KWK-Brenner']),id='n_chp',n_clicks=0), md=4),
-                        ],
-                    align="top",
-                    ),
-                    dbc.Row(
-                        [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="mdi:heat-pump-outline",width=50,height=50,),html.Br(),'Wärmepumpe']),id='n_hp',n_clicks=0), md=4),
-                        ],
-                    align="top",
-                    ),
-                    dbc.Row(
-                        [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="material-symbols:mode-heat",width=50,height=50,),html.Br(),'Gasheizung']),id='n_gas',n_clicks=0), md=4),
-                        ],
-                    align="top",
-                    ),
-                    dbc.Row(
-                        [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Elektrische Batterie']),id='n_bat',n_clicks=0), md=4),
-                        ],
-                    align="top",
-                    ),
-                    dbc.Row(
-                        [
-                        dbc.Col(html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0), md=4),
-                        dbc.Col(html.Div(id='technology'),md=8)
-                        ],
-                    align="top",
-                    ),
-                    ],
-                    fluid=True,
-                    )
 
 content_3 = html.Div(
         id='main_page',
@@ -248,7 +296,7 @@ content_3 = html.Div(
                     ],
                 fluid=True)]))])
 
-layout = html.Div(id='app-page-content',children=[html.Header(children='PIEG-Stom Webtool'),content_3])
+layout = html.Div(id='app-page-content',children=[header,content_3])
 app.layout=layout
 
 @app.callback(
@@ -374,16 +422,63 @@ def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd):
     return html.Div(children=technology_list)
 
 @app.callback(
+    Output("E_bat_slider", "children"),
+    Input("stromverbrauch", "value"),
+)
+def render_E_bat(efh):
+    if int(efh/4000)==efh/4000:
+        return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+    elif int(efh/1000)==efh/1000:
+        return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+    else:
+        return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={(efh/4000):str((efh/4000)),(efh/1000):str((efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+@app.callback(
+    Output("P_bat_slider", "children"),
+    Input("E_bat", "value"),
+)
+def render_E_bat(e_bat):
+    if e_bat is None:
+        raise PreventUpdate
+    return html.Div(dcc.Slider(e_bat/4,e_bat,e_bat/20,value=e_bat/2,id='P_bat',marks={(e_bat/4):str((e_bat/4)),(e_bat):str((e_bat))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+
+@app.callback(
+    Output("hyd_cap", "children"),
+    Input("stromverbrauch", "value"),
+)
+def render_E_hyd(efh):
+    if int(efh/8)==efh/8:
+        return html.Div(dcc.Slider(efh/8,efh/2,efh/40,value=efh/4,id='hyd_cap_slider',marks={int(efh/8):str(int(efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+    else:
+        return html.Div(dcc.Slider(efh/8,efh/2,efh/40,value=efh/4,id='hyd_cap_slider',marks={(efh/8):str((efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+@app.callback(
+    Output("electrolyseur_slider", "children"),
+    Input("hyd_cap_slider", "value"),
+)
+def render_P_hyd(E_h2):
+    if E_h2 is None:
+        raise PreventUpdate
+    if int(E_h2/200)==E_h2/200:
+        if int(E_h2/50)==E_h2/50:
+            return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={int(E_h2/200):str(int(E_h2/200)),int(E_h2/50):str(int(E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+        else:
+            return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={int(E_h2/200):str(int(E_h2/200)),(E_h2/50):str((E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+    elif int(E_h2/50)==E_h2/50:
+        return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={(E_h2/200):str((E_h2/200)),int(E_h2/50):str(int(E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+    else:
+        return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={(E_h2/200):str((E_h2/200)),(E_h2/50):str((E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+
+@app.callback(
     Output('forna-container','figure'),
     State('standort','value'),
-    Input('baustandart_sfh','value'),
-    Input('wohraum_efh','value'),
-    Input('n_bewohner_efh','value'),
-    Input('stromverbrauch_efh','value'),
+    Input('baustandart','value'),
+    Input('wohraum','value'),
+    Input('n_wohn','value'),
+    Input('stromverbrauch','value'),
+    State('bulding_container','children')
 )
-def show_results(standort,baustandart_sfh,wohraum_efh,n_bewohner_efh,stromverbrauch_efh):
-    #print(region[getregion(standort)-1])
-    dff=df_sfh.loc[(df_sfh['personen']==n_bewohner_efh)&(df_sfh['stromverbrauch']==stromverbrauch_efh)&(df_sfh['size']==wohraum_efh)&(df_sfh['baustand']==baustandart_sfh)]
+def show_results(standort,baustandart_sfh,wohraum,n_wohn,stromverbrauch,info):
+    gebäude=(info['props']['children'][0]['props']['children'][0]['props']['children']['props']['children'][0]['props']['children'])
+    dff=df_sfh.loc[(df_sfh['personen']==n_wohn)&(df_sfh['stromverbrauch']==stromverbrauch)&(df_sfh['size']==wohraum)&(df_sfh['baustand']==baustandart_sfh)]
     fig=px.scatter(dff,x='personen',y='Kosten')
     return fig
 
@@ -405,7 +500,7 @@ def getcontainer(efh_click,mfh_click,industy_click):
     elif changed_id.startswith('industry'):
         return Industrie_container,{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': 'green','color': 'white',}
     else:
-        return 'Press a Housing option',{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
+        return 'Ein Gebäudetyp wählen',{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
 
 @app.callback(
     Output("humi", "children"),
