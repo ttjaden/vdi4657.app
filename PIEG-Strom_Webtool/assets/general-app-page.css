@@ -1,7 +1,7 @@
 
 
-#app-page-content .scroll {
-    height: 95vh;
+#app-page-content .para {
+    height: 80vh;
     overflow-y: auto;
 }
 #app-title > * {

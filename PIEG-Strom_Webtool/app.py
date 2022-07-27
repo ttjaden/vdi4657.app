@@ -483,6 +483,16 @@ def show_results(standort,baustandart_sfh,wohraum,n_wohn,stromverbrauch,info):
     return fig
 
 @app.callback(
+    Output("modal", "is_open"),
+    [Input("howto-open", "n_clicks"), Input("howto-close", "n_clicks")],
+    [State("modal", "is_open")],
+)
+def toggle_modal(n1, n2, is_open):
+    if n1 or n2:
+        return not is_open
+    return is_open
+
+@app.callback(
     Output('bulding_container','children'),
     Output('efh_click', 'style'), 
     Output('mfh_click', 'style'), 
@@ -510,7 +520,7 @@ def getcontainer(efh_click,mfh_click,industy_click):
 def render_content(tab,LSK):
     if tab=='parameter':
         if LSK==0:
-            return html.Div(children=[
+            return html.Div(className='para',id='para',children=[
                             html.Div(html.H3('Gebäudewahl:'),
                             ),
                             html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=100,height=100,),html.Br(),'Einfamilienhaus']),id='efh_click',n_clicks=0),
