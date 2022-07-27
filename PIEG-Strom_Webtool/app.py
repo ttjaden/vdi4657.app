@@ -115,7 +115,7 @@ efh_content=html.Div(children=[
     html.Div('Baustandard'),
     dcc.Dropdown(['kfW100','kfW50'],id='baustandart',value='kfW100',),
     html.Div('Wohnraum in qm'),
-    dcc.Slider(50,250,50,value=150,id='wohraum',persistence='local'),
+    dcc.Slider(50,250,50,value=150,id='wohnraum',persistence='local'),
     html.H4('Verbrauchskennzahlen'),
     html.Div('Bewohneranzahl'),
     dcc.Slider(min=1,max=6,step=1,value=4,id='n_wohn',persistence='local'),
@@ -130,7 +130,7 @@ mfh_content=html.Div(children=[
     html.Div('Anzahl an Wohnungen'),
     dcc.Slider(2,25,1,value=7,marks={2:'2',25:'25'},id='n_wohn',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
     html.Div('Gebäudegröße in m²:'),
-    dcc.Slider(140,1750,70,value=700,marks={140:'140',1750:'1750'},id='wohraum',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
+    dcc.Slider(140,1750,70,value=700,marks={140:'140',1750:'1750'},id='wohnraum',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
     html.Div('Baustandard in kWh/(m² Jahr)'),
     dcc.Dropdown([25,75,200],value=75,id='baustandart'),
     html.Div('Stromverbrauch in kWh:'),
@@ -142,9 +142,11 @@ industrie_content=html.Div(children=[
     dcc.Input(id='standort',placeholder='Postleitzahl oder Adresse',persistence='local'),
     html.Div('Nordsee',id='region'),
     html.Div('Industriezweig'),
-    dcc.Dropdown(['office','Schule'],value='office',id='industriezweig',persistence='local'),
+    dcc.Dropdown(['office','Schule'],value='office',id='baustandart',persistence='local'),
     html.Div('Stromverbrauch in kWh'),
     dcc.Slider(min=8000,max=74000,step=2000,marks={8000:'8000',74000:'74000'},id='stromverbrauch',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
+    dcc.Store(id='wohnraum'),
+    dcc.Store(id='n_wohn'),
 ])
 PV=[]
 pv_dict=dict()
@@ -288,9 +290,7 @@ content_3 = html.Div(
                             dcc.Tab(label='Ökonomie', value='show-sequences',),             
                         ]),html.Div(id='humi')
                         ]),md=4),
-                        dbc.Col(html.Div(children=[html.Div(
-                            dcc.Graph(id='forna-container')),
-                            dcc.Store(id='forna-custom-colors')]),md=8)#row
+                        dbc.Col(html.Div(id='forna-container')),
                     ],align="top",
                     ),
                     ],
@@ -468,19 +468,21 @@ def render_P_hyd(E_h2):
         return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={(E_h2/200):str((E_h2/200)),(E_h2/50):str((E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
 
 @app.callback(
-    Output('forna-container','figure'),
+    Output('forna-container','children'),
     State('standort','value'),
     Input('baustandart','value'),
-    Input('wohraum','value'),
+    Input('wohnraum','value'),
     Input('n_wohn','value'),
     Input('stromverbrauch','value'),
     State('bulding_container','children')
 )
-def show_results(standort,baustandart_sfh,wohraum,n_wohn,stromverbrauch,info):
+def show_results(standort,baustandart_sfh,wohnraum,n_wohn,stromverbrauch,info):
+    print(baustandart_sfh,wohnraum,n_wohn,stromverbrauch)
     gebäude=(info['props']['children'][0]['props']['children'][0]['props']['children']['props']['children'][0]['props']['children'])
-    dff=df_sfh.loc[(df_sfh['personen']==n_wohn)&(df_sfh['stromverbrauch']==stromverbrauch)&(df_sfh['size']==wohraum)&(df_sfh['baustand']==baustandart_sfh)]
+    print(gebäude)
+    dff=df_sfh.loc[(df_sfh['personen']==n_wohn)&(df_sfh['stromverbrauch']==stromverbrauch)&(df_sfh['size']==wohnraum)&(df_sfh['baustand']==baustandart_sfh)]
     fig=px.scatter(dff,x='personen',y='Kosten')
-    return fig
+    return dcc.Graph(figure=fig)
 
 @app.callback(
     Output("modal", "is_open"),
@@ -523,9 +525,9 @@ def render_content(tab,LSK):
             return html.Div(className='para',id='para',children=[
                             html.Div(html.H3('Gebäudewahl:'),
                             ),
-                            html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=100,height=100,),html.Br(),'Einfamilienhaus']),id='efh_click',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="bxs:building-house",width=100,height=100,),html.Br(),'Mehrfamilienhaus']),id='mfh_click',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="la:industry",width=100,height=100,),html.Br(),'Industrie']),id='industry_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=50,height=50,),html.Br(),'Einfamilienhaus'],style={"width":'20vh'}),id='efh_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="bxs:building-house",width=50,height=50,),html.Br(),'Mehrfamilienhaus'],style={"width":'20vh'}),id='mfh_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="la:industry",width=50,height=50,),html.Br(),'Industrie'],style={"width":'20vh'}),id='industry_click',n_clicks=0),
                             html.Div(id='bulding_container'),
                             html.Br(),
                             html.Div(html.H3('Technologiewahl:')),
