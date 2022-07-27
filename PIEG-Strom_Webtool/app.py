@@ -20,19 +20,9 @@ region=['Nordseeküste','Ostseeküste','Nordwestdeutsches Tiefland','Nordostdeut
 'Erzgebirge, Böhmer- und Schwarzwald oberhalb 1000 m','Oberrheingraben und unteres Neckartal','Schwäbisch-fränkisches Stufenland und Alpenvorland','Schwäbische Alb und Baar',
 'Alpenrand und -täler']
 
-howto_md='''Hello World''' 
-modal_overlay = dbc.Modal(
-    [
-        dbc.ModalBody(html.Div([dcc.Markdown(howto_md)], id="howto-md")),
-        dbc.ModalFooter(dbc.Button("Close", id="howto-close", className="howto-bn")),
-    ],
-    id="modal",
-    size="lg",
-)
-
 button_howto = dbc.Button(
-    "Learn more",
-    id="howto-open",
+    html.Div(id='button_expert',children=[DashIconify(icon="bi:toggle-on",width=30,height=30,),'Expert']),
+    id="expert",
     outline=True,
     color="info",
     # Turn off lowercase transformation for class .button in stylesheet
@@ -40,11 +30,10 @@ button_howto = dbc.Button(
 )
 
 button_github = dbc.Button(
-    "Copyright",
+    html.Div(id='button_language',children=[DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language']),
     outline=True,
     color="primary",
-    href="https://github.com/plotly/dash-sample-apps/tree/master/apps/dash-image-segmentation",
-    id="gh-link",
+    id="language",
     style={"text-transform": "none"},
 )
 
@@ -85,17 +74,16 @@ header=dbc.Navbar(
                             dbc.Collapse(
                                 dbc.Nav(
                                     [
-                                        dbc.NavItem(button_howto),
-                                        dbc.NavItem(button_github),
+                                        dbc.NavItem(button_howto,style={'width':'150'}),
+                                        dbc.NavItem(button_github,style={'width':'150'}),
                                     ],
                                     navbar=True,
                                 ),
                                 id="navbar-collapse",
                                 navbar=True,
                             ),
-                            modal_overlay,
                         ],
-                        md=2,
+                        md=3,
                     ),
                 ],
                 align="center",
@@ -483,12 +471,35 @@ def show_results(standort,baustandart_sfh,wohnraum,n_wohn,stromverbrauch,info):
     return dcc.Graph(figure=fig)
 
 @app.callback(
-    Output("modal", "is_open"),
-    [Input("howto-open", "n_clicks"), Input("howto-close", "n_clicks")],
-    [State("modal", "is_open")],
+    Output("button_expert", "children"),
+    Input("expert", "n_clicks"),
 )
-def toggle_modal(n1, n2, is_open):
-    if n1 or n2:
+def expertmode(n1):
+    if n1 is None:
+        raise PreventUpdate
+    if n1%2==1:
+        return [DashIconify(icon="bi:toggle-off",width=100,height=30,),'Expert']
+    else: 
+        return [DashIconify(icon="bi:toggle-on",width=100,height=30,),'Expert']
+
+@app.callback(
+    Output("button_language", "children"),
+    Input("language", "n_clicks"),
+)
+def language(n1):
+    if n1 is None:
+        raise PreventUpdate
+    if n1%2==0:
+        return [DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language']
+    else: 
+        return [DashIconify(icon="emojione:flag-for-germany",width=30,height=30,),'Sprache']
+@app.callback(
+    Output("navbar-collapse", "is_open"),
+    [Input("navbar-toggler", "n_clicks")],
+    [State("navbar-collapse", "is_open")],
+)
+def toggle_navbar_collapse(n, is_open):
+    if n:
         return not is_open
     return is_open
 
