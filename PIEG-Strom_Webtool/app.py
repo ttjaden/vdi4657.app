@@ -104,7 +104,7 @@ header=dbc.Navbar(
         fluid=True,
     ),
     dark=True,
-    color="dark",
+    color="#212529",
     sticky="top",
 )
 efh_content=html.Div(children=[
@@ -330,7 +330,7 @@ def standorttoregion(standort):
     )
 def change_solar_style(n_clicks):
     if (n_clicks%2)==1:
-        return {'background-color': 'green','color': 'white',}
+        return {'background-color': '#212529','color': 'white',}
     else:
         return {'background-color': 'white','color': 'black'}
 @app.callback(
@@ -343,7 +343,7 @@ def change_chp_style(n_clicks,hp,gas):
     if (n_clicks%2)==1:
         if (hp['color']=='black') & (gas['color']=='black'):
             return {'background-color': 'white','color': 'black'},2
-        return {'background-color': 'green','color': 'white',},1
+        return {'background-color': '#212529','color': 'white',},1
     else:
         return {'background-color': 'white','color': 'black'},2
 @app.callback(
@@ -355,11 +355,11 @@ def change_chp_style(n_clicks,hp,gas):
     )
 def change_hp_style(n_clicks,n_chp,n_gas):
     if (n_clicks%2)==1:
-        return {'background-color': 'green','color': 'white',},1
+        return {'background-color': '#212529','color': 'white',},1
     else:
         if None!=n_chp:
             if (n_chp['color']=='white')&(n_gas['color']=='black'):
-                return {'background-color': 'green','color': 'white',},1
+                return {'background-color': '#212529','color': 'white',},1
         return {'background-color': 'white','color': 'black'},2
 @app.callback(
     Output('n_gas', 'style'), 
@@ -369,18 +369,18 @@ def change_hp_style(n_clicks,n_chp,n_gas):
     State('n_hp', 'style'),)
 def change_gas_style(n_clicks,n_chp,n_hp):
     if (n_clicks%2)==1:
-        return {'background-color': 'green','color': 'white',},1
+        return {'background-color': '#212529','color': 'white',},1
     else:
         if None!=n_chp:
             if (n_chp['color']=='white')&(n_hp['color']=='black'):
-                return {'background-color': 'green','color': 'white',},1
+                return {'background-color': '#212529','color': 'white',},1
         return {'background-color': 'white','color': 'black'},2
 @app.callback(
     Output('n_bat', 'style'), 
     Input('n_bat', 'n_clicks'),)
 def change_bat_style(n_clicks):
     if (n_clicks%2)==1:
-        return {'background-color': 'green','color': 'white',}
+        return {'background-color': '#212529','color': 'white',}
     else:
         return {'background-color': 'white','color': 'black'}
 @app.callback(
@@ -388,7 +388,7 @@ def change_bat_style(n_clicks):
     Input('n_hyd', 'n_clicks'),)
 def change_hyd_style(n_clicks):
     if (n_clicks%2)==1:
-        return {'background-color': 'green','color': 'white',}
+        return {'background-color': '#212529','color': 'white',}
     else:
         return {'background-color': 'white','color': 'black'}
 @app.callback(
@@ -477,9 +477,7 @@ def render_P_hyd(E_h2):
     State('bulding_container','children')
 )
 def show_results(standort,baustandart_sfh,wohnraum,n_wohn,stromverbrauch,info):
-    print(baustandart_sfh,wohnraum,n_wohn,stromverbrauch)
     gebäude=(info['props']['children'][0]['props']['children'][0]['props']['children']['props']['children'][0]['props']['children'])
-    print(gebäude)
     dff=df_sfh.loc[(df_sfh['personen']==n_wohn)&(df_sfh['stromverbrauch']==stromverbrauch)&(df_sfh['size']==wohnraum)&(df_sfh['baustand']==baustandart_sfh)]
     fig=px.scatter(dff,x='personen',y='Kosten')
     return dcc.Graph(figure=fig)
@@ -506,11 +504,11 @@ def toggle_modal(n1, n2, is_open):
 def getcontainer(efh_click,mfh_click,industy_click):
     changed_id = [p['prop_id'] for p in callback_context.triggered][0]
     if changed_id.startswith('efh'):
-        return EFH_container,{'background-color': 'green','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
+        return EFH_container,{'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
     elif changed_id.startswith('mfh'):
-        return MFH_container,{'background-color': 'white','color': 'black'},{'background-color': 'green','color': 'white',},{'background-color': 'white','color': 'black'}
+        return MFH_container,{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'}
     elif changed_id.startswith('industry'):
-        return Industrie_container,{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': 'green','color': 'white',}
+        return Industrie_container,{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',}
     else:
         return 'Ein Gebäudetyp wählen',{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
 
