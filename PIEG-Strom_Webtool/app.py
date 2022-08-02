@@ -1,3 +1,4 @@
+from tkinter import E
 from dash.dependencies import Input, Output
 import pandas as pd
 from dash import Dash, html, dcc, Input, Output, State, callback_context
@@ -21,7 +22,7 @@ region=['Nordseeküste','Ostseeküste','Nordwestdeutsches Tiefland','Nordostdeut
 'Alpenrand und -täler']
 
 button_howto = dbc.Button(
-    html.Div(id='button_expert',children=[DashIconify(icon="bi:toggle-on",width=30,height=30,),'Expert']),
+    html.Div(id='button_expert',children=[DashIconify(icon="bi:toggle-off",width=100,height=30,),'Expert']),
     id="expert",
     outline=True,
     color="info",
@@ -196,6 +197,14 @@ hyd_content=html.Div(children=[
     html.Div(id='electrolyseur_slider',children=dcc.Slider(min=0.5,max=2,step=0.1, id='electrolyseur_power',value=10,persistence='local')),
     #html.Div(id='pv_value'),
     ])
+hyd_content_expert=html.Div(children=[
+    html.Div(html.H4('H2-Speicher')),
+    html.H6('H2-Speicherkapazität in kWhel: '),
+    html.Div(id='hyd_cap',children=[dcc.RangeSlider(0.5,2,0.1,id='hyd_cap_slider',persistence='local')]),
+    html.H6('Elektolyseur-Leistung in kW: '),
+    html.Div(id='electrolyseur_slider',children=dcc.Slider(min=0.5,max=2,step=0.1, id='electrolyseur_power',value=10,persistence='local')),
+    #html.Div(id='pv_value'),
+    ])
 EFH_container = dbc.Container(
                     [
                     dbc.Row(
@@ -252,15 +261,12 @@ content_3 = html.Div(
                         dbc.Col(html.Div(id='scroll',className='scroll',children=[
                         dcc.Tabs(id='forna-tabs',className='forna-tabs',value='what-is', children=[
                             dcc.Tab(label='About',value='what-is',children=[html.Div(className='control-tab', children=[
-                                    html.H4(className='what-is', children='What is FornaContainer?'),
+                                    html.H4(className='what-is', children='Was kann PIEG Strom Webtool?'),
                                     dcc.Markdown('''
-                                    FornaContainer is a force-directed graph that is
-                                    used to represent the secondary structure of nucleic
-                                    acids (i.e., DNA and RNA).
-                                    In the "Add New" tab, you can enter a sequence
-                                    by specifying the nucleotide sequence and the
-                                    dot-bracket representation of the secondary
-                                    structure.
+                                    Das PIEG-Strom Webtool dient zur Hilfe bei der 
+                                    Auslegung von Batteriespeichern. Nach Eingabe verschiedener
+                                    Parametern werden Aussagen über die Wirtschaftlichkeit
+                                    und die effektivste Speichergröße getroffen.
                                     In the "Sequences" tab, you can select which
                                     sequences will be displayed, as well as obtain
                                     information about the sequences that you have
@@ -392,9 +398,14 @@ def change_hyd_style(pv_slider):
     Input('n_hp', 'style'),
     Input('n_gas', 'style'),
     Input('n_bat', 'style'),
-    Input('n_hyd', 'style'),)
-def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd):
+    Input('n_hyd', 'style'),
+    Input('button_expert','n_clicks'),)
+def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd,expertmode):
     technology_list=[]
+    if expertmode is None or expertmode%2==0:
+        expertmode=False
+    else:
+        expertmode=True
     if n_solar['color']=='white':
         technology_list.append(pv_content)
     if n_chp['color']=='white':
@@ -412,14 +423,27 @@ def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd):
 @app.callback(
     Output("E_bat_slider", "children"),
     Input("stromverbrauch", "value"),
-)
-def render_E_bat(efh):
-    if int(efh/4000)==efh/4000:
-        return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
-    elif int(efh/1000)==efh/1000:
-        return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+    Input('button_expert','n_clicks'),)
+def render_E_bat(efh,expertmode):
+    if expertmode is None or expertmode%2==0:
+        expertmode=False
     else:
-        return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={(efh/4000):str((efh/4000)),(efh/1000):str((efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+        expertmode=True
+    if int(efh/4000)==efh/4000:
+        if expertmode:
+            return html.Div(dcc.RangeSlider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+        else:
+            return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+    elif int(efh/1000)==efh/1000:
+        if expertmode:
+            return html.Div(dcc.RangeSlider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+        else:
+            return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+    else:
+        if expertmode:
+            return html.Div(dcc.RangeSlider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={(efh/4000):str((efh/4000)),(efh/1000):str((efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+        else:
+            return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={(efh/4000):str((efh/4000)),(efh/1000):str((efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
 @app.callback(
     Output("P_bat_slider", "children"),
     Input("E_bat", "value"),
@@ -432,12 +456,18 @@ def render_E_bat(e_bat):
 @app.callback(
     Output("hyd_cap", "children"),
     Input("stromverbrauch", "value"),
-)
-def render_E_hyd(efh):
+    Input('button_expert','n_clicks'),)
+def render_E_hyd(efh,expertmode):
     if int(efh/8)==efh/8:
-        return html.Div(dcc.Slider(efh/8,efh/2,efh/40,value=efh/4,id='hyd_cap_slider',marks={int(efh/8):str(int(efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+        if expertmode:
+            return html.Div([dcc.RangeSlider(efh/8,efh/2,efh/40,id='hyd_cap_slider',marks={int(efh/8):str(int(efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False})])
+        else:
+            return html.Div(dcc.Slider(efh/8,efh/2,efh/40,value=efh/4,id='hyd_cap_slider',marks={int(efh/8):str(int(efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
     else:
-        return html.Div(dcc.Slider(efh/8,efh/2,efh/40,value=efh/4,id='hyd_cap_slider',marks={(efh/8):str((efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+        if expertmode:
+            return html.Div([dcc.RangeSlider(efh/8,efh/2,efh/40,id='hyd_cap_slider',marks={(efh/8):str((efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False})])
+        else:
+            return html.Div(dcc.Slider(efh/8,efh/2,efh/40,value=efh/4,id='hyd_cap_slider',marks={(efh/8):str((efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
 @app.callback(
     Output("electrolyseur_slider", "children"),
     Input("hyd_cap_slider", "value"),
@@ -445,15 +475,28 @@ def render_E_hyd(efh):
 def render_P_hyd(E_h2):
     if E_h2 is None:
         raise PreventUpdate
-    if int(E_h2/200)==E_h2/200:
-        if int(E_h2/50)==E_h2/50:
-            return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={int(E_h2/200):str(int(E_h2/200)),int(E_h2/50):str(int(E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+    try:
+        E_h2_0=E_h2[0]
+        E_h2_1=E_h2[1]
+        if int(E_h2_0/200)==E_h2_0/200:
+            if int(E_h2_1/50)==E_h2_1/50:
+                return html.Div(children=[dcc.RangeSlider(E_h2_0/200,E_h2_1/50,E_h2_1/1000,id='electrolyseur_power',marks={int(E_h2_0/200):str(int(E_h2_0/200)),int(E_h2_1/50):str(int(E_h2_1/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+            else:
+                return html.Div(children=[dcc.RangeSlider(E_h2_0/200,E_h2_1/50,E_h2_1/1000,id='electrolyseur_power',marks={int(E_h2_0/200):str(int(E_h2_0/200)),(E_h2_1/50):str((E_h2_1/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+        elif int(E_h2_1/50)==E_h2_1/50:
+            return html.Div(children=[dcc.RangeSlider(E_h2_0/200,E_h2_1/50,E_h2_1/1000,id='electrolyseur_power',marks={(E_h2_0/200):str((E_h2_0/200)),int(E_h2_1/50):str(int(E_h2_1/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
         else:
-            return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={int(E_h2/200):str(int(E_h2/200)),(E_h2/50):str((E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
-    elif int(E_h2/50)==E_h2/50:
-        return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={(E_h2/200):str((E_h2/200)),int(E_h2/50):str(int(E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
-    else:
-        return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={(E_h2/200):str((E_h2/200)),(E_h2/50):str((E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+            return html.Div(children=[dcc.RangeSlider(E_h2_0/200,E_h2_1/50,E_h2_1/1000,id='electrolyseur_power',marks={(E_h2_0/200):str((E_h2_0/200)),(E_h2_1/50):str((E_h2_1/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+    except:
+        if int(E_h2/200)==E_h2/200:
+            if int(E_h2/50)==E_h2/50:
+                return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={int(E_h2/200):str(int(E_h2/200)),int(E_h2/50):str(int(E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+            else:
+                return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={int(E_h2/200):str(int(E_h2/200)),(E_h2/50):str((E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+        elif int(E_h2/50)==E_h2/50:
+            return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={(E_h2/200):str((E_h2/200)),int(E_h2/50):str(int(E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
+        else:
+            return html.Div(children=[dcc.Slider(E_h2/200,E_h2/50,E_h2/1000,value=E_h2/100,id='electrolyseur_power',marks={(E_h2/200):str((E_h2/200)),(E_h2/50):str((E_h2/50))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'),html.Br()])
 
 @app.callback(
     Output('forna-container','children'),
@@ -478,9 +521,9 @@ def expertmode(n1):
     if n1 is None:
         raise PreventUpdate
     if n1%2==1:
-        return [DashIconify(icon="bi:toggle-off",width=100,height=30,),'Expert']
-    else: 
         return [DashIconify(icon="bi:toggle-on",width=100,height=30,),'Expert']
+    else: 
+        return [DashIconify(icon="bi:toggle-off",width=100,height=30,),'Expert']
 
 @app.callback(
     Output("button_language", "children"),
@@ -534,9 +577,9 @@ def render_content(tab,LSK):
             return html.Div(className='para',id='para',children=[
                             html.Div(html.H3('Gebäudewahl:'),
                             ),
-                            html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=50,height=50,),html.Br(),'Einfamilienhaus'],style={"width":'20vh'}),id='efh_click',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="bxs:building-house",width=50,height=50,),html.Br(),'Mehrfamilienhaus'],style={"width":'20vh'}),id='mfh_click',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="la:industry",width=50,height=50,),html.Br(),'Industrie'],style={"width":'20vh'}),id='industry_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=50,height=50,),html.Br(),'Einfamilienhaus'],style={"width":'10vw'}),id='efh_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="bxs:building-house",width=50,height=50,),html.Br(),'Mehrfamilienhaus'],style={"width":'10vw'}),id='mfh_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="la:industry",width=50,height=50,),html.Br(),'Industrie'],style={"width":'10vw'}),id='industry_click',n_clicks=0),
                             html.Div(id='bulding_container'),
                             html.Br(),
                             html.Div(html.H3('Technologiewahl:')),
