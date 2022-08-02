@@ -399,7 +399,7 @@ def change_hyd_style(pv_slider):
     Input('n_gas', 'style'),
     Input('n_bat', 'style'),
     Input('n_hyd', 'style'),
-    Input('button_expert','n_clicks'),)
+    Input('expert','n_clicks'),)
 def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd,expertmode):
     technology_list=[]
     if expertmode is None or expertmode%2==0:
@@ -431,17 +431,17 @@ def render_E_bat(efh,expertmode):
         expertmode=True
     if int(efh/4000)==efh/4000:
         if expertmode:
-            return html.Div(dcc.RangeSlider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+            return html.Div(dcc.RangeSlider(efh/4000,efh/1000,efh/20000,value=[efh/4000,efh/1000],id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
         else:
             return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
     elif int(efh/1000)==efh/1000:
         if expertmode:
-            return html.Div(dcc.RangeSlider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+            return html.Div(dcc.RangeSlider(efh/4000,efh/1000,efh/20000,value=[efh/4000,efh/1000],id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
         else:
             return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={int(efh/4000):str(int(efh/4000)),int(efh/1000):str(int(efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
     else:
         if expertmode:
-            return html.Div(dcc.RangeSlider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={(efh/4000):str((efh/4000)),(efh/1000):str((efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+            return html.Div(dcc.RangeSlider(efh/4000,efh/1000,efh/20000,value=[efh/4000,efh/1000],id='E_bat',marks={(efh/4000):str((efh/4000)),(efh/1000):str((efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
         else:
             return html.Div(dcc.Slider(efh/4000,efh/1000,efh/20000,value=efh/2000,id='E_bat',marks={(efh/4000):str((efh/4000)),(efh/1000):str((efh/1000))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
 @app.callback(
@@ -451,21 +451,27 @@ def render_E_bat(efh,expertmode):
 def render_E_bat(e_bat):
     if e_bat is None:
         raise PreventUpdate
-    return html.Div(dcc.Slider(e_bat/4,e_bat,e_bat/20,value=e_bat/2,id='P_bat',marks={(e_bat/4):str((e_bat/4)),(e_bat):str((e_bat))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
+    if isinstance(e_bat,list):
+        return html.Div(dcc.RangeSlider(e_bat[0]/4,e_bat[1],e_bat[1]/20,value=[e_bat[0]/4,e_bat[1]],id='P_bat',marks={(e_bat[0]/4):str((e_bat[0]/4)),(e_bat[1]):str((e_bat[1]))},tooltip={"placement": "bottom", "always_visible": False}))
+    return html.Div(dcc.Slider(e_bat/4,e_bat,e_bat/20,value=e_bat/2,id='P_bat',marks={(e_bat/4):str((e_bat/4)),(e_bat):str((e_bat))},tooltip={"placement": "bottom", "always_visible": False}))
 
 @app.callback(
     Output("hyd_cap", "children"),
     Input("stromverbrauch", "value"),
-    Input('button_expert','n_clicks'),)
+    Input('expert','n_clicks'),)
 def render_E_hyd(efh,expertmode):
+    if expertmode is None or expertmode%2==0:
+        expertmode=False
+    else:
+        expertmode=True
     if int(efh/8)==efh/8:
         if expertmode:
-            return html.Div([dcc.RangeSlider(efh/8,efh/2,efh/40,id='hyd_cap_slider',marks={int(efh/8):str(int(efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False})])
+            return html.Div([dcc.RangeSlider(efh/8,efh/2,efh/40,value=[efh/8,efh/2],id='hyd_cap_slider',marks={int(efh/8):str(int(efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False})])
         else:
             return html.Div(dcc.Slider(efh/8,efh/2,efh/40,value=efh/4,id='hyd_cap_slider',marks={int(efh/8):str(int(efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
     else:
         if expertmode:
-            return html.Div([dcc.RangeSlider(efh/8,efh/2,efh/40,id='hyd_cap_slider',marks={(efh/8):str((efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False})])
+            return html.Div([dcc.RangeSlider(efh/8,efh/2,efh/40,value=[efh/8,efh/2],id='hyd_cap_slider',marks={(efh/8):str((efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False})])
         else:
             return html.Div(dcc.Slider(efh/8,efh/2,efh/40,value=efh/4,id='hyd_cap_slider',marks={(efh/8):str((efh/8)),int(efh/2):str(int(efh/2))},tooltip={"placement": "bottom", "always_visible": False},persistence='local'))
 @app.callback(
