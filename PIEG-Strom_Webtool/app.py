@@ -266,20 +266,7 @@ technology=html.Div(children=[html.Button(html.Div([DashIconify(icon="fa-solid:s
         html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Batterie']),id='n_bat',n_clicks=0),
         html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0),
         html.Div(id='technology')])
-inhalt = html.Div(
-        id='main_page',
-        children=[
-            dcc.Location(id='url', refresh=False),
-            html.Div(
-                id='app-page',
-                children=html.Div(
-        children=[dbc.Container(
-                    [
-                    dbc.Row(
-                        [
-                        dbc.Col(html.Div(id='scroll',className='scroll',children=[
-                        dcc.Tabs(id='forna-tabs',className='forna-tabs',value='what-is', children=[
-                            dcc.Tab(label='Info',value='what-is',children=[html.Div(className='control-tab', children=[
+forna_tabs_ger=[dcc.Tab(label='Info',value='what-is',children=[html.Div(className='control-tab', children=[
                                     html.H4(className='what-is', children='Was kann PIEG Strom Webtool?'),
                                     dcc.Markdown('''
                                     Das PIEG-Strom Webtool dient zur Hilfe bei der 
@@ -300,8 +287,44 @@ inhalt = html.Div(
                                     html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Lastspitzenkappung']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
                                 ])]),
                             dcc.Tab(label='Parameter',className='parameter',value='parameter',),
-                            dcc.Tab(id='tab_economy',label='Ökonomie', value='show-sequences',),             
-                        ]),html.Div(id='humi')
+                            dcc.Tab(id='tab_economy',label='Ökonomie', value='show-sequences',)]
+forna_tabs_eng=[dcc.Tab(label='Info',value='what-is',children=[html.Div(className='control-tab', children=[
+                                    html.H4(className='what-is', children='What can PIEG Strom Webtool do?'),
+                                    dcc.Markdown('''
+                                    The PIEG-Strom Webtool serves as an aid for the 
+                                    design of battery storage systems. After entering various
+                                    parameters, statements are made about the economic efficiency
+                                    and the most effective storage size.
+
+                                    In the "Sequences" tab, you can select which
+                                    sequences will be displayed, as well as obtain
+                                    information about the sequences that you have
+                                    already created.
+                                    In the "Colors" tab, you can choose to color each
+                                    nucleotide according to its base, the structural
+                                    feature to which it belongs, or its position in
+                                    the sequence; you can also specify a custom color
+                                    scheme.
+                                    ''',id='what_is'),
+                                    html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Increase self-sufficiency']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                    html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Peak shaving']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                ])]),
+                            dcc.Tab(label='Parameter',className='parameter',value='parameter',),
+                            dcc.Tab(id='tab_economy',label='Economy', value='show-sequences',)]
+inhalt = html.Div(
+        id='main_page',
+        children=[
+            dcc.Location(id='url', refresh=False),
+            html.Div(
+                id='app-page',
+                children=html.Div(
+        children=[dbc.Container(
+                    [
+                    dbc.Row(
+                        [
+                        dbc.Col(html.Div(id='scroll',className='scroll',children=[
+                        dcc.Tabs(id='forna-tabs',className='forna-tabs',value='what-is', children=forna_tabs_ger),
+                        html.Div(id='humi')
                         ]),md=4),
                         dbc.Col(html.Div(id='forna-container')),
                     ],align="top",
@@ -554,16 +577,16 @@ def expertmode(n1):
 @app.callback(
     Output("button_language", "children"),
     Output("app-title",'children'),
-    Output("tab_economy",'label'),
+    Output("forna-tabs",'children'),
     Input("language", "n_clicks"),
 )
 def language(n1):
     if n1 is None:
         raise PreventUpdate
     if n1%2==0:
-        return [DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language'],[html.H4("PIEG-Strom Webtool"),html.P("Auslegung von Batteriespeichern")],'Ökonomie'
+        return [DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language'],[html.H4("PIEG-Strom Webtool"),html.P("Auslegung von Batteriespeichern")],forna_tabs_ger
     else: 
-        return [DashIconify(icon="emojione:flag-for-germany",width=30,height=30,),'Sprache'],[html.H4("PIEG-Strom Webtool"),html.P("Design of battery storage systems")],'Economy'
+        return [DashIconify(icon="emojione:flag-for-germany",width=30,height=30,),'Sprache'],[html.H4("PIEG-Strom Webtool"),html.P("Design of battery storage systems")],forna_tabs_eng
 @app.callback(
     Output("navbar-collapse", "is_open"),
     [Input("navbar-toggler", "n_clicks")],
