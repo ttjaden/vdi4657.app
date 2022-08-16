@@ -1,0 +1,13 @@
+name,eng,ger
+lang,Language,Sprache
+header_p,Sizing of battery storage systems,Auslegung von Batteriespeichern
+efh_name,Single family house,Einfamilienhaus
+location,Location,Standort
+placeholder_location,ZIP-Code (Germany),Postleitzahl oder Adresse
+building_type,Building type,Baustandard
+building_size,Building size in sqm,Wohnraum in qm
+usage,Consumption usage,Verbrauchskennzahlen
+inhabitants,Inhabitants,Bewohneranzahl
+energy_cons,Energy consumption in kWh,Stromverbrauch in kWh
+mfh_name,Apartment house,Mehrfamilienhaus
+industy_name,Industry,Industrie

@@ -9,13 +9,16 @@ from dash.exceptions import PreventUpdate
 
 from functions.PLZtoWeatherRegion import getregion
 
+
+
 df_sfh=pd.read_pickle('PIEG-Strom_Webtool/dummy.pkl')
 app = Dash(__name__,
           suppress_callback_exceptions=True, 
           external_stylesheets=[dbc.themes.BOOTSTRAP,{'href': 'https://use.fontawesome.com/releases/v5.8.1/css/all.css','rel': 'stylesheet','integrity': 'sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf','crossorigin': 'anonymous'}],
-          meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"},
+          meta_tags=[{"name": "viewport", "inhalt": "width=device-width, initial-scale=1"},
           ],
           )
+language=pd.read_csv('PIEG-Strom_Webtool/functions/translate.csv')
 region=['Nordseeküste','Ostseeküste','Nordwestdeutsches Tiefland','Nordostdeutsches Tiefland','Niederrheinisch-westfälische Bucht und Emsland','Nördliche und westliche Mittelgebirge, Randgebiete',
 'Nördliche und westliche Mittelgebirge, zentrale Bereiche','Oberharz und Schwarzwald (mittlere Lagen)','Thüringer Becken und Sächsisches Hügelland','Südöstliche Mittelgebirge bis 1000 m',
 'Erzgebirge, Böhmer- und Schwarzwald oberhalb 1000 m','Oberrheingraben und unteres Neckartal','Schwäbisch-fränkisches Stufenland und Alpenvorland','Schwäbische Alb und Baar',
@@ -26,7 +29,6 @@ button_howto = dbc.Button(
     id="expert",
     outline=True,
     color="info",
-    # Turn off lowercase transformation for class .button in stylesheet
     style={"textTransform": "none"},
 )
 
@@ -43,14 +45,6 @@ header=dbc.Navbar(
         [
             dbc.Row(
                 [
-                    dbc.Col(
-                        html.Img(
-                            id="logo",
-                            src=app.get_asset_url("plotly-dash-bio-logo.png"),
-                            height="30px",
-                        ),
-                        md="auto",
-                    ),
                     dbc.Col(
                         [
                             html.Div(
@@ -96,11 +90,11 @@ header=dbc.Navbar(
     color="#212529",
     sticky="top",
 )
-efh_content=html.Div(children=[
-    html.H4('Einfamilienhaus'),
+efh_inhalt=html.Div(children=[
+    html.H4(language.loc[language['name']=='efh_name','ger']),
     html.Div('Standort'),
     dcc.Input(id='standort',placeholder='Postleitzahl oder Adresse',persistence='local'),
-    html.Div('Nordsee',id='region'),
+    html.Div(id='region'),
     html.Div('Baustandard'),
     dcc.Dropdown(['kfW100','kfW50'],id='baustandart',value='kfW100',),
     html.Div('Wohnraum in qm'),
@@ -111,7 +105,22 @@ efh_content=html.Div(children=[
     html.Div('Stromverbrauch in kWh'),
     dcc.Slider(min=2000,max=8000,step=500,value=4000,marks={2000:'2000',8000:'8000'},id='stromverbrauch',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
 ])
-mfh_content=html.Div(children=[
+efh_content=html.Div(children=[
+    html.H4(language.loc[language['name']=='efh_name','eng']),
+    html.Div(language.loc[language['name']=='location','eng']),
+    dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location','eng'].values[0],persistence='local'),
+    html.Div(id='region'),
+    html.Div(language.loc[language['name']=='building_type','eng']),
+    dcc.Dropdown(['kfW100','kfW50'],id='baustandart',value='kfW100',),
+    html.Div(language.loc[language['name']=='Building size in sqm','eng']),
+    dcc.Slider(50,250,50,value=150,id='wohnraum',persistence='local'),
+    html.H4(language.loc[language['name']=='usage','eng']),
+    html.Div(language.loc[language['name']=='inhabitants','eng']),
+    dcc.Slider(min=1,max=6,step=1,value=4,id='n_wohn',persistence='local'),
+    html.Div(language.loc[language['name']=='energy_cons','eng']),
+    dcc.Slider(min=2000,max=8000,step=500,value=4000,marks={2000:'2000',8000:'8000'},id='stromverbrauch',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
+])
+mfh_inhalt=html.Div(children=[
     html.H4('Mehrfamilienhaus'),
     html.Div('Standort'),
     dcc.Input(id='standort',placeholder='Postleitzahl oder Adresse',persistence='local'),
@@ -125,7 +134,7 @@ mfh_content=html.Div(children=[
     html.Div('Stromverbrauch in kWh:'),
     dcc.Slider(min=8000,max=74000,step=2000,value=10000,marks={8000:'8000',74000:'74000'},id='stromverbrauch',tooltip={"placement": "bottom", "always_visible": False},persistence='local'),
 ])
-industrie_content=html.Div(children=[
+industrie_inhalt=html.Div(children=[
     html.H4('Industriegebäude'),
     html.Div('Standort'),
     dcc.Input(id='standort',placeholder='Postleitzahl oder Adresse',persistence='local'),
@@ -155,7 +164,7 @@ pv_dict[len(PV)]=str(i+10)
 for i in range(100,220,20):
     PV.append(i)
 pv_dict[len(PV)-1]=str(i)
-pv_content=html.Div(children=[
+pv_inhalt=html.Div(children=[
     html.Div(html.H4('Photovoltaik')),
     html.H6('PV-Leistung in kWp: '),
     dcc.Slider(min=0,max=len(PV)-1,step=1,marks=pv_dict, id='pv_slider',value=10,persistence='local'),
@@ -163,7 +172,7 @@ pv_content=html.Div(children=[
     html.H6('PV-Ausrichtung: '),
     dcc.RadioItems(options={'Ost-West':'Ost-West','Süd':'Süd'},value='Süd',id='pv_ausrichtung',inline=False)
     ])
-chp_content=html.Div(children=[
+chp_inhalt=html.Div(children=[
     html.Div(html.H4('KWK-Anlage')),
     html.H6('Technologie: '),
     dcc.RadioItems(options={'Gas':'Erdas','PEM':'Brennstoffzelle (PEM)','SOFC':'Brennstoffzelle (SOFC)'},id='chp_tech',),
@@ -171,16 +180,16 @@ chp_content=html.Div(children=[
     html.H6('Betriebsstrategie: '),
     dcc.RadioItems(options={'el':'elektisch','heat':'Wärme','el_heat':'elektisch & Wärme'},value='el_heat',id='chp_operation'),   
     ])
-hp_content=html.Div(children=[
+hp_inhalt=html.Div(children=[
     html.Div(html.H4('Wärmepumpe')),
     html.H6('Wärmepumpen-Typ: '),
     dcc.RadioItems(options={'air':'Luft/Wasser','brine':'Sole/Wasser'},value='air',id='hp_typ')
     ])
-gas_content=html.Div(children=[
+gas_inhalt=html.Div(children=[
     html.Div(html.H4('Gasheizung')),
     html.Div(id='gas_power',children=[html.Div('bsp: Thermische Leistung: 500 kW')]),
     ])
-bat_content=html.Div(children=[
+bat_inhalt=html.Div(children=[
     html.Div(html.H4('Batterie')),
     html.H6('Batterie-Größe in kWh: '),
     html.Div(id='E_bat_slider',children=dcc.Slider(min=0.5,max=2,step=0.1,marks=pv_dict, id='E_bat',persistence='local')),
@@ -189,7 +198,7 @@ bat_content=html.Div(children=[
     html.H6('Einspeisegrenze in kW/kWp: '),
     html.Div(dcc.Slider(min=0,max=1,step=0.1, id='bat_lim',persistence='local')),
     ])
-hyd_content=html.Div(children=[
+hyd_inhalt=html.Div(children=[
     html.Div(html.H4('H2-Speicher')),
     html.H6('H2-Speicherkapazität in kWhel: '),
     html.Div(id='hyd_cap',children=[dcc.Slider(0.5,2,0.1,id='hyd_cap_slider',persistence='local')]),
@@ -197,7 +206,7 @@ hyd_content=html.Div(children=[
     html.Div(id='electrolyseur_slider',children=dcc.Slider(min=0.5,max=2,step=0.1, id='electrolyseur_power',value=10,persistence='local')),
     #html.Div(id='pv_value'),
     ])
-hyd_content_expert=html.Div(children=[
+hyd_inhalt_expert=html.Div(children=[
     html.Div(html.H4('H2-Speicher')),
     html.H6('H2-Speicherkapazität in kWhel: '),
     html.Div(id='hyd_cap',children=[dcc.RangeSlider(0.5,2,0.1,id='hyd_cap_slider',persistence='local')]),
@@ -205,7 +214,18 @@ hyd_content_expert=html.Div(children=[
     html.Div(id='electrolyseur_slider',children=dcc.Slider(min=0.5,max=2,step=0.1, id='electrolyseur_power',value=10,persistence='local')),
     #html.Div(id='pv_value'),
     ])
-EFH_container = dbc.Container(
+EFH_container_ger = dbc.Container(
+                    [
+                    dbc.Row(
+                        [
+                        dbc.Col(efh_inhalt, md=12),
+                        ],
+                    align="top",
+                    ),
+                    ],
+                    fluid=True,
+                    )
+EFH_container_eng = dbc.Container(
                     [
                     dbc.Row(
                         [
@@ -220,7 +240,7 @@ MFH_container = dbc.Container(
                     [
                     dbc.Row(
                         [
-                        dbc.Col(mfh_content, md=12),
+                        dbc.Col(mfh_inhalt, md=12),
                         ],
                     align="top",
                     ),
@@ -231,7 +251,7 @@ Industrie_container = dbc.Container(
                     [
                     dbc.Row(
                         [
-                        dbc.Col(industrie_content, md=12),
+                        dbc.Col(industrie_inhalt, md=12),
                         ],
                     align="top",
                     ),
@@ -246,8 +266,7 @@ technology=html.Div(children=[html.Button(html.Div([DashIconify(icon="fa-solid:s
         html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Batterie']),id='n_bat',n_clicks=0),
         html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0),
         html.Div(id='technology')])
-
-content_3 = html.Div(
+inhalt = html.Div(
         id='main_page',
         children=[
             dcc.Location(id='url', refresh=False),
@@ -260,7 +279,7 @@ content_3 = html.Div(
                         [
                         dbc.Col(html.Div(id='scroll',className='scroll',children=[
                         dcc.Tabs(id='forna-tabs',className='forna-tabs',value='what-is', children=[
-                            dcc.Tab(label='About',value='what-is',children=[html.Div(className='control-tab', children=[
+                            dcc.Tab(label='Info',value='what-is',children=[html.Div(className='control-tab', children=[
                                     html.H4(className='what-is', children='Was kann PIEG Strom Webtool?'),
                                     dcc.Markdown('''
                                     Das PIEG-Strom Webtool dient zur Hilfe bei der 
@@ -276,12 +295,12 @@ content_3 = html.Div(
                                     feature to which it belongs, or its position in
                                     the sequence; you can also specify a custom color
                                     scheme.
-                                    '''),
+                                    ''',id='what_is'),
                                     html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Autarkie erhöhen']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
                                     html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Lastspitzenkappung']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
                                 ])]),
                             dcc.Tab(label='Parameter',className='parameter',value='parameter',),
-                            dcc.Tab(label='Ökonomie', value='show-sequences',),             
+                            dcc.Tab(id='tab_economy',label='Ökonomie', value='show-sequences',),             
                         ]),html.Div(id='humi')
                         ]),md=4),
                         dbc.Col(html.Div(id='forna-container')),
@@ -290,8 +309,9 @@ content_3 = html.Div(
                     ],
                 fluid=True)]))])
 
-layout = html.Div(id='app-page-content',children=[header,content_3])
+layout = html.Div(id='app-page-inhalt',children=[header,inhalt])
 app.layout=layout
+
 
 @app.callback(
     Output('forna-tabs', 'value'),
@@ -407,17 +427,17 @@ def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd,expertmode):
     else:
         expertmode=True
     if n_solar['color']=='white':
-        technology_list.append(pv_content)
+        technology_list.append(pv_inhalt)
     if n_chp['color']=='white':
-        technology_list.append(chp_content)
+        technology_list.append(chp_inhalt)
     if n_hp['color']=='white':
-        technology_list.append(hp_content)
+        technology_list.append(hp_inhalt)
     if n_gas['color']=='white':
-        technology_list.append(gas_content)
+        technology_list.append(gas_inhalt)
     if n_bat['color']=='white':
-        technology_list.append(bat_content)
+        technology_list.append(bat_inhalt)
     if n_hyd['color']=='white':
-        technology_list.append(hyd_content)
+        technology_list.append(hyd_inhalt)
     return html.Div(children=technology_list)
 
 @app.callback(
@@ -533,15 +553,17 @@ def expertmode(n1):
 
 @app.callback(
     Output("button_language", "children"),
+    Output("app-title",'children'),
+    Output("tab_economy",'label'),
     Input("language", "n_clicks"),
 )
 def language(n1):
     if n1 is None:
         raise PreventUpdate
     if n1%2==0:
-        return [DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language']
+        return [DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language'],[html.H4("PIEG-Strom Webtool"),html.P("Auslegung von Batteriespeichern")],'Ökonomie'
     else: 
-        return [DashIconify(icon="emojione:flag-for-germany",width=30,height=30,),'Sprache']
+        return [DashIconify(icon="emojione:flag-for-germany",width=30,height=30,),'Sprache'],[html.H4("PIEG-Strom Webtool"),html.P("Design of battery storage systems")],'Economy'
 @app.callback(
     Output("navbar-collapse", "is_open"),
     [Input("navbar-toggler", "n_clicks")],
@@ -560,11 +582,15 @@ def toggle_navbar_collapse(n, is_open):
     Input('efh_click','n_clicks'),
     Input('mfh_click','n_clicks'),
     Input('industry_click','n_clicks'),
+    Input('language','n_clicks'),
 )
-def getcontainer(efh_click,mfh_click,industy_click):
+def getcontainer(efh_click,mfh_click,industy_click,n_language):
     changed_id = [p['prop_id'] for p in callback_context.triggered][0]
     if changed_id.startswith('efh'):
-        return EFH_container,{'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
+        if n_language is None or n_language%2==0:
+            return EFH_container_ger,{'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
+        else:
+            return EFH_container_eng,{'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
     elif changed_id.startswith('mfh'):
         return MFH_container,{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'}
     elif changed_id.startswith('industry'):
@@ -575,20 +601,34 @@ def getcontainer(efh_click,mfh_click,industy_click):
 @app.callback(
     Output("humi", "children"),
     Input("forna-tabs", "value"),
-    State('LSK_click','n_clicks')
+    State('LSK_click','n_clicks'),
+    Input('language','n_clicks'),
 )
-def render_content(tab,LSK):
+def render_inhalt(tab,LSK,n_language):
     if tab=='parameter':
         if LSK==0:
-            return html.Div(className='para',id='para',children=[
+            if n_language is None or n_language%2==0:
+                return html.Div(className='para',id='para',children=[
                             html.Div(html.H3('Gebäudewahl:'),
                             ),
-                            html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=50,height=50,),html.Br(),'Einfamilienhaus'],style={"width":'10vw'}),id='efh_click',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="bxs:building-house",width=50,height=50,),html.Br(),'Mehrfamilienhaus'],style={"width":'10vw'}),id='mfh_click',n_clicks=0),
-                            html.Button(html.Div([DashIconify(icon="la:industry",width=50,height=50,),html.Br(),'Industrie'],style={"width":'10vw'}),id='industry_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=50,height=50,),html.Br(),'Einfamilienhaus'],style={"width":'20vh'}),id='efh_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="bxs:building-house",width=50,height=50,),html.Br(),'Mehrfamilienhaus'],style={"width":'20vh'}),id='mfh_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="la:industry",width=50,height=50,),html.Br(),'Industriegebäude'],style={"width":'20vh'}),id='industry_click',n_clicks=0),
                             html.Div(id='bulding_container'),
                             html.Br(),
                             html.Div(html.H3('Technologiewahl:')),
+                            html.Div(technology),
+                            ]),
+            else:
+                return html.Div(className='para',id='para',children=[
+                            html.Div(html.H3('Building selection:'),
+                            ),
+                            html.Button(html.Div([DashIconify(icon="clarity:home-solid",width=50,height=50,),html.Br(),'Single family house'],style={"width":'20vh'}),id='efh_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="bxs:building-house",width=50,height=50,),html.Br(),'Apartment house'],style={"width":'20vh'}),id='mfh_click',n_clicks=0),
+                            html.Button(html.Div([DashIconify(icon="la:industry",width=50,height=50,),html.Br(),'Industry building'],style={"width":'20vh'}),id='industry_click',n_clicks=0),
+                            html.Div(id='bulding_container'),
+                            html.Br(),
+                            html.Div(html.H3('Technology selection:')),
                             html.Div(technology),
                             ]),
         else:
