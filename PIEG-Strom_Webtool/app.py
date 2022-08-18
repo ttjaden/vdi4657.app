@@ -1,42 +1,66 @@
-from tkinter import E
-from dash.dependencies import Input, Output
-import pandas as pd
+from tkinter import E # fliegt raus
+# Dash
 from dash import Dash, html, dcc, Input, Output, State, callback_context
+from dash.dependencies import Input, Output # checken
+from dash.exceptions import PreventUpdate
+# Dash community libraries
 import dash_bootstrap_components as dbc
 from dash_iconify import DashIconify
+# Data management
+import pandas as pd
+# Plots
 import plotly_express as px
-from dash.exceptions import PreventUpdate
-
+# Eigene Funktionen
 from functions.PLZtoWeatherRegion import getregion
 
+##################################################
+# TODOs ##########################################
+##################################################
+# TODO durchgängige Benennung der ids (Inhalt und Element) wie button_expert
+# TODO durchgängig einfache Anführungszeichen
+# Abstand zwisschen Container und Header
+# Startbild, falls noch nichts fertig parametriert werden
 
-
+# Dummy-Ergebnis-Dataframe
 df_sfh=pd.read_pickle('PIEG-Strom_Webtool/dummy.pkl')
+
+# App konfigurieren
+# Icons via Iconify: siehe ps://icon-sets.iconify.design
 app = Dash(__name__,
           suppress_callback_exceptions=True, 
           external_stylesheets=[dbc.themes.BOOTSTRAP,{'href': 'https://use.fontawesome.com/releases/v5.8.1/css/all.css','rel': 'stylesheet','integrity': 'sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf','crossorigin': 'anonymous'}],
           meta_tags=[{"name": "viewport", "inhalt": "width=device-width, initial-scale=1"},
           ],
           )
+
+# Übersetzungstabelle (noch nicht durchgängig genutzt)
 language=pd.read_csv('PIEG-Strom_Webtool/functions/translate.csv')
+
+# Definition der Namen der DWD Referenzstandorte
 region=['Nordseeküste','Ostseeküste','Nordwestdeutsches Tiefland','Nordostdeutsches Tiefland','Niederrheinisch-westfälische Bucht und Emsland','Nördliche und westliche Mittelgebirge, Randgebiete',
 'Nördliche und westliche Mittelgebirge, zentrale Bereiche','Oberharz und Schwarzwald (mittlere Lagen)','Thüringer Becken und Sächsisches Hügelland','Südöstliche Mittelgebirge bis 1000 m',
 'Erzgebirge, Böhmer- und Schwarzwald oberhalb 1000 m','Oberrheingraben und unteres Neckartal','Schwäbisch-fränkisches Stufenland und Alpenvorland','Schwäbische Alb und Baar',
 'Alpenrand und -täler']
 
-button_howto = dbc.Button(
-    html.Div(id='button_expert',children=[DashIconify(icon="bi:toggle-off",width=100,height=30,),'Expert']),
-    id="expert",
+##################################################
+# Definiton grafischer Elemente / Inhalte ########
+##################################################
+
+# Header #########################################
+
+button_expert = dbc.Button(
+    html.Div(id='button_expert_content',children=[DashIconify(icon="bi:toggle-off",width=100,height=30,),'Expert']),
+    id="button_expert",
     outline=True,
     color="info",
     style={"textTransform": "none"},
 )
 
-button_github = dbc.Button(
-    html.Div(id='button_language',children=[DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language']),
+button_language = dbc.Button(
+    html.Div(id='button_language_content',children=[DashIconify(icon="emojione:flag-for-germany",width=30,height=30,),'Sprache']),
     outline=True,
     color="primary",
-    id="language",
+    id="button_language",
     style={"text-transform": "none"},
 )
 
@@ -69,8 +93,8 @@ header=dbc.Navbar(
                             dbc.Collapse(
                                 dbc.Nav(
                                     [
-                                        dbc.NavItem(button_howto,style={'width':'150'}),
-                                        dbc.NavItem(button_github,style={'width':'150'}),
+                                        dbc.NavItem(button_expert,style={'width':'150'}),
+                                        dbc.NavItem(button_language,style={'width':'150'}),
                                     ],
                                     navbar=True,
                                 ),
@@ -90,6 +114,19 @@ header=dbc.Navbar(
     color="#212529",
     sticky="top",
 )
+
+################################################
+
+# Definition der drei Tabs
+tab_info=[dcc.Tab(label='Info',value='what-is',children=[html.Div(className='control-tab', children=[
+                                    html.H4(children='Was kann PIEG Strom Webtool?'),
+                                    dcc.Markdown(tab_info_1),
+                                    html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Autarkie erhöhen']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                    html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Lastspitzenkappung']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                ])]),
+                            dcc.Tab(label='Parameter',className='parameter',value='parameter',),
+                            dcc.Tab(id='tab_economy',label='Ökonomie', value='show-sequences',)]
+
 efh_inhalt=html.Div(children=[
     html.H4(language.loc[language['name']=='efh_name','ger']),
     html.Div('Standort'),
@@ -266,51 +303,7 @@ technology=html.Div(children=[html.Button(html.Div([DashIconify(icon="fa-solid:s
         html.Button(html.Div([DashIconify(icon="cil:battery-3",width=50,height=50,),html.Br(),'Batterie']),id='n_bat',n_clicks=0),
         html.Button(html.Div([DashIconify(icon="iconoir:hydrogen",width=50,height=50,),html.Br(),'H2-Speicher']),id='n_hyd',n_clicks=0),
         html.Div(id='technology')])
-forna_tabs_ger=[dcc.Tab(label='Info',value='what-is',children=[html.Div(className='control-tab', children=[
-                                    html.H4(className='what-is', children='Was kann PIEG Strom Webtool?'),
-                                    dcc.Markdown('''
-                                    Das PIEG-Strom Webtool dient zur Hilfe bei der 
-                                    Auslegung von Batteriespeichern. Nach Eingabe verschiedener
-                                    Parametern werden Aussagen über die Wirtschaftlichkeit
-                                    und die effektivste Speichergröße getroffen.
-                                    In the "Sequences" tab, you can select which
-                                    sequences will be displayed, as well as obtain
-                                    information about the sequences that you have
-                                    already created.
-                                    In the "Colors" tab, you can choose to color each
-                                    nucleotide according to its base, the structural
-                                    feature to which it belongs, or its position in
-                                    the sequence; you can also specify a custom color
-                                    scheme.
-                                    ''',id='what_is'),
-                                    html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Autarkie erhöhen']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
-                                    html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Lastspitzenkappung']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
-                                ])]),
-                            dcc.Tab(label='Parameter',className='parameter',value='parameter',),
-                            dcc.Tab(id='tab_economy',label='Ökonomie', value='show-sequences',)]
-forna_tabs_eng=[dcc.Tab(label='Info',value='what-is',children=[html.Div(className='control-tab', children=[
-                                    html.H4(className='what-is', children='What can PIEG Strom Webtool do?'),
-                                    dcc.Markdown('''
-                                    The PIEG-Strom Webtool serves as an aid for the 
-                                    design of battery storage systems. After entering various
-                                    parameters, statements are made about the economic efficiency
-                                    and the most effective storage size.
 
-                                    In the "Sequences" tab, you can select which
-                                    sequences will be displayed, as well as obtain
-                                    information about the sequences that you have
-                                    already created.
-                                    In the "Colors" tab, you can choose to color each
-                                    nucleotide according to its base, the structural
-                                    feature to which it belongs, or its position in
-                                    the sequence; you can also specify a custom color
-                                    scheme.
-                                    ''',id='what_is'),
-                                    html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Increase self-sufficiency']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
-                                    html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Peak shaving']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
-                                ])]),
-                            dcc.Tab(label='Parameter',className='parameter',value='parameter',),
-                            dcc.Tab(id='tab_economy',label='Economy', value='show-sequences',)]
 inhalt = html.Div(
         id='main_page',
         children=[
@@ -323,7 +316,7 @@ inhalt = html.Div(
                     dbc.Row(
                         [
                         dbc.Col(html.Div(id='scroll',className='scroll',children=[
-                        dcc.Tabs(id='forna-tabs',className='forna-tabs',value='what-is', children=forna_tabs_ger),
+                        dcc.Tabs(id='forna-tabs',className='forna-tabs',value='what-is', children=tab_info),
                         html.Div(id='humi')
                         ]),md=4),
                         dbc.Col(html.Div(id='forna-container')),
@@ -442,7 +435,7 @@ def change_hyd_style(pv_slider):
     Input('n_gas', 'style'),
     Input('n_bat', 'style'),
     Input('n_hyd', 'style'),
-    Input('expert','n_clicks'),)
+    Input('button_expert','n_clicks'),)
 def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd,expertmode):
     technology_list=[]
     if expertmode is None or expertmode%2==0:
@@ -466,7 +459,7 @@ def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd,expertmode):
 @app.callback(
     Output("E_bat_slider", "children"),
     Input("stromverbrauch", "value"),
-    Input('button_expert','n_clicks'),)
+    Input('button_expert_content','n_clicks'),)
 def render_E_bat(efh,expertmode):
     if expertmode is None or expertmode%2==0:
         expertmode=False
@@ -501,7 +494,7 @@ def render_E_bat(e_bat):
 @app.callback(
     Output("hyd_cap", "children"),
     Input("stromverbrauch", "value"),
-    Input('expert','n_clicks'),)
+    Input('button_expert','n_clicks'),)
 def render_E_hyd(efh,expertmode):
     if expertmode is None or expertmode%2==0:
         expertmode=False
@@ -564,7 +557,7 @@ def show_results(standort,baustandart_sfh,wohnraum,n_wohn,stromverbrauch,info):
 
 @app.callback(
     Output("button_expert", "children"),
-    Input("expert", "n_clicks"),
+    Input("button_expert", "n_clicks"),
 )
 def expertmode(n1):
     if n1 is None:
@@ -575,18 +568,20 @@ def expertmode(n1):
         return [DashIconify(icon="bi:toggle-off",width=100,height=30,),'Expert']
 
 @app.callback(
-    Output("button_language", "children"),
+    Output("button_language_content", "children"),
     Output("app-title",'children'),
     Output("forna-tabs",'children'),
-    Input("language", "n_clicks"),
+    Input("button_language", "n_clicks"),
 )
 def language(n1):
     if n1 is None:
         raise PreventUpdate
     if n1%2==0:
-        return [DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language'],[html.H4("PIEG-Strom Webtool"),html.P("Auslegung von Batteriespeichern")],forna_tabs_ger
+        globals.tab_info_1 = language.loc(language['name']=='tab_info_1','ger')
+        return [DashIconify(icon="emojione:flag-for-germany",width=30,height=30,),'Sprache'],[html.H4("PIEG-Strom Webtool"),html.P("Auslegung von Batteriespeichern")],tab_info
     else: 
-        return [DashIconify(icon="emojione:flag-for-germany",width=30,height=30,),'Sprache'],[html.H4("PIEG-Strom Webtool"),html.P("Design of battery storage systems")],forna_tabs_eng
+        return [DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language'],[html.H4("PIEG-Strom Webtool"),html.P("Design of battery storage systems")],forna_tabs_eng
+
 @app.callback(
     Output("navbar-collapse", "is_open"),
     [Input("navbar-toggler", "n_clicks")],
@@ -605,7 +600,7 @@ def toggle_navbar_collapse(n, is_open):
     Input('efh_click','n_clicks'),
     Input('mfh_click','n_clicks'),
     Input('industry_click','n_clicks'),
-    Input('language','n_clicks'),
+    Input('button_language','n_clicks'),
 )
 def getcontainer(efh_click,mfh_click,industy_click,n_language):
     changed_id = [p['prop_id'] for p in callback_context.triggered][0]
@@ -625,7 +620,7 @@ def getcontainer(efh_click,mfh_click,industy_click,n_language):
     Output("humi", "children"),
     Input("forna-tabs", "value"),
     State('LSK_click','n_clicks'),
-    Input('language','n_clicks'),
+    Input('button_language','n_clicks'),
 )
 def render_inhalt(tab,LSK,n_language):
     if tab=='parameter':
