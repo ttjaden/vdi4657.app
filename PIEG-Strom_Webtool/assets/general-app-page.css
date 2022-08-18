@@ -1,0 +1,18 @@
+
+
+#app-page-content .para {
+    height: 80vh;
+    overflow-y: auto;
+}
+#app-title > * {
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+#howto-open {
+    white-space: nowrap;
+}
+
+#gh-link {
+    white-space: nowrap;
+}

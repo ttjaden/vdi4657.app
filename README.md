@@ -10,17 +10,16 @@ Create the environment:
 
 - `conda env create --name PIEG-Strom-Webtool python=3.9`
 
+Activate enviroment
+
+- `conda activate PIEG-Strom-Webtool`
+
 Install dependencies with pip
 
 - `pip install -r requirements.txt`
 
-Create admin user with
-
-- `cd thesis`
-- `python manage.py createsuperuser`
-
 ## Run code
 
-- `python manage.py runserver`
+- `python PIEG-Strom_Webtool/app.py`
 
-Open http://127.0.0.1:8000 or http://127.0.0.1:8000/admin in your browser
+Open http://127.0.0.1:8050 in your browser
