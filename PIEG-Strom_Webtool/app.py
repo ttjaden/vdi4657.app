@@ -116,16 +116,6 @@ header=dbc.Navbar(
 
 ################################################
 
-# Definition der drei Tabs
-tab_info=[dcc.Tab(label='Info',value='what-is',children=[html.Div(className='control-tab', children=[
-                                    html.H4(children='Was kann PIEG Strom Webtool?'),
-                                    dcc.Markdown(tab_info_1),
-                                    html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Autarkie erhöhen']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
-                                    html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Lastspitzenkappung']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
-                                ])]),
-                            dcc.Tab(label='Parameter',className='parameter',value='parameter',),
-                            dcc.Tab(id='tab_economy',label='Ökonomie', value='show-sequences',)]
-
 efh_inhalt=html.Div(children=[
     html.H4(language.loc[language['name']=='efh_name','ger']),
     html.Div('Standort'),
@@ -315,7 +305,7 @@ inhalt = html.Div(
                     dbc.Row(
                         [
                         dbc.Col(html.Div(id='scroll',className='scroll',children=[
-                        dcc.Tabs(id='forna-tabs',className='forna-tabs',value='what-is', children=tab_info),
+                        dcc.Tabs(id='forna-tabs',className='forna-tabs',value='what-is'),
                         html.Div(id='humi')
                         ]),md=4),
                         dbc.Col(html.Div(id='forna-container')),
@@ -571,14 +561,31 @@ def expertmode(n1):
     Output("forna-tabs",'children'),
     Input("button_language", "n_clicks"),
 )
-def language(n1):
-    if n1 is None:
-        raise PreventUpdate
-    if n1%2==0:
-        globals.tab_info_1 = language.loc(language['name']=='tab_info_1','ger')
-        return [DashIconify(icon="emojione:flag-for-germany",width=30,height=30,),'Sprache'],[html.H4("PIEG-Strom Webtool"),html.P("Auslegung von Batteriespeichern")],tab_info
+def change_language(n1):
+    if (n1 is None) or (n1%2==0):
+        return ([DashIconify(icon="emojione:flag-for-germany", width=30,height=30,),'Sprache'],
+                [html.H4("PIEG-Strom Webtool"),html.P("Auslegung von Batteriespeichern")],
+                [dcc.Tab(label='Info',value='what-is',children=[html.Div(className='control-tab', children=[
+                                    html.H4(children='Was kann PIEG Strom Webtool?'),
+                                    html.Div(children=language.loc[language['name']=='tab_info_1','ger']),
+                                    html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Autarkie erhöhen']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                    html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Lastspitzenkappung']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                ])]),
+                            dcc.Tab(label='Parameter',className='parameter',value='parameter',),
+                            dcc.Tab(id='tab_economy',label='Ökonomie', value='show-sequences',)]
+        )
     else: 
-        return [DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language'],[html.H4("PIEG-Strom Webtool"),html.P("Design of battery storage systems")],forna_tabs_eng
+        return ([DashIconify(icon="emojione:flag-for-united-kingdom",width=30,height=30,),'Language'],
+                [html.H4("PIEG-Strom Webtool"),html.P("Design of battery storage systems")],
+                [dcc.Tab(label='Info',value='what-is',children=[html.Div(className='control-tab', children=[
+                                    html.H4(children='Was kann PIEG Strom Webtool?'),
+                                    html.Div(children=language.loc[language['name']=='tab_info_1','eng']),
+                                    html.Button(html.Div([DashIconify(icon="carbon:analytics",width=100,height=100,),html.Br(),'Autarky']),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                    html.Button(html.Div([DashIconify(icon="carbon:chart-multi-line",width=100,height=100,),html.Br(),'Peak shaving']),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                ])]),
+                            dcc.Tab(label='Parameter',className='parameter',value='parameter',),
+                            dcc.Tab(id='tab_economy',label='Economy', value='show-sequences',)]
+        )
 
 @app.callback(
     Output("navbar-collapse", "is_open"),
