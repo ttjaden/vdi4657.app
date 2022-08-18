@@ -4,13 +4,13 @@ header_p,Sizing of battery storage systems,Auslegung von Batteriespeichern
 efh_name,Single family house,Einfamilienhaus
 location,Location,Standort
 placeholder_location,ZIP-Code (Germany),Postleitzahl oder Adresse
-building_type,Building type,Baustandard
+building_type_efh,Building type,Baustandard
 building_size,Building size in sqm,Wohnraum in qm
 usage,Consumption usage,Verbrauchskennzahlen
-inhabitants,Inhabitants,Bewohneranzahl
-energy_cons,Energy consumption in kWh,Stromverbrauch in kWh
+inhabitants,Number of persons,Bewohneranzahl
+energy_cons,Electrical energy consumption in kWh,Stromverbrauch in kWh
 mfh_name,Apartment house,Mehrfamilienhaus
-industry_name,Industry,Industrie
+industry_name,Commercial,Industrie
 tab_info_1,"The PIEG-Strom Webtool serves as an aid for the design of battery storage systems. After entering various parameters, statements are made about the economic efficiency and the most effective storage size.",Das PIEG-Strom Webtool dient zur Hilfe bei der Auslegung von Batteriespeichern. Nach Eingabe verschiedener Parametern werden Aussagen über die Wirtschaftlichkeit und die effektivste Speichergröße getroffen.
 choose_building,Building selection:,Gebäudewahl:
 choose_technology,Technology selection:,Technologiewahl:
@@ -23,3 +23,21 @@ hp,Heat pump,Wärmepumpe
 gas,Gas heater,Gasheizung
 bat,Battery,Batterie
 hyd,H2-Storage,H2-Speicher
+n_dwellings,Number of dwellings,Anzahl Wohnungen
+building_type_mfh,Thermal building standard in kWh / (m² * a),Thermischer Baustandard in kWh / (m² * Jahr)
+building_type_industry,Business sector,Geschäftsfeld
+1,North Sea coast,Nordseeküste
+2,Baltic Sea coast,Ostseeküste
+3,Northwest German Lowlands,Nordwestdeutsches Tiefland
+4,Northeast German Lowlands,Nordostdeutsches Tiefland
+5,Lower Rhine-Westphalian Bay and Emsland,Niederrheinisch-westfälische Bucht und Emsland
+6,"Northern and western low mountain ranges, peripheral areas","Nördliche und westliche Mittelgebirge, Randgebiete"
+7,"Northern and western low mountain ranges, central areas","Nördliche und westliche Mittelgebirge, zentrale Bereiche"
+8,Upper Harz and Black Forest (central areas),Oberharz und Schwarzwald (mittlere Lagen)
+9,Thuringian basin and Saxon hill country,Thüringer Becken und Sächsisches Hügelland
+10,Southeastern low mountain ranges up to 1000 m,Südöstliche Mittelgebirge bis 1000 m
+11,"Erzgebirge, Bohemian and Black Forest above 1000 m","Erzgebirge, Böhmer- und Schwarzwald oberhalb 1000 m"
+12,Upper Rhine Graben and Lower Neckar Valley,Oberrheingraben und unteres Neckartal
+13,Swabian-Franconian Steppes and Alpine Foothills,Schwäbisch-fränkisches Stufenland und Alpenvorland
+14,Swabian Alb and Baar,Schwäbische Alb und Baar
+15,Alpine rim and valleys,Alpenrand und -täler
