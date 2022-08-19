@@ -49,3 +49,13 @@ chp_type,Combined heat and power fuel type,Brennstoff für KWK-Brenner
 chp_type_options,Natural gas,Erdgas
 chp_type_options,Fuel cell (PEM),Brennstoffzelle (PEM)
 chp_type_options,Fuel cell (SOFC),Brennstoffzelle (SOFC)
+chp_strategy,Operating strategy:,Betriebsstrategie:
+chp_strategy_options,Electricity,Elektrizität
+chp_strategy_options,Heat,Wärme
+chp_strategy_options,Heat & Electricity,Wärme & Elektrizität
+hp_type,Heat pump type:,Wärmepumpen-Typ:
+hp_type_options,Air / Water,Luft / Wasser
+hp_type_options,Brine / Water,Sole / Wasser
+bat_size,Battery size in kWh:,Batterie-Größe in kWh:
+bat_power,Battery power in kW:,Batterie-Leistung in kW:
+bat_feed_lim,Feed in Limit in kW/kWp:,Einspeisegrenze in kW/kWp:
