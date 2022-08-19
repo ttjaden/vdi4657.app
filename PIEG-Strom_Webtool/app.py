@@ -346,17 +346,17 @@ def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd,lang):
     if n_solar['color']=='white':
         technology_list.append(html.Div(children=[
                             html.Div(html.H4(language.loc[language['name']=='pv',lang].iloc[0])),
-                            html.H6('PV-Leistung in kWp: '),
+                            html.H6(language.loc[language['name']=='pv_power',lang].iloc[0]),
                             dcc.Slider(min=0,max=len(PV)-1,step=1,marks=pv_dict, id='pv_slider',value=10,persistence='local'),
                             #html.Div(id='pv_value'),
-                            html.H6('PV-Ausrichtung: '),
-                            dcc.RadioItems(options={'Ost-West':'Ost-West','Süd':'Süd'},value='Süd',id='pv_ausrichtung',inline=False)
+                            html.H6((language.loc[language['name']=='pv_orientation',lang].iloc[0])),
+                            dcc.RadioItems(language.loc[language['name']=='pv_orientation_option',lang],value=(language.loc[language['name']=='pv_orientation_option',lang].iloc[0]),id='pv_ausrichtung',inline=False)
                         ]))
     if n_chp['color']=='white':
         technology_list.append(html.Div(children=[
                             html.Div(html.H4(language.loc[language['name']=='chp',lang].iloc[0])),
-                            html.H6('Technologie: '),
-                            dcc.RadioItems(options={'Gas':'Erdas','PEM':'Brennstoffzelle (PEM)','SOFC':'Brennstoffzelle (SOFC)'},id='chp_tech',),
+                            html.H6(language.loc[language['name']=='chp_type',lang].iloc[0]),
+                            dcc.RadioItems(options=language.loc[language['name']=='chp_type_options',lang],id='chp_tech',),
                             html.Div(id='chp_elec',children=[html.Div(html.H6('Elektische Leistung')),dcc.Slider(min=0.5,max=2,step=0.1, id='chp_electric_slider',value=1,persistence='local')]),
                             html.H6('Betriebsstrategie: '),
                             dcc.RadioItems(options={'el':'elektisch','heat':'Wärme','el_heat':'elektisch & Wärme'},value='el_heat',id='chp_operation'),   

@@ -41,3 +41,11 @@ building_type_industry,Business sector,Geschäftsfeld
 13,Swabian-Franconian Steppes and Alpine Foothills,Schwäbisch-fränkisches Stufenland und Alpenvorland
 14,Swabian Alb and Baar,Schwäbische Alb und Baar
 15,Alpine rim and valleys,Alpenrand und -täler
+pv_power,PV-Power in kWp:,PV-Leistung in kWp:
+pv_orientation,PV-Orientation:,PV-Orientierung:
+pv_orientation_option,South,Süd
+pv_orientation_option,East-West,Ost-West
+chp_type,Combined heat and power fuel type,Brennstoff für KWK-Brenner
+chp_type_options,Natural gas,Erdgas
+chp_type_options,Fuel cell (PEM),Brennstoffzelle (PEM)
+chp_type_options,Fuel cell (SOFC),Brennstoffzelle (SOFC)
