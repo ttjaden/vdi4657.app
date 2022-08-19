@@ -356,16 +356,16 @@ def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd,lang):
         technology_list.append(html.Div(children=[
                             html.Div(html.H4(language.loc[language['name']=='chp',lang].iloc[0])),
                             html.H6(language.loc[language['name']=='chp_type',lang].iloc[0]),
-                            dcc.RadioItems(options=language.loc[language['name']=='chp_type_options',lang],id='chp_tech',),
+                            dcc.RadioItems(options=language.loc[language['name']=='chp_type_options',lang],value=language.loc[language['name']=='chp_type_options',lang].iloc[0],id='chp_tech',),
                             html.Div(id='chp_elec',children=[html.Div(html.H6('Elektische Leistung')),dcc.Slider(min=0.5,max=2,step=0.1, id='chp_electric_slider',value=1,persistence='local')]),
-                            html.H6('Betriebsstrategie: '),
-                            dcc.RadioItems(options={'el':'elektisch','heat':'Wärme','el_heat':'elektisch & Wärme'},value='el_heat',id='chp_operation'),   
+                            html.H6(language.loc[language['name']=='chp_strategy',lang].iloc[0]),
+                            dcc.RadioItems(options=language.loc[language['name']=='chp_strategy_options',lang],value=language.loc[language['name']=='chp_strategy_options',lang].iloc[2],id='chp_operation'),   
                             ]))
     if n_hp['color']=='white':
         technology_list.append(html.Div(children=[
                             html.Div(html.H4(language.loc[language['name']=='hp',lang].iloc[0])),
-                            html.H6('Wärmepumpen-Typ: '),
-                            dcc.RadioItems(options={'air':'Luft/Wasser','brine':'Sole/Wasser'},value='air',id='hp_typ')
+                            html.H6(language.loc[language['name']=='hp_type',lang].iloc[0]),
+                            dcc.RadioItems(options=language.loc[language['name']=='hp_type_options',lang],value=language.loc[language['name']=='hp_type_options',lang].iloc[0],id='hp_typ')
                             ]))
     if n_gas['color']=='white':
         technology_list.append(html.Div(children=[
@@ -375,11 +375,11 @@ def built_technology(n_solar,n_chp,n_hp,n_gas,n_bat,n_hyd,lang):
     if n_bat['color']=='white':
         technology_list.append(html.Div(children=[
                             html.Div(html.H4(language.loc[language['name']=='bat',lang].iloc[0])),
-                            html.H6('Batterie-Größe in kWh: '),
+                            html.H6(language.loc[language['name']=='bat_size',lang].iloc[0]),
                             html.Div(id='E_bat_slider',children=dcc.Slider(min=0.5,max=2,step=0.1,marks=pv_dict, id='E_bat',persistence='local')),
-                            html.H6('Batterieleistung in kW: '),
+                            html.H6(language.loc[language['name']=='bat_power',lang].iloc[0]),
                             html.Div(id='P_bat_slider',children=dcc.Slider(min=0.5,max=2,step=0.1, id='P_bat',persistence='local')),
-                            html.H6('Einspeisegrenze in kW/kWp: '),
+                            html.H6(language.loc[language['name']=='bat_feed_lim',lang].iloc[0]),
                             html.Div(dcc.Slider(min=0,max=1,step=0.1, id='bat_lim',persistence='local')),
                             ]))
     if n_hyd['color']=='white':
