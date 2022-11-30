@@ -14,8 +14,6 @@ from functions.PLZtoWeatherRegion import getregion
 ##################################################
 # TODOs ##########################################
 ##################################################
-# TODO durchgängige Benennung der ids (Inhalt und Element) wie button_expert
-# TODO durchgängig einfache Anführungszeichen
 # Abstand zwisschen Container und Header
 # Startbild, falls noch nichts fertig parametriert werden
 
@@ -35,6 +33,7 @@ app = Dash(__name__,
 language=pd.read_csv('PIEG-Strom_Webtool/functions/translate.csv')
 
 # PV-Größentabelle erstellen
+# TODO Umbau auf Callback mit Gebäudestrombedarf
 PV=[]
 pv_dict=dict()
 pv_dict[0]=str(0)
@@ -170,7 +169,8 @@ def change_language(n_language):
     else:
         lang='eng'
         flag='emojione:flag-for-united-kingdom'
-    return ([DashIconify(icon=flag, width=30,height=30,),language.loc[language['name']=='lang',lang].iloc[0]],lang,
+    return ([DashIconify(icon=flag, width=30,height=30,),language.loc[language['name']=='lang',lang].iloc[0]],
+                lang,
                 [html.H4('PIEG-Strom Webtool'),html.P(language.loc[language['name']=='header_p',lang].iloc[0])],
                 [dcc.Tab(label='Info',value='tab_info',children=[html.Div(children=[
                                     html.H4(children='Was kann PIEG Strom Webtool?'),
@@ -218,6 +218,7 @@ def render_content(tab,LSK,lang):
         return html.Div()
 
 # build parameter container
+# Gebäudeauswahl
 @app.callback(
     Output('bulding_container','children'),
     Output('efh_click', 'style'), 
