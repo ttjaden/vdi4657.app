@@ -1,5 +1,9 @@
-# PIEG-Strom-Webtool
-Cleaned up code, based on Master Thesis of Darima Motta: https://github.com/darimamotta/thesis_7_ver
+# VDI 4657 - Webtool
+Complementary Webtool to guideline VDI 4657 - Planning and integration of energy storage systems in energy building systems - Eletrical storage, see: https://www.vdi.de/richtlinien/details/vdi-4657-blatt-3-planung-und-integration-von-energiespeichern-in-gebaeudeenergiesystemen-elektrische-stromspeicher-ess
+
+**First release planned for Q1/2023**
+
+# Development
 
 ## Prepare environment
 Download or clone repository:
