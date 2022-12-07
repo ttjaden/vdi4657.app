@@ -9,7 +9,7 @@ from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
 
 
 def calc_pv(trj, year, type, tilt, orientation):
-    locations=pd.read_csv('PIEG-Strom_Webtool/functions/input_data/weather/TRJ-Tabelle.csv')
+    locations=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
     location = Location(locations['lat'][trj], locations['lon'][trj],'Europe/Berlin', locations['height'][trj], locations['station'][trj])
     module_parameters = dict(pdc0=1000, gamma_pdc=-0.003)
     inverter_parameters = dict(pdc0=1000*0.96)
@@ -19,7 +19,7 @@ def calc_pv(trj, year, type, tilt, orientation):
             inverter_parameters=inverter_parameters,
             temperature_model_parameters=temperature_parameters)
     mc_sys_s = ModelChain.with_pvwatts(sys_s, location, name=locations['station'][trj]+'_Süd')
-    weather_csv = pd.read_csv('PIEG-Strom_Webtool/functions/input_data/weather/TRY_'+str(locations['TRY'][trj])+'_'+type+'_'+str(year)+'_15min.csv', header=0, index_col=0)
+    weather_csv = pd.read_csv('src/assets/data/weather/TRY_'+str(locations['TRY'][trj])+'_'+type+'_'+str(year)+'_15min.csv', header=0, index_col=0)
     weather = pd.concat([weather_csv['synthetic global irradiance [W/m^2]'],
                         weather_csv['synthetic diffuse irradiance [W/m^2]'],
                         weather_csv['wind speed [m/s]'],
@@ -80,12 +80,12 @@ def calc_bat(df):
     return batteries
 
 def calc_hp():
-    TRJ=pd.read_csv('src/simulation_data/TRJ-Tabelle.csv').head(15)# average year
-    weather=pd.read_csv('src/simulation_data/weather/weather_'+str(standort)+'_a_2015_1min.csv') 
-    photovoltaic = pd.read_csv('src/simulation_data/pv/pv_' + str(standort)+'_a_2015_1min.csv', header=0, index_col=0)
+    TRJ=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv').head(15)# average year
+    weather=pd.read_csv('src/assets/data/weather/weather_'+str(standort)+'_a_2015_1min.csv') 
+    photovoltaic = pd.read_csv('src/assets/data/photovoltaic/pv_' + str(standort)+'_a_2015_1min.csv', header=0, index_col=0)
     photovoltaic=photovoltaic*pv_kwp
-    P_el_hh=pd.read_csv('src/simulation_data/electrical_load/existing_house.csv')
-    P_tww_load=pd.read_csv('src/simulation_data/dhw_load/dhw_'+str(n_Personen)+'.csv',index_col=0)
+    P_el_hh=pd.read_csv('src/assets/data/electrical_loadprofiles/existing_house.csv')
+    P_tww_load=pd.read_csv('src/assets/data/thermal-loadprofiles/dhw_'+str(n_Personen)+'.csv',index_col=0)
     P_tww_load.index=weather.index
     #calc loads 
     eff_heiz=0.9                #average from DIN EN 12831 Tabelle 38
@@ -98,7 +98,7 @@ def calc_hp():
     elif Baujahr>2015:
         Heizgrenztemperatur=10
         gtz=TRJ.iloc[standort-1,12]
-        P_el_hh=pd.read_csv('src/simulation_data/electrical_load/low_energy_house.csv')
+        P_el_hh=pd.read_csv('src/assets/data/electrical_loadprofiles/low_energy_house.csv')
     else:
         Heizgrenztemperatur=12
         gtz=TRJ.iloc[standort-1,10]
@@ -429,5 +429,5 @@ def calc_hp():
             results_summary.loc[reihe, 'E_bd'] = np.minimum(0, BAT_P_bs).mean()*8.76*-1
         reihe+=1
     wp_model=wp_model.replace('/','')
-    results_summary.to_csv('src/simulation_data/simulations/'+str(standort)+'_'+ str(E_gas)+'_'+str(T_vorlauf)+'_'+str(n_Personen)+'_'+str(eff_tww)+'_'+str(Baujahr)+'_'+ wp_model+'_'+str(pv_kwp)+'_'+pv_orientation+'.csv',index=False)
+    results_summary.to_csv('src/output/simulations/'+str(standort)+'_'+ str(E_gas)+'_'+str(T_vorlauf)+'_'+str(n_Personen)+'_'+str(eff_tww)+'_'+str(Baujahr)+'_'+ wp_model+'_'+str(pv_kwp)+'_'+pv_orientation+'.csv',index=False)
     return results_summary

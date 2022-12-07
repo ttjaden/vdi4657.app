@@ -12,9 +12,9 @@ import plotly_express as px
 # Additional informations
 from datetime import datetime
 # Eigene Funktionen
-from functions.PLZtoWeatherRegion import getregion
-from functions.simulate import calc_pv
-from functions.simulate import calc_bat
+from utils.PLZtoWeatherRegion import getregion
+from utils.simulate import calc_pv
+from utils.simulate import calc_bat
 
 ##################################################
 # TODOs ##########################################
@@ -23,7 +23,7 @@ from functions.simulate import calc_bat
 # Startbild, falls noch nichts fertig parametriert werden
 
 # Dummy-Ergebnis-Dataframe
-df_sfh=pd.read_pickle('PIEG-Strom_Webtool/dummy.pkl')
+df_sfh=pd.read_pickle('src/assets/data/dummy.pkl')
 
 # App konfigurieren
 # Icons via Iconify: siehe ps://icon-sets.iconify.design
@@ -35,7 +35,7 @@ app = Dash(__name__,
           )
 
 # Übersetzungstabelle (noch nicht durchgängig genutzt)
-language=pd.read_csv('PIEG-Strom_Webtool/functions/translate.csv')
+language=pd.read_csv('src/utils/translate.csv')
 
 # PV-Größentabelle erstellen
 # TODO Umbau auf Callback mit Gebäudestrombedarf
@@ -423,17 +423,17 @@ def standorttoregion(standort,lang):
     State('last_triggered_building','data'))
 def get_p_el_hh(e_hh,building):
     if building=='efh':
-        p_el=pd.read_csv('PIEG-Strom_Webtool/functions/input_data/electical_loadprofiles/LP_W_EFH.csv')
+        p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_EFH.csv')
     elif building=='mfh':
         if e_hh>8000:
-            p_el=pd.read_csv('PIEG-Strom_Webtool/functions/input_data/electical_loadprofiles/LP_W_MFH_k.csv')
+            p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_MFH_k.csv')
 
         elif e_hh>15000:
-            p_el=pd.read_csv('PIEG-Strom_Webtool/functions/input_data/electical_loadprofiles/LP_W_MFH_m.csv')
+            p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_MFH_m.csv')
         elif e_hh>45000:
-            p_el=pd.read_csv('PIEG-Strom_Webtool/functions/input_data/electical_loadprofiles/LP_W_MFH_g.csv')
+            p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_MFH_g.csv')
     else:
-        p_el=pd.read_csv('PIEG-Strom_Webtool/functions/input_data/electical_loadprofiles/LP_G_G.csv')
+        p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_G_G.csv')
     return (p_el.iloc[:,1].values*e_hh/1000).tolist()
 
 @app.callback(
