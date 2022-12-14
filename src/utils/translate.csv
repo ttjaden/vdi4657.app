@@ -8,17 +8,17 @@ building_type_efh,Building type,Baustandard
 building_size,Building size in sqm,Wohnraum in qm
 usage,Consumption usage,Verbrauchskennzahlen
 inhabitants,Number of persons,Bewohneranzahl
-energy_cons,Electrical energy consumption in kWh,Stromverbrauch in kWh
+energy_cons,Electrical energy consumption,Stromverbrauch
 mfh_name,Apartment house,Mehrfamilienhaus
-industry_name,Commercial,Industrie
+industry_name,Others,Sonstige
 tab_info_1,"The PIEG-Strom Webtool serves as an aid for the design of battery storage systems. After entering various parameters, statements are made about the economic efficiency and the most effective storage size.",Das PIEG-Strom Webtool dient zur Hilfe bei der Auslegung von Batteriespeichern. Nach Eingabe verschiedener Parametern werden Aussagen über die Wirtschaftlichkeit und die effektivste Speichergröße getroffen.
-choose_building,Building selection:,Gebäudewahl:
-choose_technology,Technology selection:,Technologiewahl:
+choose_building,Building selection:,Gebäude:
+choose_technology,Technology:,Technologie:
 increase_autarky,Increase autarky,Autarkiegrad optimieren
 peak_shaving,Peak shaving,Lastspitzenkappung
 economics,Economics,Ökonomie
 pv,Photovoltaic,Fotovoltaik
-chp,Combined heat and power,Krafwärmekopplung
+chp,Combined heat and power,Kraft-Wärme-Kopplung
 hp,Heat pump,Wärmepumpe
 gas,Gas heater,Gasheizung
 bat,Battery,Batterie
