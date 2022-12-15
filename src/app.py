@@ -649,7 +649,7 @@ def scale_pv2(pv_slider2, pv2):
     Input('wohnfläche','value'),
     Input('building_type','value'),
     )
-def scale_pv2(choosen_hp,location,Area,building_type):
+def sizing_of_heatpump(choosen_hp,location,Area,building_type):
     if choosen_hp.startswith('Sole'):
         group_id=5
     elif choosen_hp.startswith('Luft'):
