@@ -13,8 +13,7 @@ import plotly_express as px
 from datetime import datetime
 # Eigene Funktionen
 from utils.PLZtoWeatherRegion import getregion
-from utils.simulate import calc_pv
-from utils.simulate import calc_bat
+import utils.simulate as sim
 
 ##################################################
 # TODOs ##########################################
@@ -336,8 +335,8 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                     dbc.Col('Gebäudetyp', md=3),
-                                    dbc.Col(dcc.Dropdown([1,2,3],id='building_type_efh'), md=5),
-                                    dbc.Col(html.Div(id='building_type_efh_value'), md=4),
+                                    dbc.Col(dcc.Dropdown(['Bestand, unsaniert','Bestand, saniert', 'Neubau, nach 2016'],id='building_type'), md=5),
+                                    dbc.Col(html.Div(id='building_type_value'), md=4),
                                 ],
                                 align='center',
                                 )
@@ -387,8 +386,8 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                     dbc.Col('Gebäudetyp', md=3),
-                                    dbc.Col(dcc.Dropdown([1,2,3],id='building_type_mfh'), md=5),
-                                    dbc.Col(html.Div(id='building_type_mfh_value'), md=4),
+                                    dbc.Col(dcc.Dropdown(['Bestand, unsaniert','Bestand, saniert', 'Neubau, nach 2016'],id='building_type'), md=5),
+                                    dbc.Col(html.Div(id='building_type_value'), md=4),
                                 ],
                                 align='center',
                                 )
@@ -405,8 +404,8 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='building_type_industry',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Dropdown(['office','Schule'],value='office',id='building_type_sonstige',persistence='local'), md=5),
-                                dbc.Col(html.Div(id='building_type_sonstige_value'), md=3),
+                                dbc.Col(dcc.Dropdown(['office','Schule'],value='office',id='building_type',persistence='local'), md=5),
+                                dbc.Col(html.Div(id='building_type'), md=3),
                                 ],
                             align='center',
                             ),
@@ -430,8 +429,8 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='building_type_industry',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Dropdown(['office','Schule'],value='office',id='building_type_sonstige',persistence='local'), md=5),
-                                dbc.Col(html.Div(id='building_type_sonstige_value'), md=3),
+                                dbc.Col(dcc.Dropdown(['office','Schule'],value='office',id='building_type',persistence='local'), md=5),
+                                dbc.Col(html.Div(id='building_type_value'), md=3),
                                 ],
                             align='center',
                             ),
@@ -487,7 +486,7 @@ def built_technology(n_solar,n_chp,n_hp,lang):
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='chp',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Dropdown([1,2,3], id='chp_technology',value=10,persistence='local'), md=5),
+                                dbc.Col(dcc.Dropdown([1,2], id='chp_technology',value=10,persistence='local'), md=5),
                                 dbc.Col(html.Div(id='chp_technology_value'), md=4),
                                 ],
                             align='center',
@@ -501,7 +500,7 @@ def built_technology(n_solar,n_chp,n_hp,lang):
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='hp',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Dropdown([1,2,3], id='hp_technology',value=10,persistence='local'), md=5),
+                                dbc.Col(dcc.Dropdown(['Luft/Wasser (mittl. Effizienz)','Sole/Wasser (mittl. Effizienz)'], id='hp_technology',value=10,persistence='local'), md=5),
                                 dbc.Col(html.Div(id='hp_technology_value'), md=4),
                                 ],
                             align='center',
@@ -616,7 +615,7 @@ def calc_pv_power1(location):
     tilt=35
     type='a'
     year=2015
-    pv1=calc_pv(trj=getregion(location)-1,year=year,type=type,tilt=tilt,orientation=orientation)
+    pv1=sim.calc_pv(trj=getregion(location)-1,year=year,type=type,tilt=tilt,orientation=orientation)
     return pv1
 @app.callback(
     Output('c_pv2', 'data'), 
@@ -626,7 +625,7 @@ def calc_pv_power2(location):
     tilt=35
     type='a'
     year=2015
-    pv2=calc_pv(trj=getregion(location)-1,year=year,type=type,tilt=tilt,orientation=orientation)
+    pv2=sim.calc_pv(trj=getregion(location)-1,year=year,type=type,tilt=tilt,orientation=orientation)
     return pv2
 @app.callback(
     Output('p_pv1', 'data'), 
@@ -642,6 +641,31 @@ def scale_pv1(pv_slider1, pv1):
 def scale_pv2(pv_slider2, pv2):
     pv2=np.array(pv2) * PV[pv_slider2]
     return list(pv2)
+
+@app.callback(
+    Output('hp_technology_value', 'children'), 
+    Input('hp_technology','value'),
+    Input('standort','value'),
+    Input('wohnfläche','value'),
+    Input('building_type','value'),
+    )
+def scale_pv2(choosen_hp,location,Area,building_type):
+    if choosen_hp.startswith('Sole'):
+        group_id=5
+    elif choosen_hp.startswith('Luft'):
+        group_id=1
+    buildings = pd.DataFrame([[0.6, 12, 35, 28, 1.1], [1.2, 15, 55, 45, 1.3]],
+                            columns=['Q_sp', 'T_limit', 'T_vl_max',
+                                    'T_rl_max', 'f_hs_exp'],
+                            index=['new', 'old'])
+    if building_type.endswith('unsaniert'):
+        building=buildings.loc['old',:]
+    elif building_type.startswith('Bestand'):
+        building=buildings.loc['old',:]
+    elif building_type.startswith('Neubau'):
+        building=buildings.loc['new',:]
+    results_timeseries, P_th_max, t_in, t_out = sim.sim_hp(getregion(location),Area,building,group_id)
+    return (html.Div(str(round(P_th_max/1000,1))+' kWth'),html.Div('(' + str(t_in)+ '° / ' + str(t_out) + '°)'))
 
 
 @app.callback(
@@ -735,7 +759,7 @@ def calc_bat_results(p_el_hh,pv1,pv2,n_pv1,p_el):
         return None, None , None
     E_el_MWH = np.array(p_el).mean()*8.76/1000
     E_pv_kwp = df['p_PV'].mean()*8.76/1000
-    batteries=calc_bat(df, round(np.minimum(E_el_MWH*1.5,E_pv_kwp*1.5),1))
+    batteries=sim.calc_bat(df, round(np.minimum(E_el_MWH*1.5,E_pv_kwp*1.5),1))
     return batteries.to_dict(),batteries['E_gs'].values.tolist(),batteries['E_gf'].values.tolist()
 
 @app.callback(
