@@ -377,9 +377,9 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                                 ),
                             dbc.Row(
                                 [
-                                    dbc.Col('Wohnfläche', md=3),
-                                    dbc.Col(dcc.Slider(min=2,max=15,step=1,value=12,marks=None,id='wohneinheiten',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
-                                    dbc.Col(html.Div(id='wohneinheiten_value'), md=4),
+                                    dbc.Col('Wohneinheiten', md=3),
+                                    dbc.Col(dcc.Slider(min=2,max=15,step=1,value=12,marks=None,id='wohnfläche',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
+                                    dbc.Col(html.Div(id='wohnfläche_value'), md=4),
                                 ],
                                 align='center',
                                 ),
@@ -576,21 +576,7 @@ def change_gas_style(n_clicks):
         return {'background-color': '#212529','color': 'white',}
     else:
         return {'background-color': 'white','color': 'black'}
-"""@app.callback(
-    Output('n_hp', 'style'), 
-    Output('n_hp', 'n_clicks'), 
-    Input('n_hp', 'n_clicks'),
-    State('n_chp', 'style'),
-    State('n_gas', 'style'),
-    )
-def change_hp_style(n_clicks,n_chp,n_gas):
-    if (n_clicks%2)==1:
-        return {'background-color': '#212529','color': 'white',},1
-    else:
-        if None!=n_chp:
-            if (n_chp['color']=='white')&(n_gas['color']=='black'):
-                return {'background-color': '#212529','color': 'white',},1
-        return {'background-color': 'white','color': 'black'},2"""
+
 @app.callback(
     Output('n_chp', 'style'),
     Output('n_chp','n_clicks'), 
@@ -598,8 +584,11 @@ def change_hp_style(n_clicks,n_chp,n_gas):
     Output('n_hp','n_clicks'), 
     Input('n_chp', 'n_clicks'),
     Input('n_hp','n_clicks'), 
+    Input('include_heating','value'),
     )
-def change_chp_style(n_chp,n_hp):
+def change_chp_style(n_chp,n_hp,heating):
+    if (heating is None) or (len(heating)==0):
+        return {'background-color': 'white','color': 'grey'},0,{'background-color': 'white','color': 'grey'},0
     if ((n_hp%2==0) and (n_chp%2==0)) or (n_chp>=3) or (n_hp>=3):
         return {'background-color': 'white','color': 'black'},0,{'background-color': 'white','color': 'black'},0
     elif (n_chp%2)==1:
@@ -650,6 +639,8 @@ def scale_pv2(pv_slider2, pv2):
     Input('building_type','value'),
     )
 def sizing_of_heatpump(choosen_hp,location,Area,building_type):
+    if Area<50: # in that case its the amount of WE in a MFH
+        Area=Area*80 # (80sqm/WE)
     if choosen_hp.startswith('Sole'):
         group_id=5
     elif choosen_hp.startswith('Luft'):
@@ -679,13 +670,9 @@ def print_stromverbrauch_value(stromverbrauch):
     Input('wohnfläche', 'value'),
     )
 def print_wohnfläche_value(wohnfläche):
+    if wohnfläche<50:
+        return html.Div(str(wohnfläche)+ ' WE')
     return html.Div(str(wohnfläche)+ ' m²')
-@app.callback(
-    Output('wohneinheiten_value', 'children'),
-    Input('wohneinheiten', 'value'),
-    )
-def print_wohneinheiten_value(wohneinheiten):
-    return html.Div(str(wohneinheiten)+ ' WE')
 @app.callback(
     Output('normheizlast_value', 'children'),
     Input('normheizlast', 'value'),
