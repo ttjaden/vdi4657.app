@@ -113,10 +113,7 @@ def sim_hp(location, Area, building, group_id, t_room=20):
     else:
     # HS.calc_brine_temp(locations['T_min_ref'][index])
         t_in = 0
-    if building.name == 'new':
-        t_out = 35
-    else:
-        t_out = 55
+    t_out=building['T_vl_max']
     para = hpl.get_parameters(model='Generic',
                             group_id=group_id,
                             t_in=t_in,

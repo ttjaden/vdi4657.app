@@ -61,22 +61,28 @@ pv_dict[len(PV)-1]=str(i)
 # Header #########################################
 
 button_expert = dbc.Button(
-    html.Div(id='button_expert_content',children=[DashIconify(icon='bi:toggle-off',width=100,height=30,),'Expert']),
+    html.Div(id='button_expert_content',children=[DashIconify(icon='bi:toggle-off',width=50,height=30,),'Expert']),
     id='button_expert',
     outline=True,
-    color='info',
+    color='light',
     style={'textTransform': 'none'},
 )
 
 button_language = dbc.Button(
-    html.Div(id='button_language_content',children=[DashIconify(icon='emojione:flag-for-germany',width=30,height=30,),'Sprache']),
+    html.Div(id='button_language_content',children=[DashIconify(icon='emojione:flag-for-germany',width=50,height=30,),'Sprache']),
     outline=True,
-    color='primary',
+    color='light',
     id='button_language',
     style={'text-transform': 'none'},
     value='ger'
 )
-
+button_info = dbc.Button(
+    html.Div(id='button_info_content',children=[DashIconify(icon='ph:info',width=50,height=30,),'Info']),
+    outline=True,
+    color='light',
+    id='button_info',
+    style={'text-transform': 'none'}
+)
 header=dbc.Navbar(
     dbc.Container(
         [
@@ -98,6 +104,10 @@ header=dbc.Navbar(
                 ],
                 align='center',
             ),
+            dcc.ConfirmDialog(
+                id='info_dialog',
+                message='Danger danger! Are you sure you want to continue?',
+                ),
             dbc.Row(
                 [
                     dbc.Col(
@@ -108,6 +118,7 @@ header=dbc.Navbar(
                                     [
                                         dbc.NavItem(button_expert,style={'width':'150'}),
                                         dbc.NavItem(button_language,style={'width':'150'}),
+                                        dbc.NavItem(button_info,style={'width':'150'}),
                                     ],
                                     navbar=True,
                                 ),
@@ -151,6 +162,7 @@ content = html.Div(
                     dcc.Store(id='c_pv2'),
                     dcc.Store(id='p_pv1'),
                     dcc.Store(id='p_pv2'),
+                    dcc.Store(id='power_heat_pump_W'),
                     dcc.Store(id='batteries'),
                     dcc.Store(id='E_gf'),
                     dcc.Store(id='E_gs'),
@@ -182,7 +194,7 @@ def change_language(n_language):
     else:
         lang='eng'
         flag='emojione:flag-for-united-kingdom'
-    return ([DashIconify(icon=flag, width=30,height=30,),language.loc[language['name']=='lang',lang].iloc[0]],
+    return ([DashIconify(icon=flag, width=50,height=30,),language.loc[language['name']=='lang',lang].iloc[0]],
                 lang,
                 [html.H4('PIEG-Strom Webtool'),html.P(language.loc[language['name']=='header_p',lang].iloc[0])],
                 [dcc.Tab(label='Anwendung',value='tab_info',children=[html.Div(children=[
@@ -262,6 +274,15 @@ def render_content(tab,LSK,lang):
             ])
     else:
         return html.Div()
+
+@app.callback(
+    Output('info_dialog', 'displayed'),
+    Input('button_info','n_clicks'),
+)
+def display_info(n_clicks_info):
+    if n_clicks_info is None:
+        raise PreventUpdate
+    return True
 
 # build parameter container
 # Gebäudeauswahl
@@ -581,7 +602,7 @@ def change_gas_style(n_clicks):
     Output('n_chp', 'style'),
     Output('n_chp','n_clicks'), 
     Output('n_hp','style'), 
-    Output('n_hp','n_clicks'), 
+    Output('n_hp','n_clicks'),
     Input('n_chp', 'n_clicks'),
     Input('n_hp','n_clicks'), 
     Input('include_heating','value'),
@@ -633,6 +654,7 @@ def scale_pv2(pv_slider2, pv2):
 
 @app.callback(
     Output('hp_technology_value', 'children'), 
+    Output('power_heat_pump_W', 'data'),
     Input('hp_technology','value'),
     Input('standort','value'),
     Input('wohnfläche','value'),
@@ -645,18 +667,20 @@ def sizing_of_heatpump(choosen_hp,location,Area,building_type):
         group_id=5
     elif choosen_hp.startswith('Luft'):
         group_id=1
-    buildings = pd.DataFrame([[0.6, 12, 35, 28, 1.1], [1.2, 15, 55, 45, 1.3]],
+    buildings = pd.DataFrame([[0.6, 12, 35, 28, 1.1],[0.9, 14, 45, 37, 1.2], [1.2, 15, 55, 45, 1.3]],
                             columns=['Q_sp', 'T_limit', 'T_vl_max',
                                     'T_rl_max', 'f_hs_exp'],
-                            index=['new', 'old'])
+                            index=['new','middle', 'old'])
     if building_type.endswith('unsaniert'):
         building=buildings.loc['old',:]
     elif building_type.startswith('Bestand'):
-        building=buildings.loc['old',:]
+        building=buildings.loc['middle',:]
     elif building_type.startswith('Neubau'):
         building=buildings.loc['new',:]
     results_timeseries, P_th_max, t_in, t_out = sim.sim_hp(getregion(location),Area,building,group_id)
-    return (html.Div(str(round(P_th_max/1000,1))+' kWth'),html.Div('(' + str(t_in)+ '° / ' + str(t_out) + '°)'))
+    electical_energy_heat_pump_kWh = (results_timeseries[['P_hp_h_el', 'P_Heizstab_h', 'P_hp_tww_el', 'P_Heizstab_tww']].mean()*8.76).sum()
+    electical_power_heat_pump_W=(results_timeseries['P_hp_h_el']+results_timeseries['P_Heizstab_h']+results_timeseries['P_hp_tww_el']+results_timeseries['P_Heizstab_tww']).values.tolist()
+    return (html.Div(str(round(P_th_max/1000,1))+' kWth'),html.Div('(' + str(t_in)+ '° / ' + str(t_out) + '°)'),html.Div(str(int(electical_energy_heat_pump_kWh))+' kWh Verbauch')), electical_power_heat_pump_W
 
 
 @app.callback(
@@ -707,9 +731,9 @@ def expertmode(n1):
     if n1 is None:
         raise PreventUpdate
     if n1%2==1:
-        return [DashIconify(icon='bi:toggle-on',width=100,height=30,),'Expert']
+        return [DashIconify(icon='bi:toggle-on',width=50,height=30,),'Expert']
     else: 
-        return [DashIconify(icon='bi:toggle-off',width=100,height=30,),'Expert']
+        return [DashIconify(icon='bi:toggle-off',width=50,height=30,),'Expert']
 
 @app.callback(
     Output('navbar-collapse', 'is_open'),
@@ -728,19 +752,25 @@ def toggle_navbar_collapse(n, is_open):
     Output('E_gs', 'data'),
     Output('E_gf', 'data'),
     Input('p_el_hh','data'), 
+    Input('power_heat_pump_W','data'), 
     Input('p_pv1', 'data'),
     Input('p_pv2', 'data'),
     Input('n_solar', 'n_clicks'),
-    State('p_el_hh','data'),)
-def calc_bat_results(p_el_hh,pv1,pv2,n_pv1,p_el):
+    State('p_el_hh','data'),
+    State('n_hp','style'),
+    )
+def calc_bat_results(p_el_hh,power_heat_pump_W,pv1,pv2,n_pv1,p_el,n_hp_style):
     df=pd.DataFrame()
-    year=datetime.now().date().year
-    df.index=pd.date_range(start=str(year)+'-01-01', end=str(year+1)+'-01-01', periods=35041)[0:35040]
+    df.index=pd.date_range(start='2022-01-01', end='2023-01-01', periods=35041)[0:35040]
     if (pv1 is None) or ((n_pv1%2)!=1):
         pv1=np.zeros(35040).tolist()
     if (pv2 is None) or ((n_pv2%2)!=1):
         pv2=np.zeros(35040).tolist()
+    if (power_heat_pump_W is None) or n_hp_style['color']!='white':
+        power_heat_pump_W=np.zeros(35040).tolist()
     df['p_el_hh']=p_el_hh
+    df['p_el_hp']=power_heat_pump_W
+    df['p_el_hh']=df['p_el_hh']+df['p_el_hp']
     df['p_PV']=np.array(pv1)+np.array(pv2)
     if df['p_PV'].mean()==0:
         return None, None , None
