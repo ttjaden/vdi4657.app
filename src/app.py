@@ -32,7 +32,7 @@ app = Dash(__name__,
 
 # Übersetzungstabelle (noch nicht durchgängig genutzt)
 language=pd.read_csv('src/utils/translate.csv')
-
+weather_summary=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
 # PV-Größentabelle erstellen
 # TODO Umbau auf Callback mit Gebäudestrombedarf
 PV=[]
@@ -157,6 +157,8 @@ content = html.Div(
                     ),
                     dcc.Store(id='last_triggered_building'),
                     dcc.Store(id='p_el_hh'),
+                    dcc.Store(id='p_th_load'),
+                    dcc.Store(id='building'),
                     dcc.Store(id='pv_all'),
                     dcc.Store(id='c_pv1'),
                     dcc.Store(id='c_pv2'),
@@ -199,7 +201,12 @@ def change_language(n_language):
                 [html.H4('PIEG-Strom Webtool'),html.P(language.loc[language['name']=='header_p',lang].iloc[0])],
                 [dcc.Tab(label='Anwendung',value='tab_info',children=[html.Div(children=[
                                     html.H4(children='Was kann PIEG Strom Webtool?'),
-                                    html.Div(children=language.loc[language['name']=='tab_info_1',lang].iloc[0]),
+                                    html.Div('Dies ist ein ergänzendes Webtool zur'),
+                                    html.A('"VDI 4657 Blatt 3 - Planung und Integration von Energiespeichern in Gebäudeenergiesystemen - Elektrische Stromspeicher (ESS)"',href='https://www.vdi.de/richtlinien/details/vdi-4657-blatt-3-planung-und-integration-von-energiespeichern-in-gebaeudeenergiesystemen-elektrische-stromspeicher-ess'),
+                                    html.Br(),
+                                    html.Br(),
+                                    html.Div('Auswahl des Anwendungsfalls: '),
+                                    html.Br(),
                                     html.Button(html.Div([DashIconify(icon='grommet-icons:optimize',width=100,height=100,),html.Br(),language.loc[language['name']=='increase_autarky',lang].iloc[0]]),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
                                     html.Button(html.Div([DashIconify(icon='grommet-icons:time',width=100,height=100,),html.Br(),language.loc[language['name']=='peak_shaving',lang].iloc[0]]),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
                                 ])]),
@@ -214,7 +221,7 @@ def change_language(n_language):
     State('LSK_click','n_clicks'),
     Input('button_language','value'),
 )
-def render_content(tab,LSK,lang):
+def render_tab_content(tab,LSK,lang):
     if tab=='tab_parameter':
         if LSK==0:
             return html.Div(className='para',id='para',children=[
@@ -558,7 +565,13 @@ def next_Tab(autarkie,LSK,tab):
     Input('standort', 'value'),
     Input('button_language','value'))
 def standorttoregion(standort,lang):
-    return html.Div(language.loc[language['name']==str(getregion(standort)),lang].iloc[0])
+    region=str(getregion(standort))
+    weather=pd.read_csv('src/assets/data/weather/TRY_'+region+'_a_2015_15min.csv')
+    average_temperature_C=weather['temperature [degC]'].mean()
+    global_irradiance_kWh_m2a=weather['synthetic global irradiance [W/m^2]'].mean()*8.76
+    return html.Div(children=['DWD Region: '+language.loc[language['name']==str(getregion(standort)),lang].iloc[0],html.Br(),
+                    'Durchschnittstemperatur: ' + str(round(average_temperature_C ,1)) + ' °C',html.Br(),
+                    'Globalstrahlung: '+ str(int(global_irradiance_kWh_m2a)) + ' kWh/(m²a)'])
 
 @app.callback(
     Output('p_el_hh', 'data'),
@@ -592,7 +605,7 @@ def change_solar_style(n_clicks):
     Output('n_solar2', 'style'), 
     Input('n_solar2', 'n_clicks'),
     )
-def change_gas_style(n_clicks):
+def change_solar2_style(n_clicks):
     if (n_clicks%2)==1:
         return {'background-color': '#212529','color': 'white',}
     else:
@@ -607,7 +620,7 @@ def change_gas_style(n_clicks):
     Input('n_hp','n_clicks'), 
     Input('include_heating','value'),
     )
-def change_chp_style(n_chp,n_hp,heating):
+def change_hp_chp_style(n_chp,n_hp,heating):
     if (heating is None) or (len(heating)==0):
         return {'background-color': 'white','color': 'grey'},0,{'background-color': 'white','color': 'grey'},0
     if ((n_hp%2==0) and (n_chp%2==0)) or (n_chp>=3) or (n_hp>=3):
@@ -653,20 +666,20 @@ def scale_pv2(pv_slider2, pv2):
     return list(pv2)
 
 @app.callback(
-    Output('hp_technology_value', 'children'), 
-    Output('power_heat_pump_W', 'data'),
-    Input('hp_technology','value'),
+    Output('p_th_load', 'data'), 
+    Output('building', 'data'), 
+    Input('include_heating','value'),
     Input('standort','value'),
     Input('wohnfläche','value'),
-    Input('building_type','value'),
-    )
-def sizing_of_heatpump(choosen_hp,location,Area,building_type):
+    Input('building_type','value'),)
+def calc_heating_timeseries(heating,location,Area,building_type):
+    print(heating,location,Area,building_type)
+    if (heating is None) or (location is None) or (Area is None) or(building_type is None):
+        return None, None
+    inhabitants = round(Area/50,0)
     if Area<50: # in that case its the amount of WE in a MFH
+        inhabitants=Area*3
         Area=Area*80 # (80sqm/WE)
-    if choosen_hp.startswith('Sole'):
-        group_id=5
-    elif choosen_hp.startswith('Luft'):
-        group_id=1
     buildings = pd.DataFrame([[0.6, 12, 35, 28, 1.1],[0.9, 14, 45, 37, 1.2], [1.2, 15, 55, 45, 1.3]],
                             columns=['Q_sp', 'T_limit', 'T_vl_max',
                                     'T_rl_max', 'f_hs_exp'],
@@ -677,10 +690,49 @@ def sizing_of_heatpump(choosen_hp,location,Area,building_type):
         building=buildings.loc['middle',:]
     elif building_type.startswith('Neubau'):
         building=buildings.loc['new',:]
-    results_timeseries, P_th_max, t_in, t_out = sim.sim_hp(getregion(location),Area,building,group_id)
+    building=building.to_dict()
+    p_th_heating=[]
+    t_room = 20
+    region=getregion(location)
+    #get min temp. for location
+    Heizlast=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
+    building['T_min_ref'] = Heizlast['T_min_ref'][region-1]
+    building['Area']=Area
+    building['location']=str(region)
+
+    #calc load for heating
+    weather = pd.read_csv('src/assets/data/weather/TRY_'+str(region)+'_a_2015_15min.csv', header=0, index_col=0)
+    for t in weather.index:
+    # gleitender Tagesmittelwert und neue Berechnung der Heizlast
+        temp = weather.at[t, 'temperature 24h [degC]']
+        if temp < building['T_limit']:
+            p_th_heating.append((t_room - temp) * building['Q_sp'] * Area)
+        else:
+            p_th_heating.append(0)
+
+    #get DHW load
+    load = pd.read_csv('src/assets/data/thermal_loadprofiles/dhw_'+str(int(inhabitants)) +'_15min.csv', header=0, index_col=0)
+    load['p_th_heating [W]']=p_th_heating
+    load_dict=load[['load [W]','p_th_heating [W]']].to_dict()
+    return load_dict, building
+
+@app.callback(
+    Output('hp_technology_value', 'children'), 
+    Output('power_heat_pump_W', 'data'),
+    Output('cost_result', 'children'),
+    Input('building','data'),
+    Input('p_th_load','data'),
+    Input('hp_technology','value'),
+    )
+def sizing_of_heatpump(building, p_th_load,choosen_hp):
+    if choosen_hp.startswith('Sole'):
+        group_id=5
+    elif choosen_hp.startswith('Luft'):
+        group_id=1
+    results_timeseries, P_th_max, t_in, t_out = sim.sim_hp(building,p_th_load,group_id)
     electical_energy_heat_pump_kWh = (results_timeseries[['P_hp_h_el', 'P_Heizstab_h', 'P_hp_tww_el', 'P_Heizstab_tww']].mean()*8.76).sum()
     electical_power_heat_pump_W=(results_timeseries['P_hp_h_el']+results_timeseries['P_Heizstab_h']+results_timeseries['P_hp_tww_el']+results_timeseries['P_Heizstab_tww']).values.tolist()
-    return (html.Div(str(round(P_th_max/1000,1))+' kWth'),html.Div('(' + str(t_in)+ '° / ' + str(t_out) + '°)'),html.Div(str(int(electical_energy_heat_pump_kWh))+' kWh Verbauch')), electical_power_heat_pump_W
+    return (html.Div(str(round(P_th_max/1000,1))+' kWth'),html.Div('(' + str(t_in)+ '° / ' + str(t_out) + '°)'),html.Div(str(int(electical_energy_heat_pump_kWh))+' kWh Verbauch')), electical_power_heat_pump_W,dcc.Graph(figure=px.line(results_timeseries))
 
 
 @app.callback(
@@ -798,15 +850,34 @@ def bat_results(batteries,tab,results_id):
     if (batteries is None) or (tab!='tab_parameter'):
         return html.Div()
     batteries=pd.DataFrame.from_dict(batteries)
+    batteries['A0']=batteries['A'].values[0]
+    batteries['E0']=batteries['E'].values[0]
+    batteries['A+']=batteries['A']-batteries['A0']
+    batteries['E+']=batteries['E']-batteries['E0']
     if results_id=='Autarkiegrad':
-        fig=px.line(data_frame=batteries,x='e_bat',y='A',title='Autarkiegrad with different battery sizes')
+        fig=px.bar(data_frame=batteries,x='e_bat',y=['A0','A+'],
+            color_discrete_map={'A0': '#fecda4', 'A+' : '#90da9d'},
+            labels={"e_bat": "nutzbare Speicherkapazität in kWh",
+                    "value": "%",
+                    }
+            )
     elif results_id=='Eigenverbrauchsanteil':
-        fig=px.line(data_frame=batteries,x='e_bat',y='E',title='Eigenverbrauchsanteil with different battery sizes')
+        fig=px.bar(data_frame=batteries,x='e_bat',y=['E0','E+'],
+            color_discrete_map={'E0': '#fecda4', 'E+' : '#90da9d'},
+            labels={"e_bat": "nutzbare Speicherkapazität in kWh",
+                    "value": "%",
+                    }
+            )
     elif results_id=='Energiebilanz':
-        fig=px.line(data_frame=batteries,x='e_bat',y=['A','E'],title='Self-sufficiency and Self-consumption with different battery sizes')
+        fig=px.bar(data_frame=batteries,x='e_bat',y=['E_gf','E_gs'],
+            color_discrete_map={'E_gf': '#fae0a4', 'E_gs' : '#a7adb4'},
+            labels={"e_bat": "nutzbare Speicherkapazität in kWh",
+                    "value": "Netzeinspeisung/Netzbezug in kWh/a",
+                    }
+            )
     return dcc.Graph(figure=fig)
 
-@app.callback(
+"""@app.callback(
     Output('cost_result', 'children'),
     State('E_gs', 'data'),
     State('E_gf', 'data'),
@@ -831,5 +902,6 @@ def economic_results_graph(E_gs,E_gf,electricity_price_buy,electricity_price_sel
     if (electricity_price_buy is None) or (E_gs is None) or (tab!='tab_econmics'): 
         return html.Div()
     return dcc.Graph(figure=px.line(y=np.array(E_gs)*(-electricity_price_buy/100)-np.array(E_gf)*electricity_price_sell/100,title='Jahreskosten über Batteriegröße'))
+"""
 if __name__ == '__main__':
     app.run_server(debug=True)

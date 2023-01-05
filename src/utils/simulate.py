@@ -90,10 +90,15 @@ class HeatStorage():
         T_sp=T_sp + (1/(self.V_sp*self.c_w))*(P_hp - P_ld - P_loss*(T_sp-self.T_amb))*dt
         return T_sp
 
-def sim_hp(location, Area, building, group_id, t_room=20):
+def sim_hp(building, p_th_load, group_id, t_room=20):
+    #read load and weather
+    weather = pd.read_csv('src/assets/data/weather/TRY_'+building['location']+'_a_2015_15min.csv', header=0, index_col=0)
+    p_th_load=pd.DataFrame(p_th_load)
+    P_th_tww = p_th_load['load [W]']
+    P_th_h = p_th_load['p_th_heating [W]']
+    
     # Feste Parameter
     P_tww = 1000        # Heizlast-Aufschlag für Trinkwarmwasser in W
-    E_th_tww = 1875     # Wärmebedarf Trinkwarmwasser in kWh/a
     dt = 900            # Zeitschrittweite in s
     T_hyst = 3          # Hysterese-Temperatur in thermischen Speichern
     # Wärmespeicher
@@ -101,9 +106,8 @@ def sim_hp(location, Area, building, group_id, t_room=20):
     HeatStorage_tww = HeatStorage(Volume=300, ambient_temperature=15)  # TWW-Speicher
 
     # Gebäude-Klassen
-    Heizlast=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
-    P_th_max=(t_room - Heizlast['T_min_ref'][location-1]) * building['Q_sp'] * Area + P_tww
-    HS = hpl.HeatingSystem(t_outside_min=Heizlast['T_min_ref'][location-1],
+    P_th_max=(t_room - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
+    HS = hpl.HeatingSystem(t_outside_min=building['T_min_ref'],
                                             t_inside_set=t_room,
                                             t_hs_set=[building['T_vl_max'],
                                                     building['T_rl_max']],
@@ -120,15 +124,8 @@ def sim_hp(location, Area, building, group_id, t_room=20):
                             t_out=t_out,
                             p_th=P_th_max)
     HeatPump = hpl.HeatPump(para)
-    load_building=[]
-    weather = pd.read_csv('src/assets/data/weather/TRY_'+str(location)+'_a_2015_15min.csv', header=0, index_col=0)
-    for t in weather.index:
-    # gleitender Tagesmittelwert und neue Berechnung der Heizlast
-        temp = weather.at[t, 'temperature 24h [degC]']
-        if temp < building['T_limit']:
-            load_building.append((t_room - temp) * building['Q_sp'] * Area)
-        else:
-            load_building.append(0)
+    
+
     # Simulations-Schleife
     # Temperatur beim Start in °C
     T_sp_h = building['T_vl_max']
@@ -161,7 +158,6 @@ def sim_hp(location, Area, building, group_id, t_room=20):
     COP_tww = []
     T_HP_in = []
     T_AMB_avg_24h = []
-
     for t in weather.index:
         # Soll-Temperaturen
         T_sp_tww_set = 47
@@ -172,10 +168,10 @@ def sim_hp(location, Area, building, group_id, t_room=20):
         T_sp_h_set = T_vl
 
         # Lasten
-        P_load_tww_th = 0
-        P_load_h_th = load_building[i]
+        P_load_tww_th = P_th_tww[i]
+        P_load_h_th = P_th_h[i]
         if P_load_h_th > 0 or P_load_tww_th > 0:
-            heizlänge = heizlänge+1/60
+            heizlänge = heizlänge+dt
         # HP inflow Temperatur berechnen
         T_hp_brine = HS.calc_brine_temp(
             weather.at[t, 'temperature 24h [degC]'])
