@@ -156,6 +156,9 @@ content = html.Div(
                     ],align='top',
                     ),
                     dcc.Store(id='last_triggered_building'),
+                    dcc.Store(id='n_clicks_pv'),
+                    dcc.Store(id='n_clicks_chp'),
+                    dcc.Store(id='n_clicks_hp'),
                     dcc.Store(id='p_el_hh'),
                     dcc.Store(id='p_th_load'),
                     dcc.Store(id='building'),
@@ -220,10 +223,19 @@ def change_language(n_language):
     Input('tabs', 'value'),
     State('LSK_click','n_clicks'),
     Input('button_language','value'),
+    State('n_clicks_pv','data'),
+    State('n_clicks_chp','data'),
+    State('n_clicks_hp','data'),
 )
-def render_tab_content(tab,LSK,lang):
+def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
     if tab=='tab_parameter':
         if LSK==0:
+            if n_clicks_solar is None:
+                n_clicks_solar=0
+            if n_clicks_chp is None:
+                n_clicks_chp=0
+            if n_clicks_hp is None:
+                n_clicks_hp=0
             return html.Div(className='para',id='para',children=[
                 html.Br(),
                 dbc.Container(
@@ -249,7 +261,7 @@ def render_tab_content(tab,LSK,lang):
                         dbc.Row(
                             [
                             dbc.Col(html.H3(language.loc[language['name']=='choose_building',lang].iloc[0]), md=4),
-                            dbc.Col(dcc.Checklist(options={'True': 'Heizen und Warmwasser berücksichtigen?'},id='include_heating'), md=8),
+                            dbc.Col(dcc.Checklist(options={'True': 'Heizen und Warmwasser berücksichtigen?'},id='include_heating',persistence='local'), md=8),
                             ],
                         align='center',
                         ),
@@ -265,9 +277,9 @@ def render_tab_content(tab,LSK,lang):
                 html.Br(),
                 html.Div(html.H3(language.loc[language['name']=='efh_name',lang].iloc[0])),
                 html.Div(
-                    html.Div(children=[html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'20vh'}),id='n_solar',n_clicks=0),
-                    html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'20vh'}),id='n_chp',n_clicks=0),
-                    html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'20vh'}),id='n_hp',n_clicks=0),
+                    html.Div(children=[html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'20vh'}),id='n_solar',n_clicks=n_clicks_solar),
+                    html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'20vh'}),id='n_chp',n_clicks=n_clicks_chp),
+                    html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'20vh'}),id='n_hp',n_clicks=n_clicks_hp),
                     html.Div(id='technology')])
                 ),])
         else:
@@ -363,7 +375,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                     dbc.Col('Gebäudetyp', md=3),
-                                    dbc.Col(dcc.Dropdown(['Bestand, unsaniert','Bestand, saniert', 'Neubau, nach 2016'],id='building_type'), md=5),
+                                    dbc.Col(dcc.Dropdown(['Bestand, unsaniert','Bestand, saniert', 'Neubau, nach 2016'],id='building_type',persistence='local'), md=5),
                                     dbc.Col(html.Div(id='building_type_value'), md=4),
                                 ],
                                 align='center',
@@ -381,7 +393,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Slider(min=8000,max=74000,step=2000,value=16000,marks=None,id='stromverbrauch',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
+                                dbc.Col(dcc.Slider(min=5000,max=100000,step=5000,value=15000,marks=None,id='stromverbrauch',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
                                 dbc.Col(html.Div(id='stromverbrauch_value'), md=4),
                                 ],
                             align='center',
@@ -398,7 +410,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                     dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], md=3),
-                                    dbc.Col(dcc.Slider(min=8000,max=74000,step=2000,value=16000,marks=None,id='stromverbrauch',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
+                                    dbc.Col(dcc.Slider(min=5000,max=100000,step=5000,value=15000,marks=None,id='stromverbrauch',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
                                     dbc.Col(html.Div(id='stromverbrauch_value'), md=4),
                                 ],
                                 align='center',
@@ -406,7 +418,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                     dbc.Col('Wohneinheiten', md=3),
-                                    dbc.Col(dcc.Slider(min=2,max=15,step=1,value=12,marks=None,id='wohnfläche',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
+                                    dbc.Col(dcc.Slider(min=2,max=49,step=1,value=12,marks=None,id='wohnfläche',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
                                     dbc.Col(html.Div(id='wohnfläche_value'), md=4),
                                 ],
                                 align='center',
@@ -414,7 +426,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                     dbc.Col('Gebäudetyp', md=3),
-                                    dbc.Col(dcc.Dropdown(['Bestand, unsaniert','Bestand, saniert', 'Neubau, nach 2016'],id='building_type'), md=5),
+                                    dbc.Col(dcc.Dropdown(['Bestand, unsaniert','Bestand, saniert', 'Neubau, nach 2016'],id='building_type',persistence='local'), md=5),
                                     dbc.Col(html.Div(id='building_type_value'), md=4),
                                 ],
                                 align='center',
@@ -440,7 +452,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Slider(min=8000,max=74000,step=2000,value=16000,marks=None,id='stromverbrauch',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
+                                dbc.Col(dcc.Slider(min=25000,max=500000,step=5000,value=50000,marks=None,id='stromverbrauch',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
                                 dbc.Col(html.Div(id='stromverbrauch_value'), md=3),
                                 ],
                             align='center',
@@ -465,7 +477,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Slider(min=8000,max=74000,step=2000,value=16000,marks=None,id='stromverbrauch',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
+                                dbc.Col(dcc.Slider(min=25000,max=500000,step=5000,value=50_000,marks=None,id='stromverbrauch',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
                                 dbc.Col(html.Div(id='stromverbrauch_value'), md=3),
                                 ],
                             align='center',
@@ -581,10 +593,10 @@ def get_p_el_hh(e_hh,building):
     if building=='efh':
         p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_EFH.csv')
     elif building=='mfh':
-        if e_hh>8000:
+        if e_hh<15000:
             p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_MFH_k.csv')
 
-        elif e_hh>15000:
+        elif e_hh<45000:
             p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_MFH_m.csv')
         elif e_hh>45000:
             p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_MFH_g.csv')
@@ -594,13 +606,14 @@ def get_p_el_hh(e_hh,building):
 
 @app.callback(
     Output('n_solar', 'style'),
+    Output('n_clicks_pv', 'data'),
     Input('n_solar', 'n_clicks'),
     )
 def change_solar_style(n_clicks):
     if (n_clicks%2)==1:
-        return {'background-color': '#212529','color': 'white',}
+        return {'background-color': '#212529','color': 'white',},1
     else:
-        return {'background-color': 'white','color': 'black'}
+        return {'background-color': 'white','color': 'black'},0
 @app.callback(
     Output('n_solar2', 'style'), 
     Input('n_solar2', 'n_clicks'),
@@ -616,19 +629,21 @@ def change_solar2_style(n_clicks):
     Output('n_chp','n_clicks'), 
     Output('n_hp','style'), 
     Output('n_hp','n_clicks'),
+    Output('n_clicks_chp','data'),
+    Output('n_clicks_hp','data'),
     Input('n_chp', 'n_clicks'),
     Input('n_hp','n_clicks'), 
     Input('include_heating','value'),
     )
 def change_hp_chp_style(n_chp,n_hp,heating):
     if (heating is None) or (len(heating)==0):
-        return {'background-color': 'white','color': 'grey'},0,{'background-color': 'white','color': 'grey'},0
+        return {'background-color': 'white','color': 'grey'},0,{'background-color': 'white','color': 'grey'},0,0,0
     if ((n_hp%2==0) and (n_chp%2==0)) or (n_chp>=3) or (n_hp>=3):
-        return {'background-color': 'white','color': 'black'},0,{'background-color': 'white','color': 'black'},0
+        return {'background-color': 'white','color': 'black'},0,{'background-color': 'white','color': 'black'},0,0,0
     elif (n_chp%2)==1:
-        return {'background-color': '#212529','color': 'white'},2,{'background-color': 'white','color': 'black'},0
+        return {'background-color': '#212529','color': 'white'},2,{'background-color': 'white','color': 'black'},0,1,0
     elif n_hp%2==1:
-        return {'background-color': 'white','color': 'black'},0,{'background-color': '#212529','color': 'white'},2
+        return {'background-color': 'white','color': 'black'},0,{'background-color': '#212529','color': 'white'},2,0,1
 
 @app.callback(
     Output('c_pv1', 'data'), 
@@ -673,17 +688,16 @@ def scale_pv2(pv_slider2, pv2):
     Input('wohnfläche','value'),
     Input('building_type','value'),)
 def calc_heating_timeseries(heating,location,Area,building_type):
-    print(heating,location,Area,building_type)
     if (heating is None) or (location is None) or (Area is None) or(building_type is None):
         return None, None
     inhabitants = round(Area/50,0)
     if Area<50: # in that case its the amount of WE in a MFH
-        inhabitants=Area*3
-        Area=Area*80 # (80sqm/WE)
-    buildings = pd.DataFrame([[0.6, 12, 35, 28, 1.1],[0.9, 14, 45, 37, 1.2], [1.2, 15, 55, 45, 1.3]],
+        inhabitants=Area*2
+        Area=Area*70 # (80sqm/WE)
+    buildings = pd.DataFrame([[0.8, 12, 35, 28, 1.1],[1.6, 14, 45, 35, 1.2], [2.6, 15, 55, 45, 1.3]],
                             columns=['Q_sp', 'T_limit', 'T_vl_max',
                                     'T_rl_max', 'f_hs_exp'],
-                            index=['new','middle', 'old'])
+                            index=['new','middle', 'old'])  
     if building_type.endswith('unsaniert'):
         building=buildings.loc['old',:]
     elif building_type.startswith('Bestand'):
@@ -698,6 +712,7 @@ def calc_heating_timeseries(heating,location,Area,building_type):
     Heizlast=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
     building['T_min_ref'] = Heizlast['T_min_ref'][region-1]
     building['Area']=Area
+    building['Inhabitants']=inhabitants
     building['location']=str(region)
 
     #calc load for heating
