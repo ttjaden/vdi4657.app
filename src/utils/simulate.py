@@ -96,17 +96,16 @@ def sim_hp(building, p_th_load, group_id, t_room=20):
     p_th_load=pd.DataFrame(p_th_load)
     P_th_tww = p_th_load['load [W]']
     P_th_h = p_th_load['p_th_heating [W]']
-    
     # Feste Parameter
-    P_tww = 1000        # Heizlast-Aufschlag für Trinkwarmwasser in W
+    P_tww = 1000 + 250*building['Inhabitants']# Heizlast-Aufschlag für Trinkwarmwasser in W 1000W + 200W/Person
     dt = 900            # Zeitschrittweite in s
     T_hyst = 3          # Hysterese-Temperatur in thermischen Speichern
     # Wärmespeicher
-    HeatStorage_h = HeatStorage(Volume=300, ambient_temperature=15)  # Heizungspuffer
-    HeatStorage_tww = HeatStorage(Volume=300, ambient_temperature=15)  # TWW-Speicher
+    HeatStorage_h = HeatStorage(Volume=100+50*building['Inhabitants'], ambient_temperature=15)  # Heizungspuffer 100l + 20l/kW
+    HeatStorage_tww = HeatStorage(Volume=200+50*building['Inhabitants'], ambient_temperature=15)  # TWW-Speicher 200l + 50 l/person
 
     # Gebäude-Klassen
-    P_th_max=(t_room - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
+    P_th_max=(22 - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
     HS = hpl.HeatingSystem(t_outside_min=building['T_min_ref'],
                                             t_inside_set=t_room,
                                             t_hs_set=[building['T_vl_max'],
@@ -249,7 +248,7 @@ def sim_hp(building, p_th_load, group_id, t_room=20):
                                                                     dt=dt,
                                                                     P_hp=P_hp_h_th,
                                                                     P_ld=P_load_h_th)
-        if T_sp_h < T_sp_h_set-5:
+        if T_sp_h < T_sp_h_set-7:
             E_heizstab_h_storage = E_heizstab_h_storage + P_th_max / 60
             T_sp_h = T_sp_h + \
                 (1/(HeatStorage_h.V_sp*HeatStorage_h.c_w)) * \
@@ -289,4 +288,5 @@ def sim_hp(building, p_th_load, group_id, t_room=20):
     results_timeseries['P_Heizstab_tww'] = P_HEIZSTAB_tww
     results_timeseries['COP_h'] = COP_h
     results_timeseries['COP_tww'] = COP_tww
+    print(results_timeseries['P_Heizstab_h'].mean()*8.76/(results_timeseries['P_Heizstab_h'].mean()*8.76+results_timeseries['P_hp_h_th'].mean()*8.76)*100)
     return results_timeseries , P_th_max, t_in, t_out
