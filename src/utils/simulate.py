@@ -7,7 +7,22 @@ from pvlib.pvsystem import PVSystem
 from pvlib.modelchain import ModelChain
 from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
 
+# Thermal storage
+class HeatStorage():
+    def __init__(self,
+                 Volume= 1000, #in l
+                 ambient_temperature = 15,
+                 c_w=4180):
+        self.V_sp=Volume
+        self.c_w=c_w
+        self.T_amb=ambient_temperature
+    def calculate_new_storage_temperature(self, T_sp, dt, P_hp, P_ld):
+        P_loss=0.0038 *self.V_sp + 0.85
+        T_sp=T_sp + (1/(self.V_sp*self.c_w))*(P_hp - P_ld - P_loss*(T_sp-self.T_amb))*dt
+        return T_sp
 
+# Calculation of photovoltaic ac power time series
+# normalized to 1 kWp with 1 kW inverter
 def calc_pv(trj, year, type, tilt, orientation):
     locations=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
     location = Location(locations['lat'][trj], locations['lon'][trj],'Europe/Berlin', locations['height'][trj], locations['station'][trj])
@@ -32,12 +47,20 @@ def calc_pv(trj, year, type, tilt, orientation):
         weather.index = pd.date_range(
             '2045-01-01 00:00', '2045-12-31 23:59', freq='15min', tz="Europe/Berlin")
     mc_sys_s.complete_irradiance(weather)
-    # PV Simulation durchführen und Zeitreihen abspeichern
+    # run calculation
     mc_sys_s.run_model(mc_sys_s.results.weather)
     return mc_sys_s.results.ac.values.tolist()
 
-def calc_bat(df, bat_size):
-    batteries = pd.DataFrame([['SG1', 0.0, 0.0],['SG1', bat_size/5,bat_size/10],['SG1', bat_size*2/5, bat_size*2/10],['SG1', bat_size*3/5, bat_size*3/10],['SG1', bat_size*4/5, bat_size*4/10],['SG1', bat_size, bat_size/2]],
+# Calculation of battery storage
+# inverter = 0.5 kW per kWh useable capacity
+def calc_bs(df, e_bat):
+    # define 5 steps for battery sizes
+    batteries = pd.DataFrame([['SG1', 0.0, 0.0],
+                            ['SG1', e_bat*1/5,e_bat*1/10],
+                            ['SG1', e_bat*2/5, e_bat*2/10],
+                            ['SG1', e_bat*3/5, e_bat*3/10],
+                            ['SG1', e_bat*4/5, e_bat*4/10],
+                            ['SG1', e_bat, e_bat*5/10]],
                             columns=['system_id', 'e_bat', 'p_inv']
                             )
     P_diff=df['p_PV']-df['p_el_hh']
@@ -77,32 +100,21 @@ def calc_bat(df, bat_size):
     batteries['E_gs']=E_GS
     return batteries
 
-class HeatStorage():
-    def __init__(self,
-                 Volume= 1000, #in l
-                 ambient_temperature = 15,
-                 c_w=4180):
-        self.V_sp=Volume
-        self.c_w=c_w
-        self.T_amb=ambient_temperature
-    def calculate_new_storage_temperature(self, T_sp, dt, P_hp, P_ld):
-        P_loss=0.0038 *self.V_sp + 0.85
-        T_sp=T_sp + (1/(self.V_sp*self.c_w))*(P_hp - P_ld - P_loss*(T_sp-self.T_amb))*dt
-        return T_sp
-
-def sim_hp(building, p_th_load, group_id, t_room=20):
-    #read load and weather
+# Calculation of heat pump
+# TODO check and translate
+def calc_hp(building, p_th_load, group_id, t_room=20):
+    # read load and weather
     weather = pd.read_csv('src/assets/data/weather/TRY_'+building['location']+'_a_2015_15min.csv', header=0, index_col=0)
     p_th_load=pd.DataFrame(p_th_load)
     P_th_tww = p_th_load['load [W]']
     P_th_h = p_th_load['p_th_heating [W]']
-    # Feste Parameter
-    P_tww = 1000 + 250*building['Inhabitants']# Heizlast-Aufschlag für Trinkwarmwasser in W 1000W + 200W/Person
-    dt = 900            # Zeitschrittweite in s
-    T_hyst = 3          # Hysterese-Temperatur in thermischen Speichern
-    # Wärmespeicher
-    HeatStorage_h = HeatStorage(Volume=100+50*building['Inhabitants'], ambient_temperature=15)  # Heizungspuffer 100l + 20l/kW
-    HeatStorage_tww = HeatStorage(Volume=200+50*building['Inhabitants'], ambient_temperature=15)  # TWW-Speicher 200l + 50 l/person
+    # set parameter
+    P_tww = 1000+200*building['Inhabitants']    # additional heating load for DHW in W 1000 W + 200 W/person
+    dt = 900                                    # time step size in s 
+    T_hyst = 3                                  # hysteresis temperatur for thermal storage
+    # thermal storages
+    HeatStorage_h = HeatStorage(Volume=100+50*building['Inhabitants'], ambient_temperature=15)      # TODO Heizungspuffer 100l + 20 l/kW
+    HeatStorage_tww = HeatStorage(Volume=200+50*building['Inhabitants'], ambient_temperature=15)    # TWW-Speicher 200l + 50 l/person
 
     # Gebäude-Klassen
     P_th_max=(22 - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
@@ -124,7 +136,6 @@ def sim_hp(building, p_th_load, group_id, t_room=20):
                             p_th=P_th_max)
     HeatPump = hpl.HeatPump(para)
     
-
     # Simulations-Schleife
     # Temperatur beim Start in °C
     T_sp_h = building['T_vl_max']
@@ -140,7 +151,6 @@ def sim_hp(building, p_th_load, group_id, t_room=20):
     i=0
     # Ergebnis DataFrame Zeitreihen
     results_timeseries = pd.DataFrame()
-
     # Timeseries Results
     T_SP_h = []
     T_SP_h_set = []
@@ -171,6 +181,7 @@ def sim_hp(building, p_th_load, group_id, t_room=20):
         P_load_h_th = P_th_h[i]
         if P_load_h_th > 0 or P_load_tww_th > 0:
             heizlänge = heizlänge+dt
+
         # HP inflow Temperatur berechnen
         T_hp_brine = HS.calc_brine_temp(
             weather.at[t, 'temperature 24h [degC]'])
@@ -180,6 +191,7 @@ def sim_hp(building, p_th_load, group_id, t_room=20):
             T_hp_in = T_amb
         else:
             T_hp_in = T_hp_brine
+
         # Trinkwarmwasser: Regelung
         if T_sp_tww < T_sp_tww_set and hyst_tww == 0:
             hyst_tww = 1

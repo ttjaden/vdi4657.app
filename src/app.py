@@ -11,18 +11,19 @@ import numpy as np
 import plotly_express as px
 # Additional informations
 from datetime import datetime
-# Eigene Funktionen
+# Own functions
 from utils.getregion import getregion
 import utils.simulate as sim
 
 ##################################################
 # TODOs ##########################################
 ##################################################
-# Abstand zwisschen Container und Header
-# Startbild, falls noch nichts fertig parametriert werden
+# Space between header and container
+# Translation
+# ...
 
-# App konfigurieren
-# Icons via Iconify: siehe ps://icon-sets.iconify.design
+# App configuration
+# Icons from iconify, see https://icon-sets.iconify.design
 app = Dash(__name__,
           suppress_callback_exceptions=True, 
           external_stylesheets=[dbc.themes.BOOTSTRAP,{'href': 'https://use.fontawesome.com/releases/v5.8.1/css/all.css','rel': 'stylesheet','integrity': 'sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf','crossorigin': 'anonymous'}],
@@ -30,11 +31,15 @@ app = Dash(__name__,
           ],
           )
 
-# Übersetzungstabelle (noch nicht durchgängig genutzt)
+# Table for translation (work in progress)
 language=pd.read_csv('src/utils/translate.csv')
+
+# Weather information for all regions
 weather_summary=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
-# PV-Größentabelle erstellen
-# TODO Umbau auf Callback mit Gebäudestrombedarf
+
+# Photovoltaic sizing table
+# TODO create callback from electricity dmeand vom building
+# @Hauke: why?
 PV=[]
 pv_dict=dict()
 pv_dict[0]=str(0)
@@ -55,7 +60,7 @@ for i in range(100,220,20):
 pv_dict[len(PV)-1]=str(i)
 
 ##################################################
-# Definiton grafischer Elemente / Inhalte ########
+# Definiton of graphical elements / content ######
 ##################################################
 
 # Header #########################################
@@ -76,6 +81,7 @@ button_language = dbc.Button(
     style={'text-transform': 'none'},
     value='ger'
 )
+
 button_info = dbc.Button(
     html.Div(id='button_info_content',children=[DashIconify(icon='ph:info',width=50,height=30,),'Info']),
     outline=True,
@@ -83,6 +89,7 @@ button_info = dbc.Button(
     id='button_info',
     style={'text-transform': 'none'}
 )
+
 header=dbc.Navbar(
     dbc.Container(
         [
@@ -106,7 +113,7 @@ header=dbc.Navbar(
             ),
             dcc.ConfirmDialog(
                 id='info_dialog',
-                message='Danger danger! Are you sure you want to continue?',
+                message='Dummy text',
                 ),
             dbc.Row(
                 [
@@ -140,7 +147,7 @@ header=dbc.Navbar(
 )
 
 ################################################
-# Erstellung der Main-Page
+# Main-Page
 
 content = html.Div(
                 children=[dbc.Container(
@@ -176,15 +183,16 @@ content = html.Div(
                     
                     ],
                 fluid=True)])
-# Layout erstellen
+
+# Create layout
 layout = html.Div(id='app-page-content',children=[header,content])
 app.layout=layout
 
 ###################################################
-#Callbacks#########################################
+# Callbacks #######################################
 ###################################################
 
-#create tabs and change language
+# Create tabs and change language
 @app.callback(
     Output('button_language_content', 'children'),
     Output('button_language', 'value'),
@@ -217,7 +225,7 @@ def change_language(n_language):
                 dcc.Tab(label=language.loc[language['name']=='economics',lang].iloc[0], value='tab_econmics',)]
         )
 
-#render tab content
+# Render tab content
 @app.callback(
     Output('tab-content', 'children'),
     Input('tabs', 'value'),
@@ -294,6 +302,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
     else:
         return html.Div()
 
+# Info button content
 @app.callback(
     Output('info_dialog', 'displayed'),
     Input('button_info','n_clicks'),
@@ -303,8 +312,8 @@ def display_info(n_clicks_info):
         raise PreventUpdate
     return True
 
-# build parameter container
-# Gebäudeauswahl
+# Build parameter container
+# Building selection
 @app.callback(
     Output('bulding_container','children'),
     Output('efh_click', 'style'), 
@@ -550,7 +559,7 @@ def built_technology(n_solar,n_chp,n_hp,lang):
                         ))
     return html.Div(children=technology_list)
 
-#change tabs with buttons on Info-Tab (Autarky or Peak shaving)
+# Change tabs with buttons on info tab (self-sufficiency or peak shaving)
 @app.callback(
     Output('tabs', 'value'),
     Output('autakie_click', 'n_clicks'),
@@ -570,8 +579,8 @@ def next_Tab(autarkie,LSK,tab):
     else:
         return tab,0,0
         
-#specific functions for a certain purpose##################
-
+# Specific functions for a certain purpose ################
+# Weather information
 @app.callback(
     Output('region', 'children'),
     Input('standort', 'value'),
@@ -585,6 +594,7 @@ def standorttoregion(standort,lang):
                     'Durchschnittstemperatur: ' + str(round(average_temperature_C ,1)) + ' °C',html.Br(),
                     'Globalstrahlung: '+ str(int(global_irradiance_kWh_m2a)) + ' kWh/(m²a)'])
 
+# Electric load profile information
 @app.callback(
     Output('p_el_hh', 'data'),
     Input('stromverbrauch', 'value'),
@@ -604,6 +614,7 @@ def get_p_el_hh(e_hh,building):
         p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_G_G.csv')
     return (p_el.iloc[:,1].values*e_hh/1000).tolist()
 
+# Change button style
 @app.callback(
     Output('n_solar', 'style'),
     Output('n_clicks_pv', 'data'),
@@ -623,7 +634,6 @@ def change_solar2_style(n_clicks):
         return {'background-color': '#212529','color': 'white',}
     else:
         return {'background-color': 'white','color': 'black'}
-
 @app.callback(
     Output('n_chp', 'style'),
     Output('n_chp','n_clicks'), 
@@ -645,6 +655,7 @@ def change_hp_chp_style(n_chp,n_hp,heating):
     elif n_hp%2==1:
         return {'background-color': 'white','color': 'black'},0,{'background-color': '#212529','color': 'white'},2,0,1
 
+# Calculation of photovoltaic output time series
 @app.callback(
     Output('c_pv1', 'data'), 
     Input('standort','value'),)
@@ -680,6 +691,7 @@ def scale_pv2(pv_slider2, pv2):
     pv2=np.array(pv2) * PV[pv_slider2]
     return list(pv2)
 
+# Calculation of thermal building and hot water demand time series
 @app.callback(
     Output('p_th_load', 'data'), 
     Output('building', 'data'), 
@@ -690,47 +702,49 @@ def scale_pv2(pv_slider2, pv2):
 def calc_heating_timeseries(heating,location,Area,building_type):
     if (heating is None) or (location is None) or (Area is None) or(building_type is None):
         return None, None
+    # 1 person for every 50m² in a SFH
     inhabitants = round(Area/50,0)
-    if Area<50: # in that case its the amount of WE in a MFH
-        inhabitants=Area*2
-        Area=Area*70 # (80sqm/WE)
-    buildings = pd.DataFrame([[0.8, 12, 35, 28, 1.1],[1.6, 14, 45, 35, 1.2], [2.6, 15, 55, 45, 1.3]],
-                            columns=['Q_sp', 'T_limit', 'T_vl_max',
-                                    'T_rl_max', 'f_hs_exp'],
-                            index=['new','middle', 'old'])  
+    if Area<50: # in that case its the amount of residential units in a MFH
+        inhabitants=Area*2 # 2 persons per residential unit
+        Area=Area*70 # (70 m² per residential unit)
+    # Definintion and selection of building types
+    buildings = pd.DataFrame([[0.8, 12, 35, 28, 1.1],
+                            [1.6, 14, 45, 35, 1.2],
+                            [2.6, 15, 55, 45, 1.3]],
+                            columns=['Q_sp', 'T_limit', 'T_vl_max', 'T_rl_max', 'f_hs_exp'],
+                            index=['new','renovated','old'])  
     if building_type.endswith('unsaniert'):
         building=buildings.loc['old',:]
     elif building_type.startswith('Bestand'):
-        building=buildings.loc['middle',:]
+        building=buildings.loc['renovated',:]
     elif building_type.startswith('Neubau'):
         building=buildings.loc['new',:]
     building=building.to_dict()
     p_th_heating=[]
     t_room = 20
     region=getregion(location)
-    #get min temp. for location
-    Heizlast=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
-    building['T_min_ref'] = Heizlast['T_min_ref'][region-1]
+    # Get min temp. for location
+    TRJ=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
+    building['T_min_ref'] = TRJ['T_min_ref'][region-1]
     building['Area']=Area
     building['Inhabitants']=inhabitants
     building['location']=str(region)
-
-    #calc load for heating
+    # Calc heating load time series with 24h average outside temperature
+    # TODO @Hauke: Warum loop? Ändern bei Problem mit Laufzeit
     weather = pd.read_csv('src/assets/data/weather/TRY_'+str(region)+'_a_2015_15min.csv', header=0, index_col=0)
     for t in weather.index:
-    # gleitender Tagesmittelwert und neue Berechnung der Heizlast
         temp = weather.at[t, 'temperature 24h [degC]']
         if temp < building['T_limit']:
             p_th_heating.append((t_room - temp) * building['Q_sp'] * Area)
         else:
             p_th_heating.append(0)
-
-    #get DHW load
+    # Load domestic hot water load profile
     load = pd.read_csv('src/assets/data/thermal_loadprofiles/dhw_'+str(int(inhabitants)) +'_15min.csv', header=0, index_col=0)
     load['p_th_heating [W]']=p_th_heating
     load_dict=load[['load [W]','p_th_heating [W]']].to_dict()
     return load_dict, building
 
+# Calculation of heat pump power and efficiency time series
 @app.callback(
     Output('hp_technology_value', 'children'), 
     Output('power_heat_pump_W', 'data'),
@@ -739,23 +753,25 @@ def calc_heating_timeseries(heating,location,Area,building_type):
     Input('p_th_load','data'),
     Input('hp_technology','value'),
     )
-def sizing_of_heatpump(building, p_th_load,choosen_hp):
+def sizing_of_heatpump(building, p_th_load, choosen_hp):
     if choosen_hp.startswith('Sole'):
         group_id=5
     elif choosen_hp.startswith('Luft'):
         group_id=1
-    results_timeseries, P_th_max, t_in, t_out = sim.sim_hp(building,p_th_load,group_id)
+    results_timeseries, P_th_max, t_in, t_out = sim.calc_hp(building,p_th_load,group_id)
     electical_energy_heat_pump_kWh = (results_timeseries[['P_hp_h_el', 'P_Heizstab_h', 'P_hp_tww_el', 'P_Heizstab_tww']].mean()*8.76).sum()
     electical_power_heat_pump_W=(results_timeseries['P_hp_h_el']+results_timeseries['P_Heizstab_h']+results_timeseries['P_hp_tww_el']+results_timeseries['P_Heizstab_tww']).values.tolist()
     return (html.Div(str(round(P_th_max/1000,1))+' kWth'),html.Div('(' + str(t_in)+ '° / ' + str(t_out) + '°)'),html.Div(str(int(electical_energy_heat_pump_kWh))+' kWh Verbauch')), electical_power_heat_pump_W,dcc.Graph(figure=px.line(results_timeseries))
 
-
+# Show electric energy demand
 @app.callback(
     Output('stromverbrauch_value', 'children'),
     Input('stromverbrauch', 'value'),
     )
 def print_stromverbrauch_value(stromverbrauch):
     return html.Div(str(stromverbrauch)+ ' kWh/a')
+
+# Show living area in m² or residential units
 @app.callback(
     Output('wohnfläche_value', 'children'),
     Input('wohnfläche', 'value'),
@@ -764,18 +780,24 @@ def print_wohnfläche_value(wohnfläche):
     if wohnfläche<50:
         return html.Div(str(wohnfläche)+ ' WE')
     return html.Div(str(wohnfläche)+ ' m²')
+
+# Show maximum heating load
 @app.callback(
     Output('normheizlast_value', 'children'),
     Input('normheizlast', 'value'),
     )
 def print_normheizlast_value(normheizlast):
     return html.Div(str(normheizlast)+ ' kW')
+
+# Show photovoltaic power
 @app.callback(
     Output('pv_slider_value', 'children'),
     Input('pv_slider', 'value'),
     )
 def print_pv_slider_value(pv_slider):
     return html.Div(str(PV[pv_slider])+ ' kWp')
+
+# TODO: comment all uncommentet callbacks
 
 @app.callback(
     Output('electricity_price_buy', 'data'),
@@ -843,7 +865,7 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,pv1,pv2,n_pv1,p_el,n_hp_style):
         return None, None , None
     E_el_MWH = np.array(p_el).mean()*8.76/1000
     E_pv_kwp = df['p_PV'].mean()*8.76/1000
-    batteries=sim.calc_bat(df, round(np.minimum(E_el_MWH*1.5,E_pv_kwp*1.5),1))
+    batteries=sim.calc_bs(df, round(np.minimum(E_el_MWH*1.5,E_pv_kwp*1.5),1))
     return batteries.to_dict(),batteries['E_gs'].values.tolist(),batteries['E_gf'].values.tolist()
 
 @app.callback(
