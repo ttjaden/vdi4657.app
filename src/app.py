@@ -12,7 +12,7 @@ import plotly_express as px
 # Additional informations
 from datetime import datetime
 # Eigene Funktionen
-from utils.PLZtoWeatherRegion import getregion
+from utils.getregion import getregion
 import utils.simulate as sim
 
 ##################################################
