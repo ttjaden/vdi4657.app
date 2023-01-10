@@ -1,9 +1,9 @@
 dash
 dash_iconify
+dash_bootstrap_components
 geopy
 plotly_express
-dash_bootstrap_components
 hplib==1.9
 bslib==0.6
-pvlib
+pvlib==0.9.4
 pandas
