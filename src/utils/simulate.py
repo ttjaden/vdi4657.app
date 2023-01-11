@@ -298,4 +298,4 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     frac_heater_h = results_timeseries['P_Heizstab_h'].mean()*8.76/(results_timeseries['P_Heizstab_h'].mean()*8.76+results_timeseries['P_hp_h_th'].mean()*8.76)*100
     frac_heater_tww = results_timeseries['P_Heizstab_tww'].mean()*8.76/(results_timeseries['P_Heizstab_tww'].mean()*8.76+results_timeseries['P_hp_tww_th'].mean()*8.76)*100
     
-    return results_timeseries , P_th_max, t_in, t_out, frac_heater_h, frac_heater_tww
+    return results_timeseries , P_th_max, t_in, t_out
