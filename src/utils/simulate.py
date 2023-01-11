@@ -101,8 +101,7 @@ def calc_bs(df, e_bat):
     return batteries
 
 # Calculation of heat pump
-# TODO check and translate
-def calc_hp(building, p_th_load, group_id, t_room=20):
+def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     # read load and weather
     weather = pd.read_csv('src/assets/data/weather/TRY_'+building['location']+'_a_2015_15min.csv', header=0, index_col=0)
     p_th_load=pd.DataFrame(p_th_load)
@@ -112,22 +111,26 @@ def calc_hp(building, p_th_load, group_id, t_room=20):
     P_tww = 1000+200*building['Inhabitants']    # additional heating load for DHW in W 1000 W + 200 W/person
     dt = 900                                    # time step size in s 
     T_hyst = 3                                  # hysteresis temperatur for thermal storage
-    # thermal storages
-    HeatStorage_h = HeatStorage(Volume=100+50*building['Inhabitants'], ambient_temperature=15)      # TODO Heizungspuffer 100l + 20 l/kW
+
+    # Maximm heat load including additional power for DHW
+    P_th_max=(t_room - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
+ 
+    # Thermal storages
+    HeatStorage_h = HeatStorage(Volume=100+20*P_th_max/1000, ambient_temperature=15)                # TODO @Hauke: checken, da angepasst. Heizungspuffer 100l + 20 l/kW
     HeatStorage_tww = HeatStorage(Volume=200+50*building['Inhabitants'], ambient_temperature=15)    # TWW-Speicher 200l + 50 l/person
 
-    # Gebäude-Klassen
-    P_th_max=(22 - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
+    # Define heating system set temperatures 
     HS = hpl.HeatingSystem(t_outside_min=building['T_min_ref'],
-                                            t_inside_set=t_room,
-                                            t_hs_set=[building['T_vl_max'],
-                                                    building['T_rl_max']],
-                                            f_hs_exp=building['f_hs_exp'])
+                            t_inside_set=t_room,
+                            t_hs_set=[building['T_vl_max'],
+                            building['T_rl_max']],
+                            f_hs_exp=building['f_hs_exp'])
+    
+    # Define generic heat pump
     if group_id == 1 or group_id == 4:
-        t_in = -7  # locations['T_min_ref'][index]
+        t_in = -7   # TODO discuss alternativ -> locations['T_min_ref'][index]
     else:
-    # HS.calc_brine_temp(locations['T_min_ref'][index])
-        t_in = 0
+        t_in = 0    # TODO discuss alternativ -> HS.calc_brine_temp(locations['T_min_ref'][index])
     t_out=building['T_vl_max']
     para = hpl.get_parameters(model='Generic',
                             group_id=group_id,
@@ -136,22 +139,21 @@ def calc_hp(building, p_th_load, group_id, t_room=20):
                             p_th=P_th_max)
     HeatPump = hpl.HeatPump(para)
     
-    # Simulations-Schleife
-    # Temperatur beim Start in °C
-    T_sp_h = building['T_vl_max']
-    T_sp_tww = 50  # Temperatur beim Start in °C
-    P_hp_h = 0  # Leistung der Wärmepumpe für Heizung beim Start in W
-    P_hp_tww = 0  # Leistung der Wärmepumpe für TWW beim Start in W
-    hyst_h = 0  # Hysterese-Schalter Heizung
-    hyst_tww = 0  # Hysterese-Schalter Trinkwarmwasser
-    runtime = 0  # Laufzeit der Wärmepumpe
-    heizlänge = 0  # Länge von Load
-    E_heizstab_tww_storage = 0  # Energie vom Heizstab im Tww-Storage
-    E_heizstab_h_storage = 0  # Energie vom Heizstab im Heating-Storage
+    # Prepare simulation loop with start conditions
+    T_sp_h = building['T_vl_max']   # temperature of thermal heat storage
+    T_sp_tww = 50                   # temperature of DHW het storage
+    P_hp_h_th = 0                   # thermal power of heat pump for heating
+    P_hp_tww_th = 0                 # thermal power of heat pump for DHW
+    hyst_h = 0                      # hysteresis-switch for heating
+    hyst_tww = 0                    # hysteresis-switch for DHW
+    runtime = 0                     # runtime of heat pump per on/off cycle
+    runtime_tot = 0                 # runtime of heat pump in total
+    E_heizstab_tww_storage = 0      # energy from electric emergency heater for DHW
+    E_heizstab_h_storage = 0        # energy from electric emergency heater for heating
     i=0
-    # Ergebnis DataFrame Zeitreihen
+    # Dateframe for time series
     results_timeseries = pd.DataFrame()
-    # Timeseries Results
+    # Timeseries results
     T_SP_h = []
     T_SP_h_set = []
     T_SP_tww = []
@@ -168,21 +170,21 @@ def calc_hp(building, p_th_load, group_id, t_room=20):
     T_HP_in = []
     T_AMB_avg_24h = []
     for t in weather.index:
-        # Soll-Temperaturen
-        T_sp_tww_set = 47
+        # Set temperatures
+        T_sp_tww_set = T_sp_tww_set
         T_vl = HS.calc_heating_dist_temp(
             weather.at[t, 'temperature 24h [degC]'])[0]
         T_rl = HS.calc_heating_dist_temp(
             weather.at[t, 'temperature 24h [degC]'])[1]
         T_sp_h_set = T_vl
 
-        # Lasten
+        # Loads
         P_load_tww_th = P_th_tww[i]
         P_load_h_th = P_th_h[i]
         if P_load_h_th > 0 or P_load_tww_th > 0:
-            heizlänge = heizlänge+dt
+            runtime_tot = runtime_tot+dt
 
-        # HP inflow Temperatur berechnen
+        # Calculate primary input temperatures for heat pump
         T_hp_brine = HS.calc_brine_temp(
             weather.at[t, 'temperature 24h [degC]'])
         T_amb = weather.at[t, 'temperature [degC]']
@@ -192,7 +194,7 @@ def calc_hp(building, p_th_load, group_id, t_room=20):
         else:
             T_hp_in = T_hp_brine
 
-        # Trinkwarmwasser: Regelung
+        # DHW control
         if T_sp_tww < T_sp_tww_set and hyst_tww == 0:
             hyst_tww = 1
         if T_sp_tww < T_sp_tww_set+T_hyst and hyst_tww == 1:
@@ -209,13 +211,12 @@ def calc_hp(building, p_th_load, group_id, t_room=20):
             P_hp_tww_el = 0
             cop_tww = 0
 
-        # Trinkwarmwasser: Speichertemperatur
+        # Calculate DHW heat storage temperature
         T_sp_tww = HeatStorage_tww.calculate_new_storage_temperature(T_sp=T_sp_tww,
                                                                         dt=dt,
                                                                         P_hp=P_hp_tww_th,
                                                                         P_ld=P_load_tww_th)
         if T_sp_tww < T_sp_tww_set-5:
-            E_heizstab_tww_storage = E_heizstab_tww_storage + P_th_max / 60
             T_sp_tww = T_sp_tww + \
                 (1/(HeatStorage_tww.V_sp*HeatStorage_tww.c_w)
                     ) * P_th_max * dt
@@ -223,45 +224,37 @@ def calc_hp(building, p_th_load, group_id, t_room=20):
         else:
             P_HEIZSTAB_tww.append(0)
 
-        # Heizung: Regelung
+        # Heating control
         if T_sp_h < T_sp_h_set and hyst_h == 0 and hyst_tww == 0:
             hyst_h = 1
-
         if T_sp_h < T_sp_h_set+T_hyst and hyst_h == 1 and hyst_tww == 0:
-
             HP_h = HeatPump.simulate(t_in_primary=T_hp_in,
                                         t_in_secondary=T_sp_h,
                                         t_amb=T_amb_24h)
-
             P_hp_h_th = HP_h['P_th']
             P_hp_h_el = HP_h['P_el']
             cop_h = HP_h['COP']
-
+            # Check for regulated heat pumps if output power is enough
             if P_load_h_th > 0:
                 f_power = (P_hp_h_th / (P_load_h_th + 500))
             else:
                 f_power = 1
-
             if f_power < 1:
                 P_hp_h_th = (P_hp_h_th / f_power) * 1.1
                 P_hp_h_el = (P_hp_h_el / f_power) * 1.1
-
             runtime = runtime+1
-
         else:
             hyst_h = 0
             P_hp_h_th = 0
             P_hp_h_el = 0
             cop_h = 0
-            T_delta = 0
 
-        # Heizung: Speichertemperaturen
+        # Calculate thermal heat storage temperature
         T_sp_h = HeatStorage_h.calculate_new_storage_temperature(T_sp=T_sp_h,
                                                                     dt=dt,
                                                                     P_hp=P_hp_h_th,
                                                                     P_ld=P_load_h_th)
         if T_sp_h < T_sp_h_set-7:
-            E_heizstab_h_storage = E_heizstab_h_storage + P_th_max / 60
             T_sp_h = T_sp_h + \
                 (1/(HeatStorage_h.V_sp*HeatStorage_h.c_w)) * \
                 P_th_max * dt
@@ -269,7 +262,7 @@ def calc_hp(building, p_th_load, group_id, t_room=20):
         else:
             P_HEIZSTAB_h.append(0)
 
-        # Abspeichern relevanter Werte
+        # Save data to time series
         T_SP_h.append(T_sp_h)
         T_SP_h_set.append(T_sp_h_set)
         T_HP_in.append(T_hp_in)
@@ -284,7 +277,8 @@ def calc_hp(building, p_th_load, group_id, t_room=20):
         COP_h.append(cop_h)
         COP_tww.append(cop_tww)
         i+=1
-
+    
+    # After simulation loop: save to data frame 
     results_timeseries['T_sp_h'] = T_SP_h
     results_timeseries['T_sp_h_set'] = T_SP_h_set
     results_timeseries['T_hp_in'] = T_HP_in
@@ -300,5 +294,8 @@ def calc_hp(building, p_th_load, group_id, t_room=20):
     results_timeseries['P_Heizstab_tww'] = P_HEIZSTAB_tww
     results_timeseries['COP_h'] = COP_h
     results_timeseries['COP_tww'] = COP_tww
-    print(results_timeseries['P_Heizstab_h'].mean()*8.76/(results_timeseries['P_Heizstab_h'].mean()*8.76+results_timeseries['P_hp_h_th'].mean()*8.76)*100)
-    return results_timeseries , P_th_max, t_in, t_out
+    # check fraction of electric emergency heater 
+    frac_heater_h = results_timeseries['P_Heizstab_h'].mean()*8.76/(results_timeseries['P_Heizstab_h'].mean()*8.76+results_timeseries['P_hp_h_th'].mean()*8.76)*100
+    frac_heater_tww = results_timeseries['P_Heizstab_tww'].mean()*8.76/(results_timeseries['P_Heizstab_tww'].mean()*8.76+results_timeseries['P_hp_tww_th'].mean()*8.76)*100
+    
+    return results_timeseries , P_th_max, t_in, t_out, frac_heater_h, frac_heater_tww
