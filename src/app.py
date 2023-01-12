@@ -171,9 +171,7 @@ content = html.Div(
                     dcc.Store(id='building'),
                     dcc.Store(id='pv_all'),
                     dcc.Store(id='c_pv1'),
-                    dcc.Store(id='c_pv2'),
                     dcc.Store(id='p_pv1'),
-                    dcc.Store(id='p_pv2'),
                     dcc.Store(id='power_heat_pump_W'),
                     dcc.Store(id='batteries'),
                     dcc.Store(id='E_gf'),
@@ -288,7 +286,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
                     html.Div(children=[html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'20vh'}),id='n_solar',n_clicks=n_clicks_solar),
                     html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'20vh'}),id='n_chp',n_clicks=n_clicks_chp),
                     html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'20vh'}),id='n_hp',n_clicks=n_clicks_hp),
-                    html.Div(id='technology')])
+                    html.Div(children=['Ist das zu sehen?'],id='technology')])
                 ),])
         else:
             return html.Div(children='LSK')
@@ -529,6 +527,10 @@ def built_technology(n_solar,n_chp,n_hp,lang):
                         ],
                         fluid=True,
                         ))
+    else:
+        technology_list.append(
+            dcc.Store(id='pv_slider')
+        )
     if n_chp['color']=='white':
         technology_list.append(dbc.Container(
                         [
@@ -667,29 +669,14 @@ def calc_pv_power1(location):
     pv1=sim.calc_pv(trj=getregion(location)-1,year=year,type=type,tilt=tilt,orientation=orientation)
     return pv1
 @app.callback(
-    Output('c_pv2', 'data'), 
-    Input('standort','value'),)
-def calc_pv_power2(location):
-    orientation=180
-    tilt=35
-    type='a'
-    year=2015
-    pv2=sim.calc_pv(trj=getregion(location)-1,year=year,type=type,tilt=tilt,orientation=orientation)
-    return pv2
-@app.callback(
     Output('p_pv1', 'data'), 
     Input('pv_slider','value'),
     Input('c_pv1','data'),)
 def scale_pv1(pv_slider1, pv1):
+    if pv_slider1 is None:
+        raise PreventUpdate
     pv1=np.array(pv1) * PV[pv_slider1]
     return list(pv1)
-@app.callback(
-    Output('p_pv2', 'data'), 
-    Input('pv_slider2','value'),
-    Input('c_pv2','data'),)
-def scale_pv2(pv_slider2, pv2):
-    pv2=np.array(pv2) * PV[pv_slider2]
-    return list(pv2)
 
 # Calculation of thermal building and hot water demand time series
 @app.callback(
@@ -843,24 +830,21 @@ def toggle_navbar_collapse(n, is_open):
     Input('p_el_hh','data'), 
     Input('power_heat_pump_W','data'), 
     Input('p_pv1', 'data'),
-    Input('p_pv2', 'data'),
     Input('n_solar', 'n_clicks'),
     State('p_el_hh','data'),
     State('n_hp','style'),
     )
-def calc_bat_results(p_el_hh,power_heat_pump_W,pv1,pv2,n_pv1,p_el,n_hp_style):
+def calc_bat_results(p_el_hh,power_heat_pump_W,pv1,n_pv1,p_el,n_hp_style):
     df=pd.DataFrame()
     df.index=pd.date_range(start='2022-01-01', end='2023-01-01', periods=35041)[0:35040]
     if (pv1 is None) or ((n_pv1%2)!=1):
         pv1=np.zeros(35040).tolist()
-    if (pv2 is None) or ((n_pv2%2)!=1):
-        pv2=np.zeros(35040).tolist()
     if (power_heat_pump_W is None) or n_hp_style['color']!='white':
         power_heat_pump_W=np.zeros(35040).tolist()
     df['p_el_hh']=p_el_hh
     df['p_el_hp']=power_heat_pump_W
     df['p_el_hh']=df['p_el_hh']+df['p_el_hp']
-    df['p_PV']=np.array(pv1)+np.array(pv2)
+    df['p_PV']=np.array(pv1)
     if df['p_PV'].mean()==0:
         return None, None , None
     E_el_MWH = np.array(p_el).mean()*8.76/1000
