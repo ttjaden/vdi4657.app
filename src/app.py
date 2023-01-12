@@ -16,11 +16,11 @@ from utils.getregion import getregion
 import utils.simulate as sim
 
 ##################################################
-# TODOs ##########################################
+# TO DOs ##########################################
 ##################################################
-# Space between header and container
-# Translation
-# ...
+# TODO Space between header and container
+# TODO Translation
+# TODO Save all inputs in a dataframe for import/export
 
 # App configuration
 # Icons from iconify, see https://icon-sets.iconify.design
@@ -38,8 +38,7 @@ language=pd.read_csv('src/utils/translate.csv')
 weather_summary=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
 
 # Photovoltaic sizing table
-# TODO create callback from electricity dmeand vom building
-# @Hauke: why?
+# TODO create callback from electricity demand vom building: @Hauke: why?
 PV=[]
 pv_dict=dict()
 pv_dict[0]=str(0)
