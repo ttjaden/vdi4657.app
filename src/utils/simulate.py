@@ -116,7 +116,7 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     P_th_max=(t_room - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
  
     # Thermal storages
-    HeatStorage_h = HeatStorage(Volume=100+20*P_th_max/1000, ambient_temperature=15)                # TODO @Hauke: checken, da angepasst. Heizungspuffer 100l + 20 l/kW
+    HeatStorage_h = HeatStorage(Volume=100+20*P_th_max/1000, ambient_temperature=15)                # Heizungspuffer 100l + 20 l/kW
     HeatStorage_tww = HeatStorage(Volume=200+50*building['Inhabitants'], ambient_temperature=15)    # TWW-Speicher 200l + 50 l/person
 
     # Define heating system set temperatures 
@@ -128,9 +128,9 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     
     # Define generic heat pump
     if group_id == 1 or group_id == 4:
-        t_in = -7   # TODO discuss alternativ -> locations['T_min_ref'][index]
+        t_in = building['T_min_ref']
     else:
-        t_in = 0    # TODO discuss alternativ -> HS.calc_brine_temp(locations['T_min_ref'][index])
+        t_in = 0
     t_out=building['T_vl_max']
     para = hpl.get_parameters(model='Generic',
                             group_id=group_id,
@@ -297,5 +297,5 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     # check fraction of electric emergency heater 
     frac_heater_h = results_timeseries['P_Heizstab_h'].mean()*8.76/(results_timeseries['P_Heizstab_h'].mean()*8.76+results_timeseries['P_hp_h_th'].mean()*8.76)*100
     frac_heater_tww = results_timeseries['P_Heizstab_tww'].mean()*8.76/(results_timeseries['P_Heizstab_tww'].mean()*8.76+results_timeseries['P_hp_tww_th'].mean()*8.76)*100
-    
+    # TODO JAZ und Anteil Heizstab TWW / Heizung
     return results_timeseries , P_th_max, t_in, t_out

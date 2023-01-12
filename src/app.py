@@ -38,7 +38,7 @@ language=pd.read_csv('src/utils/translate.csv')
 weather_summary=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
 
 # Photovoltaic sizing table
-# TODO create callback from electricity demand vom building: @Hauke: why?
+# TODO raus damit
 PV=[]
 pv_dict=dict()
 pv_dict[0]=str(0)
