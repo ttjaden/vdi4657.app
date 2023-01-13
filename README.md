@@ -24,6 +24,6 @@ Install dependencies with pip
 
 ## Run code
 
-- `python PIEG-Strom_Webtool/app.py`
+- `python src/app.py`
 
 Open http://127.0.0.1:8050 in your browser
