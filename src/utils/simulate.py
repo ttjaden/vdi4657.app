@@ -148,8 +148,6 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     hyst_tww = 0                    # hysteresis-switch for DHW
     runtime = 0                     # runtime of heat pump per on/off cycle
     runtime_tot = 0                 # runtime of heat pump in total
-    E_heizstab_tww_storage = 0      # energy from electric emergency heater for DHW
-    E_heizstab_h_storage = 0        # energy from electric emergency heater for heating
     i=0
     # Dateframe for time series
     results_timeseries = pd.DataFrame()
@@ -204,7 +202,7 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
             P_hp_tww_th = HP_tww['P_th']
             P_hp_tww_el = HP_tww['P_el']
             cop_tww = HP_tww['COP']
-            runtime = runtime+1
+            runtime = runtime+dt
         else:
             hyst_tww = 0
             P_hp_tww_th = 0
@@ -242,7 +240,7 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
             if f_power < 1:
                 P_hp_h_th = (P_hp_h_th / f_power) * 1.1
                 P_hp_h_el = (P_hp_h_el / f_power) * 1.1
-            runtime = runtime+1
+            runtime = runtime+dt
         else:
             hyst_h = 0
             P_hp_h_th = 0
@@ -299,3 +297,154 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     frac_heater_tww = results_timeseries['P_Heizstab_tww'].mean()*8.76/(results_timeseries['P_Heizstab_tww'].mean()*8.76+results_timeseries['P_hp_tww_th'].mean()*8.76)*100
     # TODO JAZ und Anteil Heizstab TWW / Heizung
     return results_timeseries , P_th_max, t_in, t_out
+
+# Calculation of combined heat and power
+def calc_chp(building, p_th_load, power_to_heat_ratio, chp_to_peak_ratio=0.3, t_room=20):
+    # read load and weather
+    weather = pd.read_csv('src/assets/data/weather/TRY_'+building['location']+'_a_2015_15min.csv', header=0, index_col=0)
+    p_th_load=pd.DataFrame(p_th_load)
+    P_th_tww = p_th_load['load [W]']
+    P_th_h = p_th_load['p_th_heating [W]']
+    # set parameter
+    P_tww = 1000+200*building['Inhabitants']    # additional heating load for DHW in W 1000 W + 200 W/person
+    dt = 900                                    # time step size in s 
+    T_hyst = 3                                  # hysteresis temperatur for thermal storage
+
+    # Maximm heat load including additional power for DHW
+    P_th_max=(t_room - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
+ 
+    # Thermal storages
+    HeatStorage_h = HeatStorage(Volume=100+20*P_th_max/1000, ambient_temperature=15)                # Heizungspuffer 100l + 20 l/kW
+    HeatStorage_tww = HeatStorage(Volume=200+50*building['Inhabitants'], ambient_temperature=15)    # TWW-Speicher 200l + 50 l/person
+
+    # Define heating system set temperatures 
+    HS = hpl.HeatingSystem(t_outside_min=building['T_min_ref'],
+                            t_inside_set=t_room,
+                            t_hs_set=[building['T_vl_max'],
+                            building['T_rl_max']],
+                            f_hs_exp=building['f_hs_exp'])
+
+    # Define CHP and gas heater values
+    P_th_peak = P_th_max
+    P_th_chp = P_th_peak * chp_to_peak_ratio
+    P_el_chp = P_th_chp * power_to_heat_ratio
+    
+    # Prepare simulation loop with start conditions
+    T_sp_h = building['T_vl_max']   # temperature of thermal heat storage
+    T_sp_tww = 50                   # temperature of DHW het storage
+    P_chp_h_th = 0                   # thermal power of heat pump for heating
+    P_chp_tww_th = 0                 # thermal power of heat pump for DHW
+    hyst_h = 0                      # hysteresis-switch for heating
+    hyst_tww = 0                    # hysteresis-switch for DHW
+    runtime = 0                     # runtime of heat pump per on/off cycle
+    runtime_tot = 0                 # runtime of heat pump in total
+    i=0
+    # Dateframe for time series
+    results_timeseries = pd.DataFrame()
+    # Timeseries results
+    T_SP_h = []
+    T_SP_h_set = []
+    T_SP_tww = []
+    P_LOAD_h = []
+    P_LOAD_tww = []
+    P_CHP_h_th = []
+    P_CHP_tww_th = []
+    P_CHP_h_el = []
+    P_CHP_tww_el = []
+    P_PEAK_h = []
+    P_PEAK_tww = []
+    T_AMB_avg_24h = []
+    for t in weather.index:
+        # Set temperatures
+        T_sp_tww_set = T_sp_tww_set
+        T_vl = HS.calc_heating_dist_temp(
+            weather.at[t, 'temperature 24h [degC]'])[0]
+        T_rl = HS.calc_heating_dist_temp(
+            weather.at[t, 'temperature 24h [degC]'])[1]
+        T_sp_h_set = T_vl
+
+        # Loads
+        P_load_tww_th = P_th_tww[i]
+        P_load_h_th = P_th_h[i]
+        if P_load_h_th > 0 or P_load_tww_th > 0:
+            runtime_tot = runtime_tot+dt
+
+        # DHW control
+        if T_sp_tww < T_sp_tww_set and hyst_tww == 0:
+            hyst_tww = 1
+        if T_sp_tww < T_sp_tww_set+T_hyst and hyst_tww == 1:
+            P_chp_tww_th = P_th_chp
+            P_chp_tww_el = P_el_chp
+            runtime = runtime+dt
+        else:
+            hyst_tww = 0
+            P_chp_tww_th = 0
+            P_chp_tww_el = 0
+
+        # Calculate DHW heat storage temperature
+        T_sp_tww = HeatStorage_tww.calculate_new_storage_temperature(T_sp=T_sp_tww,
+                                                                        dt=dt,
+                                                                        P_hp=P_chp_tww_th,
+                                                                        P_ld=P_load_tww_th)
+        if T_sp_tww < T_sp_tww_set-5:
+            T_sp_tww = T_sp_tww + \
+                (1/(HeatStorage_tww.V_sp*HeatStorage_tww.c_w)
+                    ) * P_th_peak * dt
+            P_PEAK_tww.append(P_th_peak)
+        else:
+            P_PEAK_tww.append(0)
+
+        # Heating control
+        if T_sp_h < T_sp_h_set and hyst_h == 0 and hyst_tww == 0:
+            hyst_h = 1
+        if T_sp_h < T_sp_h_set+T_hyst and hyst_h == 1 and hyst_tww == 0:
+            P_chp_h_th = P_th_chp
+            P_chp_h_el = P_el_chp
+            runtime = runtime+dt
+        else:
+            hyst_h = 0
+            P_chp_h_th = 0
+            P_chp_h_el = 0
+
+        # Calculate thermal heat storage temperature
+        T_sp_h = HeatStorage_h.calculate_new_storage_temperature(T_sp=T_sp_h,
+                                                                    dt=dt,
+                                                                    P_hp=P_chp_h_th,
+                                                                    P_ld=P_load_h_th)
+        if T_sp_h < T_sp_h_set-7:
+            T_sp_h = T_sp_h + \
+                (1/(HeatStorage_h.V_sp*HeatStorage_h.c_w)) * \
+                P_th_peak * dt
+            P_PEAK_h.append(P_th_peak)
+        else:
+            P_PEAK_h.append(0)
+
+        # Save data to time series
+        T_SP_h.append(T_sp_h)
+        T_SP_h_set.append(T_sp_h_set)
+        T_AMB_avg_24h.append(weather.at[t, 'temperature 24h [degC]'])
+        T_SP_tww.append(T_sp_tww)
+        P_LOAD_h.append(P_load_h_th)
+        P_LOAD_tww.append(P_load_tww_th)
+        P_CHP_h_th.append(P_chp_h_th)
+        P_CHP_tww_th.append(P_chp_tww_th)
+        P_CHP_h_el.append(P_chp_h_el)
+        P_CHP_tww_el.append(P_chp_tww_el)
+        i+=1
+    
+    # After simulation loop: save to data frame 
+    results_timeseries['T_sp_h'] = T_SP_h
+    results_timeseries['T_sp_h_set'] = T_SP_h_set
+    results_timeseries['T_amb_avg_24h'] = T_AMB_avg_24h
+    results_timeseries['T_sp_tww'] = T_SP_tww
+    results_timeseries['P_load_h'] = P_LOAD_h
+    results_timeseries['P_load_tww'] = P_LOAD_tww
+    results_timeseries['P_chp_h_th'] = P_CHP_h_th
+    results_timeseries['P_chp_tww_th'] = P_CHP_tww_th
+    results_timeseries['P_chp_h_el'] = P_CHP_h_el
+    results_timeseries['P_peak_h'] = P_PEAK_h
+    results_timeseries['P_chp_tww_el'] = P_CHP_tww_el
+    results_timeseries['P_peak_tww'] = P_PEAK_tww
+
+    # TODO Laufzeit bzw. Vollbenutzungsstunden mit ausgeben
+    return results_timeseries, P_th_max, P_th_chp, P_el_chp, runtime
