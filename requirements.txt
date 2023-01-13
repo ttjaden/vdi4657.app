@@ -7,3 +7,5 @@ hplib==1.9
 bslib==0.6
 pvlib==0.9.4
 pandas
+numpy
+numpy-financial

@@ -75,24 +75,52 @@ def internal_rate_of_return(cashflow):
     IRR = npf.irr(cashflow)
     return IRR
 
+# Function for amortisation time
+def amortisation(cashflow):
+    t_a = 0
+    value = cashflow[0]
+    for y in range(1, len(cashflow)):
+        value = sum(cashflow[0:y+1])
+        if value > 0 and t_a == 0:
+            t_a = y+1
+        else:
+            pass
+    return t_a
 
-    # check residual value or re-invest
-    if years < lifetime:
-        residual_value = (1-(years/lifetime)) * invest_costs
-        re_invest = 0
-    else:
-        residual_value = 0
-        re_invest = (1-(lifetime/years)) * invest_costs
-    # sum of costs and revenues over years
-    revenues_sum = 0
+# Function for levelized cost of storage
+def levelized_cost_of_storage(invest_costs,
+                              feedin0,
+                              feedin,
+                              supply0,
+                              supply,
+                              tariff_feedin,
+                              years,
+                              lifetime,
+                              interest_rate):
+    costs=[]
+    energy=[]
     for y in range(1,years+1):
-        delta_feedin = (feedin - feedin0) * tariff_feedin 
-        delta_supply = -1 * (supply - supply0) * tariff_supply
-        revenues = (delta_feedin + delta_supply)/(1+interest_rate)**y
-        revenues_sum = revenues_sum + revenues 
-    # net present value
-    net_present_value = (-1*invest_costs 
-                        - re_invest 
-                        + revenues_sum
-                        + residual_value * (1+interest_rate)**years)
-    return net_present_value
+        # invest and reinvest
+        if y == 1:
+            invest = invest_costs
+        elif y == lifetime+1:
+            invest = (1-(lifetime/years)) * invest_costs
+        else:
+            invest = 0
+        # residual value
+        if y < years:
+            residual_value = 0
+        elif y == years and years < lifetime:
+            residual_value = (1-(years/lifetime)) * invest_costs
+        else:
+            residual_value = 0
+        # delta from grid supply and grid feedin
+        delta_feedin = (feedin0 - feedin) * tariff_feedin
+        delta_supply = (supply0 - supply)
+
+        # arrays
+        costs.append((invest+residual_value+delta_feedin)/(1+interest_rate)**y)
+        energy.append(delta_supply)
+    
+    LCOS = sum(costs)/sum(energy)
+    return LCOS
