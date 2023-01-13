@@ -26,8 +26,8 @@ def invest_params(xdata,ydata):
 
 # Function for invest costs
 def invest_costs(capacity, I_0, exp):
-    specific_invest_costs = I_0 * capacity^(exp) # €/kWh
-    invest_costs = i * capacity         # €
+    specific_invest_costs = I_0 * capacity**(exp)           # €/kWh
+    invest_costs = specific_invest_costs * capacity         # €
     return specific_invest_costs, invest_costs
 
 # cash flow for scenarios with increase of self-sufficiency

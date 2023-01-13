@@ -299,7 +299,7 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     return results_timeseries , P_th_max, t_in, t_out
 
 # Calculation of combined heat and power
-def calc_chp(building, p_th_load, power_to_heat_ratio, chp_to_peak_ratio=0.3, t_room=20):
+def calc_chp(building, p_th_load, power_to_heat_ratio, chp_to_peak_ratio=0.3, t_room=20, T_sp_tww_set=50):
     # read load and weather
     weather = pd.read_csv('src/assets/data/weather/TRY_'+building['location']+'_a_2015_15min.csv', header=0, index_col=0)
     p_th_load=pd.DataFrame(p_th_load)
@@ -445,6 +445,9 @@ def calc_chp(building, p_th_load, power_to_heat_ratio, chp_to_peak_ratio=0.3, t_
     results_timeseries['P_peak_h'] = P_PEAK_h
     results_timeseries['P_chp_tww_el'] = P_CHP_tww_el
     results_timeseries['P_peak_tww'] = P_PEAK_tww
+
+    # Laufzeit in h
+    runtime = runtime / 3600
 
     # TODO Laufzeit bzw. Vollbenutzungsstunden mit ausgeben
     return results_timeseries, P_th_max, P_th_chp, P_el_chp, runtime
