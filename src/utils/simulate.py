@@ -63,7 +63,7 @@ def calc_bs(df, e_bat):
                             ['SG1', e_bat, e_bat*5/10]],
                             columns=['system_id', 'e_bat', 'p_inv']
                             )
-    P_diff=df['p_PV']-df['p_el_hh']
+    P_diff=df['p_PV']+df['p_chp']-df['p_el_hh']
     dt=900
     A=[]
     E=[]
