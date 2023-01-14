@@ -94,10 +94,14 @@ def calc_bs(df, e_bat):
         E.append(e)
         E_GS.append(P_gs.mean()*8.76)
         E_GF.append(P_gf.mean()*8.76)
-    batteries['A']=A
-    batteries['E']=E
-    batteries['E_gf']=E_GF
-    batteries['E_gs']=E_GS
+    batteries['Netzeinspeisung']=E_GF
+    batteries['Netzbezug']=E_GS
+    batteries['Autarkiegrad']=A
+    batteries['Eigenverbrauch']=E
+    batteries['Autarkiegrad ohne Stromspeicher']=round((batteries['Autarkiegrad']*100).values[0],2)
+    batteries['Eigenverbrauch ohne Stromspeicher']=round((batteries['Eigenverbrauch']*100).values[0],2)
+    batteries['Erhöhung der Autarkie durch Stromspeicher']=((batteries['Autarkiegrad']*100)-batteries['Autarkiegrad ohne Stromspeicher']).round(2)
+    batteries['Erhöhung des Eigenverbrauchs durch Stromspeicher']=((batteries['Eigenverbrauch']*100)-batteries['Eigenverbrauch ohne Stromspeicher']).round(2)
     return batteries
 
 # Calculation of heat pump
@@ -128,7 +132,7 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     
     # Define generic heat pump
     if group_id == 1 or group_id == 4:
-        t_in = building['T_min_ref']
+        t_in = -7 #building['T_min_ref']
     else:
         t_in = 0
     t_out=building['T_vl_max']
