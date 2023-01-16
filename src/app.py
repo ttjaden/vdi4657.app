@@ -38,27 +38,6 @@ language=pd.read_csv('src/utils/translate.csv')
 # Weather information for all regions
 weather_summary=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
 
-# Photovoltaic sizing table
-# TODO raus damit
-PV=[]
-pv_dict=dict()
-pv_dict[0]=str(0)
-for i in range(0,10,1):
-    PV.append(i)
-pv_dict[len(PV)]=str(i+1)
-for i in range(10,20,2):
-    PV.append(i)
-pv_dict[len(PV)]=str(i+2)
-for i in range(20,50,5):
-    PV.append(i)
-pv_dict[len(PV)]=str(i+5)
-for i in range(50,100,10):
-    PV.append(i)
-pv_dict[len(PV)]=str(i+10)
-for i in range(100,220,20):
-    PV.append(i)
-pv_dict[len(PV)-1]=str(i)
-
 ##################################################
 # Definiton of graphical elements / content ######
 ##################################################
@@ -304,10 +283,9 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
                     html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology')])
                 ),])
         else:
-            return html.Div(children='LSK')
+            return html.Div(children=['LSK'])
     elif tab=='tab_econmics':
-        return html.Div(children=[html.Div(id='battery_cost_para'),
-           ])
+        return html.Div(children=[html.Div(id='battery_cost_para')])
     else:
         return html.Div()
 
@@ -339,7 +317,7 @@ def display_info(n_clicks_info):
 def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang):
     if (efh_click is None and mfh_click is None and industry_click is None):#changed_id = [0]
         if choosebuilding is None:
-            return 'Ein Gebäudetyp wählen',{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},None
+            return 'Einen Gebäudetyp wählen',{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},None
         else:
             if choosebuilding=='efh':
                 efh_click=1
@@ -360,7 +338,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Slider(min=2000,max=8000,step=500,value=4000,marks=None,id='stromverbrauch',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
+                                dbc.Col(dcc.Slider(min=2000,max=10000,step=500,value=4000,marks=None,id='stromverbrauch',tooltip={'placement': 'bottom', 'always_visible': False},persistence='local'), md=5),
                                 dbc.Col(html.Div(id='stromverbrauch_value'), md=4),
                                 html.Div(id='industry_type'),
                                 ],
@@ -523,16 +501,19 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
     Input('n_solar', 'style'),
     Input('n_chp', 'style'),
     Input('n_hp', 'style'),
-    Input('button_language','value'),)
-def built_technology(n_solar,n_chp,n_hp,lang):
+    Input('button_language','value'),
+    Input('last_triggered_building','data'),
+    )
+def built_technology(n_solar,n_chp,n_hp,lang,building):
     technology_list=[]
     if n_solar['color']=='white':
-        technology_list.append(dbc.Container(
+        if building=='efh':
+            technology_list.append(dbc.Container(
                         [
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='pv',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Slider(min=0,max=len(PV)-1,step=1,marks=pv_dict, id='pv_slider',value=10,persistence='local'), md=5),
+                                dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv_slider',value=10,persistence='local'), md=5),
                                 dbc.Col(html.Div(id='pv_slider_value'), md=4),
                                 ],
                             align='center',
@@ -540,6 +521,22 @@ def built_technology(n_solar,n_chp,n_hp,lang):
                         ],
                         fluid=True,
                         ))
+        elif (building=='mfh') or (building=='indu'):
+            technology_list.append(dbc.Container(
+                        [
+                            dbc.Row(
+                                [
+                                dbc.Col(language.loc[language['name']=='pv',lang].iloc[0], md=3),
+                                dbc.Col(dcc.Slider(min=0,max=200,step=5,marks=None, id='pv_slider',value=10,persistence='local'), md=5),
+                                dbc.Col(html.Div(id='pv_slider_value'), md=4),
+                                ],
+                            align='center',
+                            ),
+                        ],
+                        fluid=True,
+                        ))
+        else:
+            technology_list.append(html.Div('Einen Gebäudetyp wählen'))
     else:
         technology_list.append(
             dcc.Store(id='pv_slider')
@@ -622,7 +619,7 @@ def next_Tab(batteries,tab):
                             dbc.Row(
                                 [
                                 dbc.Col(html.Div(['Kleinste Batterie', html.Br(), str(batteries['e_bat']['1'])+' kWh']), md=4),
-                                dbc.Col([dcc.Input(id='specific_bat_cost_small',value=round(specific_bat_cost_small),type='number',style=dict(width = '50%')),'€/kWh'], md=5),
+                                dbc.Col([dcc.Input(id='specific_bat_cost_small',value=int(round(float(specific_bat_cost_small)/50)*50),type='number',style=dict(width = '50%')),'€/kWh'], md=5),
                                 dbc.Col(html.Div(id='absolut_bat_cost_small'), md=3),
                                 ],
                             align='center',
@@ -631,7 +628,7 @@ def next_Tab(batteries,tab):
                             dbc.Row(
                                 [
                                 dbc.Col(html.Div(['Größte Batterie', html.Br(), str(batteries['e_bat']['5'])+' kWh']), md=4),
-                                dbc.Col([dcc.Input(id='specific_bat_cost_big', value=round(specific_bat_cost_big),type='number',style=dict(width = '50%')),'€/kWh'], md=5),
+                                dbc.Col([dcc.Input(id='specific_bat_cost_big', value=int(round(float(specific_bat_cost_big)/50)*50),type='number',style=dict(width = '50%')),'€/kWh'], md=5),
                                 dbc.Col(html.Div(id='absolut_bat_cost_big'), md=3),
                                 ],
                             align='center',
@@ -771,7 +768,7 @@ def calc_pv_power1(location):
 def scale_pv1(pv_slider1, pv1):
     if pv_slider1 is None:
         raise PreventUpdate
-    pv1=np.array(pv1) * PV[pv_slider1]
+    pv1=np.array(pv1) * pv_slider1
     return list(pv1)
 
 # Calculation of thermal building and hot water demand time series
@@ -841,10 +838,12 @@ def sizing_of_heatpump(building, p_th_load, choosen_hp, hp_active):
         group_id=5
     elif choosen_hp.startswith('Luft'):
         group_id=1
-    results_timeseries, P_th_max, t_in, t_out = sim.calc_hp(building,p_th_load,group_id)
-    electical_energy_heat_pump_kWh = (results_timeseries[['P_hp_h_el', 'P_Heizstab_h', 'P_hp_tww_el', 'P_Heizstab_tww']].mean()*8.76).sum()
-    electical_power_heat_pump_W=(results_timeseries['P_hp_h_el']+results_timeseries['P_Heizstab_h']+results_timeseries['P_hp_tww_el']+results_timeseries['P_Heizstab_tww']).values.tolist()
-    return (html.Div(str(round(P_th_max/1000,1))+' kWth'),html.Div('(' + str(t_in)+ '° / ' + str(t_out) + '°)'),html.Div(str(int(electical_energy_heat_pump_kWh))+' kWh Verbauch')), electical_power_heat_pump_W
+    P_hp_el , results_summary, t_in, t_out = sim.calc_hp(building,p_th_load,group_id)
+    print(results_summary['JAZ'],results_summary['SJAZ'])
+    return (html.Div('(' + str(t_in)+ '° / ' + str(t_out) + '°)'), \
+            html.Div('SJAZ: '+str((round(results_summary['SJAZ'],2)))), \
+            html.Div('Heizstab: ' + str(int(round(results_summary['percent_heating_rod_el'])))+' % el')), \
+            P_hp_el.values.tolist()
 
 # Calculation of heat pump power and efficiency time series
 @app.callback(
@@ -859,7 +858,9 @@ def sizing_of_chp(building, p_th_load, choosen_chp, chp_active):
     if (choosen_chp is None) or chp_active['color']!='white':
         raise PreventUpdate
     results_timeseries, P_th_max, P_th_chp, P_el_chp, runtime = sim.calc_chp(building,p_th_load,choosen_chp,)
-    return (html.Div(str(round(P_th_max/1000,1))+' kWth')),results_timeseries['P_chp_h_el'].values.tolist()
+    return html.Div([html.Div(str(int(round(P_el_chp))) + ' kWel / ' + str(int(round(P_th_chp)))+' kWth'),\
+                    html.Div(str(int(round(runtime)))+ ' Volllaststunden')]), \
+                    results_timeseries['P_chp_h_el'].values.tolist()
 
 # Show electric energy demand
 @app.callback(
@@ -893,7 +894,7 @@ def print_normheizlast_value(normheizlast):
     Input('pv_slider', 'value'),
     )
 def print_pv_slider_value(pv_slider):
-    return html.Div(str(PV[pv_slider])+ ' kWp')
+    return html.Div(str(pv_slider)+ ' kWp')
 
 # Save electricity price
 @app.callback(
@@ -971,9 +972,13 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,
     df['p_PV']=np.array(pv1)
     if (df['p_PV'].mean()==0) and df['p_chp'].mean()==0:
         return None, None , None
-    E_el_MWH = np.array(p_el_hh).mean()*8.76/1000
+    E_el_MWH = df['p_el_hh'].mean()*8.76/1000
     E_pv_kwp = df['p_PV'].mean()*8.76/1000
-    batteries=sim.calc_bs(df, round(np.minimum(E_el_MWH*1.5,E_pv_kwp*1.5),1)) #TODO: CHP battery sizing?
+    E_chp = df['p_chp'].mean()*8.76/1000
+    if (E_chp>0):
+        batteries=sim.calc_bs(df, round(E_el_MWH*2,1)) #TODO: CHP battery sizing?
+    else:
+        batteries=sim.calc_bs(df, round(np.minimum(E_el_MWH*2.5,E_pv_kwp*2.5),1)) #TODO: CHP battery sizing?
     return batteries.to_dict()
 
 # Show selection for different graphs (self sufficiency, self consumption or energy balance)
@@ -981,11 +986,16 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,
     Output('bat_results', 'children'),
     Input('batteries', 'data'),
     Input('tabs', 'value'),
+    State('include_heating','value'),
+    State('n_hp', 'style'),
+    State('n_chp', 'style'),
     )
-def bat_results(batteries,tab):
-    if (batteries is None):
+def bat_results(batteries,tab,include_heating,n_hp,n_chp):
+    if (batteries is None) or (include_heating is None):
         raise PreventUpdate
     elif (len(batteries)==3) or (tab!='tab_parameter'):
+        return html.Div()
+    elif (len(include_heating)==1) and (n_hp['color']=='black') and (n_chp['color']=='black'):
         return html.Div()
     return html.Div(children=[html.Br(),dcc.RadioItems(['Autarkiegrad','Eigenverbrauchsanteil','Energiebilanz'],'Autarkiegrad',id='show_bat_results',persistence='local'),html.Div(id='bat_result_graph')])
 
@@ -1068,9 +1078,9 @@ def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,s
     years=20
     lifetime=15
     interest_rate=0.015
-    NetPresentValue=[0]
-    Amortisation=[0]
-    InternalRateOfReturn=[0]
+    NetPresentValue=[]
+    Amortisation=[]
+    InternalRateOfReturn=[]
     I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]],[specific_bat_cost_small,specific_bat_cost_big])
     for battery in batteries.index[1:]:
         i, I = eco.invest_costs(batteries.loc[battery]['e_bat'], I_0,exp)
@@ -1087,10 +1097,14 @@ def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,s
         Amortisation.append(eco.amortisation(cashflow))
         InternalRateOfReturn.append(eco.internal_rate_of_return(cashflow))
     if results_id.startswith('Amortisationszeit'):
-        return dcc.Graph(figure=px.bar(x=batteries['e_bat'], y=Amortisation,title='Amortisationszeit'))
+        return dcc.Graph(figure=px.bar(x=batteries['e_bat'][1:], y=Amortisation,title='Amortisationszeit'))
     elif results_id.startswith('NetPresentValue'):
-        return dcc.Graph(figure=px.bar(x=batteries['e_bat'], y=NetPresentValue,title='NetPresentValue'))
+        fig=px.bar(x=batteries['e_bat'][1:], y=NetPresentValue,title='NetPresentValue')
+        fig.update_yaxes(ticksuffix = " €")
+        return dcc.Graph(figure=fig)
     elif results_id.startswith('InternalRateOfReturn'):
-        return dcc.Graph(figure=px.bar(x=batteries['e_bat'], y=InternalRateOfReturn,title='InternalRateOfReturn'))
+        fig=px.bar(x=batteries['e_bat'][1:], y=np.array(InternalRateOfReturn)*100,title='InternalRateOfReturn')
+        fig.update_yaxes(ticksuffix = " %")
+        return dcc.Graph(figure=fig)
 if __name__ == '__main__':
     app.run_server(debug=True)
