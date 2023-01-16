@@ -306,11 +306,45 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     results_timeseries['P_Heizstab_tww'] = P_HEIZSTAB_tww
     results_timeseries['COP_h'] = COP_h
     results_timeseries['COP_tww'] = COP_tww
-    # check fraction of electric emergency heater 
-    frac_heater_h = results_timeseries['P_Heizstab_h'].mean()*8.76/(results_timeseries['P_Heizstab_h'].mean()*8.76+results_timeseries['P_hp_h_th'].mean()*8.76)*100
-    frac_heater_tww = results_timeseries['P_Heizstab_tww'].mean()*8.76/(results_timeseries['P_Heizstab_tww'].mean()*8.76+results_timeseries['P_hp_tww_th'].mean()*8.76)*100
+
+    P_hp_el = (results_timeseries['P_hp_h_el']+results_timeseries['P_Heizstab_h']+results_timeseries['P_hp_tww_el']+results_timeseries['P_Heizstab_tww'])
     # TODO JAZ und Anteil Heizstab TWW / Heizung
-    return results_timeseries , P_th_max, t_in, t_out
+    E_load_th = (results_timeseries['P_load_tww']+results_timeseries['P_load_h']).mean()*8.76
+
+    E_hp_h_th = results_timeseries['P_hp_h_th'].mean()*8.76 + results_timeseries['P_Heizstab_h'].mean()*8.76
+    E_hp_tww_th = results_timeseries['P_hp_tww_th'].mean()*8.76 + results_timeseries['P_Heizstab_tww'].mean()*8.76
+    E_hp_h_el = results_timeseries['P_hp_h_el'].mean()*8.76 + results_timeseries['P_Heizstab_h'].mean()*8.76
+    E_hp_tww_el = results_timeseries['P_hp_tww_el'].mean()*8.76 + results_timeseries['P_Heizstab_tww'].mean()*8.76
+    # Gesamtstromverbrauch Wärmepumpe
+    E_hp_el = E_hp_tww_el + E_hp_h_el
+
+    # Energiebilanz des Heizstabs
+    P_heizstab_tww = results_timeseries.loc[results_timeseries['COP_tww'] == 1, 'P_hp_tww_th']
+    try:
+        E_heizstab_tww = P_heizstab_tww[0] / 1000 * (len(P_heizstab_tww) / 4)
+    except:
+        E_heizstab_tww = 0
+    P_heizstab_h = results_timeseries.loc[results_timeseries['COP_h'] == 1, 'P_hp_h_th']
+    try:
+        E_heizstab_h = P_heizstab_h[0] / 1000 * (len(P_heizstab_h) / 4)
+    except:
+        E_heizstab_h = 0
+    E_heizstab = E_heizstab_h + E_heizstab_tww + (results_timeseries['P_Heizstab_h'].mean()*8.76 + results_timeseries['P_Heizstab_tww'].mean()*8.76)
+    # check fraction of electric emergency heater 
+    frac_heater = E_heizstab / E_hp_el * 100
+    frac_heater_h = results_timeseries['P_Heizstab_h'].mean()*8.76/(results_timeseries['P_Heizstab_h'].mean()*8.76+results_timeseries['P_hp_h_el'].mean()*8.76)*100
+    frac_heater_tww = results_timeseries['P_Heizstab_tww'].mean()*8.76/(results_timeseries['P_Heizstab_tww'].mean()*8.76+results_timeseries['P_hp_tww_el'].mean()*8.76)*100
+    JAZ = (E_hp_h_th+E_hp_tww_th)/E_hp_el
+    SJAZ = E_load_th/E_hp_el
+    results_summary={'Energy_consumption_kWh':E_hp_el,
+                     'Energy_heating_rod': E_heizstab,
+                     'percent_heating_rod_el': frac_heater,
+                     'percent_heating_rod_heating_el': frac_heater_h,
+                     'percent_heating_rod_tww_el': frac_heater_tww,
+                     'JAZ' : JAZ,
+                     'SJAZ' : SJAZ}
+    # check fraction of electric emergency heater 
+    return P_hp_el , results_summary, t_in, t_out
 
 # Calculation of combined heat and power
 def calc_chp(building, p_th_load, power_to_heat_ratio, chp_to_peak_ratio=0.3, t_room=20, T_sp_tww_set=50):
