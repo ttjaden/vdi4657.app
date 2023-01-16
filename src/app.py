@@ -193,7 +193,7 @@ content = html.Div(
                     dcc.Store(id='power_chp_W'),
                     dcc.Store(id='batteries'),
                     dcc.Store(id='price_electricity'),
-                    dcc.Store(id='parameters'), #TODO: parameter dict
+                    #TODO: parameter dict
                     ],
                 fluid=True)])
 
@@ -294,7 +294,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
                 html.Button(html.Div([DashIconify(icon='la:industry',width=50,height=50,),html.Br(),language.loc[language['name']=='industry_name',lang].iloc[0]],style={'width':'20vh'}),id='industry_click'),
                 html.Br(),
                 html.Br(),
-                html.Div([html.Div(id='wohnfläche'),html.Div(id='building_type')],id='bulding_container'),
+                html.Div([html.Div(id='wohnfläche'),html.Div(id='building_type'),html.Div(id='building_type_value')],id='bulding_container'),
                 html.Br(),
                 html.Div(html.H3(language.loc[language['name']=='efh_name',lang].iloc[0])),
                 html.Div(
@@ -785,7 +785,7 @@ def scale_pv1(pv_slider1, pv1):
     Input('building_type','value'),)
 def calc_heating_timeseries(heating,location,Area,building_type):
     if (heating is None) or (location is None) or (Area is None) or(building_type is None):
-        return None, None
+        return None, None, None
     # 1 person for every 50m² in a SFH
     inhabitants = round(Area/50,0)
     if Area<50: # in that case its the amount of residential units in a MFH
@@ -973,7 +973,7 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,
         return None, None , None
     E_el_MWH = np.array(p_el_hh).mean()*8.76/1000
     E_pv_kwp = df['p_PV'].mean()*8.76/1000
-    batteries=sim.calc_bs(df, round(np.minimum(E_el_MWH*1.5,E_pv_kwp*1.5),1))
+    batteries=sim.calc_bs(df, round(np.minimum(E_el_MWH*1.5,E_pv_kwp*1.5),1)) #TODO: CHP battery sizing?
     return batteries.to_dict()
 
 # Show selection for different graphs (self sufficiency, self consumption or energy balance)
