@@ -609,6 +609,8 @@ def next_Tab(autarkie,LSK,tab):
     Input('tabs','value'),
     )
 def next_Tab(batteries,tab):
+    if batteries is None:
+        return 'Zunächst System definieren.'
     I_0,exp=eco.invest_params_default()
     specific_bat_cost_small, absolut_bat_cost_small = eco.invest_costs(batteries['e_bat']['1'],I_0,exp)
     specific_bat_cost_big, absolut_bat_cost_big = eco.invest_costs(batteries['e_bat']['5'],I_0,exp)
@@ -620,8 +622,8 @@ def next_Tab(batteries,tab):
                             dbc.Row(
                                 [
                                 dbc.Col(html.Div(['Kleinste Batterie', html.Br(), str(batteries['e_bat']['1'])+' kWh']), md=4),
-                                dbc.Col(dcc.Input(id='specific_bat_cost_small',value=round(specific_bat_cost_small),type='number',style=dict(width = '70%')), md=4),
-                                dbc.Col(html.Div(id='absolut_bat_cost_small'), md=4),
+                                dbc.Col([dcc.Input(id='specific_bat_cost_small',value=round(specific_bat_cost_small),type='number',style=dict(width = '50%')),'€/kWh'], md=5),
+                                dbc.Col(html.Div(id='absolut_bat_cost_small'), md=3),
                                 ],
                             align='center',
                             ),
@@ -629,8 +631,8 @@ def next_Tab(batteries,tab):
                             dbc.Row(
                                 [
                                 dbc.Col(html.Div(['Größte Batterie', html.Br(), str(batteries['e_bat']['5'])+' kWh']), md=4),
-                                dbc.Col(dcc.Input(id='specific_bat_cost_big', value=round(specific_bat_cost_big),type='number',style=dict(width = '70%')), md=4),
-                                dbc.Col(html.Div(id='absolut_bat_cost_big'), md=4),
+                                dbc.Col([dcc.Input(id='specific_bat_cost_big', value=round(specific_bat_cost_big),type='number',style=dict(width = '50%')),'€/kWh'], md=5),
+                                dbc.Col(html.Div(id='absolut_bat_cost_big'), md=3),
                                 ],
                             align='center',
                             ),
@@ -641,7 +643,7 @@ def next_Tab(batteries,tab):
                             dbc.Row(
                                 [
                                 dbc.Col('Einspeisevergütung', md=4),
-                                dbc.Col(dcc.Input(id='price_sell',min=0,max=20,placeholder='ct/kWh',type='number',style=dict(width = '70%')), md=4),
+                                dbc.Col([dcc.Input(id='price_sell',min=0,max=20,value=6,placeholder='ct/kWh',type='number',style=dict(width = '50%',persistence='local')),'ct/kWh'], md=5),
                                 dbc.Col(html.Div(), md=4),
                                 ],
                             align='center',
@@ -649,8 +651,8 @@ def next_Tab(batteries,tab):
                             dbc.Row(
                                 [
                                 dbc.Col('Strombezugspreis', md=4),
-                                dbc.Col(dcc.Input(id='price_buy',min=10,max=60,placeholder='ct/kWh',type='number',style=dict(width = '70%')), md=4),
-                                dbc.Col(html.Div(), md=4),
+                                dbc.Col([dcc.Input(id='price_buy',min=10,max=60,value=40,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='local'),'ct/kWh'], md=5),
+                                dbc.Col(html.Div(), md=3),
                                 ],
                             align='center',
                             ),
@@ -775,7 +777,8 @@ def scale_pv1(pv_slider1, pv1):
 # Calculation of thermal building and hot water demand time series
 @app.callback(
     Output('p_th_load', 'data'), 
-    Output('building', 'data'), 
+    Output('building', 'data'),
+    Output('building_type_value','children'), 
     Input('include_heating','value'),
     Input('standort','value'),
     Input('wohnfläche','value'),
@@ -809,6 +812,9 @@ def calc_heating_timeseries(heating,location,Area,building_type):
     building['Area']=Area
     building['Inhabitants']=inhabitants
     building['location']=str(region)
+    t_room=20
+    P_tww = 1000+200*building['Inhabitants']    # additional heating load for DHW in W 1000 W + 200 W/person
+    P_th_max=(t_room - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
     # Calc heating load time series with 24h average outside temperature
     weather = pd.read_csv('src/assets/data/weather/TRY_'+str(region)+'_a_2015_15min.csv', header=0, index_col=0)
     weather.loc[weather['temperature 24h [degC]']<building['T_limit'],'p_th_heating']=(t_room-weather.loc[weather['temperature 24h [degC]']<building['T_limit'],'temperature 24h [degC]'])* building['Q_sp'] * Area
@@ -817,7 +823,7 @@ def calc_heating_timeseries(heating,location,Area,building_type):
     load = pd.read_csv('src/assets/data/thermal_loadprofiles/dhw_'+str(int(inhabitants)) +'_15min.csv', header=0, index_col=0)
     load['p_th_heating [W]']=weather['p_th_heating'].values
     load_dict=load[['load [W]','p_th_heating [W]']].to_dict()
-    return load_dict, building
+    return load_dict, building, 'Max. Heizlast: '+str(int(round(P_th_max)))+' W'
 
 # Calculation of heat pump power and efficiency time series
 @app.callback(
@@ -880,7 +886,7 @@ def print_wohnfläche_value(wohnfläche):
     )
 def print_normheizlast_value(normheizlast):
     return html.Div(str(normheizlast)+ ' kW')
-
+    
 # Show photovoltaic power
 @app.callback(
     Output('pv_slider_value', 'children'),
