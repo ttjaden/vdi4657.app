@@ -896,7 +896,6 @@ def print_pv_slider_value(pv_slider):
     Input('price_sell', 'value'),
     )
 def save_price_buy(price_buy,price_sell):
-    print(price_buy,price_sell)
     return [price_buy, price_sell]
 
 # Show investment cost batteries
@@ -980,8 +979,7 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,
 def bat_results(batteries,tab):
     if (batteries is None):
         raise PreventUpdate
-    elif (len(batteries)==2) or (tab!='tab_parameter'):
-        print(len(batteries))
+    elif (len(batteries)==3) or (tab!='tab_parameter'):
         return html.Div()
     return html.Div(children=[html.Br(),dcc.RadioItems(['Autarkiegrad','Eigenverbrauchsanteil','Energiebilanz'],'Autarkiegrad',id='show_bat_results',persistence='local'),html.Div(id='bat_result_graph')])
 
@@ -994,6 +992,8 @@ def bat_results(batteries,tab):
     )
 def bat_results(batteries,tab,results_id):
     if (batteries is None) or (tab!='tab_parameter'):
+        return html.Div()
+    elif (len(batteries)==3) or (tab!='tab_parameter'):
         return html.Div()
     batteries=pd.DataFrame.from_dict(batteries)
     if results_id=='Autarkiegrad':
@@ -1041,7 +1041,7 @@ def economic_results(batteries,electricity_price, tab):
         raise PreventUpdate
     if (electricity_price[0] is None) or (electricity_price[1] is None) or (batteries is None) or (tab!='tab_econmics'): 
         return html.Div()
-    return html.Div(children=[dcc.RadioItems(['Amortisationszeit','NetPresentValue','InternalRateOfReturn'],value='Amortisationszeit',id='show_economic_results'),html.Div(id='cost_result_graph')])
+    return html.Div(children=[dcc.RadioItems(['Amortisationszeit','NetPresentValue','InternalRateOfReturn'],value='Amortisationszeit',id='show_economic_results',persistence='local'),html.Div(id='cost_result_graph')])
 
 # Show choosen graph (economy tab)
 @app.callback(
