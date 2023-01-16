@@ -192,8 +192,7 @@ content = html.Div(
                     dcc.Store(id='power_heat_pump_W'),
                     dcc.Store(id='power_chp_W'),
                     dcc.Store(id='batteries'),
-                    dcc.Store(id='E_gf'),
-                    dcc.Store(id='E_gs'),
+                    dcc.Store(id='price_electricity'),
                     dcc.Store(id='parameters'), #TODO: parameter dict
                     ],
                 fluid=True)])
@@ -890,6 +889,16 @@ def print_normheizlast_value(normheizlast):
 def print_pv_slider_value(pv_slider):
     return html.Div(str(PV[pv_slider])+ ' kWp')
 
+# Save electricity price
+@app.callback(
+    Output('price_electricity', 'data'),
+    Input('price_buy', 'value'),
+    Input('price_sell', 'value'),
+    )
+def save_price_buy(price_buy,price_sell):
+    print(price_buy,price_sell)
+    return [price_buy, price_sell]
+
 # Show investment cost batteries
 @app.callback(
     Output('absolut_bat_cost_small', 'children'),
@@ -931,8 +940,6 @@ def toggle_navbar_collapse(n, is_open):
 # Calculate self sufficiency with different battery sizes
 @app.callback(
     Output('batteries', 'data'),
-    Output('E_gs', 'data'),
-    Output('E_gf', 'data'),
     Input('p_el_hh','data'), 
     Input('power_heat_pump_W','data'), 
     Input('power_chp_W','data'), 
@@ -950,19 +957,19 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,
         pv1=np.zeros(35040).tolist()
     if (power_heat_pump_W is None) or n_hp_style['color']!='white':
         power_heat_pump_W=np.zeros(35040).tolist()
-    if (power_chp_W is None) or n_hp_style['color']!='white':
+    if (power_chp_W is None) or n_chp_style['color']!='white':
         power_chp_W=np.zeros(35040).tolist()
     df['p_el_hh']=p_el_hh
     df['p_el_hp']=power_heat_pump_W
-    df['power_chp']=power_chp_W
+    df['p_chp']=power_chp_W
     df['p_el_hh']=df['p_el_hh']+df['p_el_hp']
     df['p_PV']=np.array(pv1)
-    if (df['p_PV'].mean()==0) and df['power_chp'].mean()==0:
+    if (df['p_PV'].mean()==0) and df['p_chp'].mean()==0:
         return None, None , None
     E_el_MWH = np.array(p_el_hh).mean()*8.76/1000
     E_pv_kwp = df['p_PV'].mean()*8.76/1000
     batteries=sim.calc_bs(df, round(np.minimum(E_el_MWH*1.5,E_pv_kwp*1.5),1))
-    return batteries.to_dict(),batteries['Netzbezug'].values.tolist(),batteries['Netzeinspeisung'].values.tolist()
+    return batteries.to_dict()
 
 # Show selection for different graphs (self sufficiency, self consumption or energy balance)
 @app.callback(
@@ -971,7 +978,10 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,
     Input('tabs', 'value'),
     )
 def bat_results(batteries,tab):
-    if (batteries is None) or (tab!='tab_parameter'):
+    if (batteries is None):
+        raise PreventUpdate
+    elif (len(batteries)==2) or (tab!='tab_parameter'):
+        print(len(batteries))
         return html.Div()
     return html.Div(children=[html.Br(),dcc.RadioItems(['Autarkiegrad','Eigenverbrauchsanteil','Energiebilanz'],'Autarkiegrad',id='show_bat_results',persistence='local'),html.Div(id='bat_result_graph')])
 
@@ -1022,31 +1032,59 @@ def bat_results(batteries,tab,results_id):
 # Show selection for different graphs (economy tab)
 @app.callback(
     Output('cost_result', 'children'),
-    State('E_gs', 'data'),
-    State('E_gf', 'data'),
-    Input('price_buy','value'), 
-    Input('price_sell', 'value'),
-    State('tabs', 'value'),
+    State('batteries', 'data'),
+    Input('price_electricity','data'), 
+    Input('tabs', 'value'),
     )
-def economic_results(E_gs,E_gf,electricity_price_buy,electricity_price_sell,tab):
-    if (electricity_price_buy is None) or (E_gs is None) or (tab!='tab_econmics'): 
+def economic_results(batteries,electricity_price, tab):
+    if electricity_price is None: 
+        raise PreventUpdate
+    if (electricity_price[0] is None) or (electricity_price[1] is None) or (batteries is None) or (tab!='tab_econmics'): 
         return html.Div()
-    return html.Div(children=[dcc.RadioItems([1,2,3],id='show_economic_results'),html.Div(id='cost_result_graph')])
+    return html.Div(children=[dcc.RadioItems(['Amortisationszeit','NetPresentValue','InternalRateOfReturn'],value='Amortisationszeit',id='show_economic_results'),html.Div(id='cost_result_graph')])
 
 # Show choosen graph (economy tab)
 @app.callback(
     Output('cost_result_graph', 'children'),
-    State('E_gs', 'data'),
-    State('E_gf', 'data'),
-    Input('price_buy','value'), 
-    Input('price_sell', 'value'),
+    State('batteries', 'data'),
+    Input('price_electricity','data'),
+    Input('specific_bat_cost_small','value'),
+    Input('specific_bat_cost_big','value'),
     Input('tabs', 'value'),
     Input('show_economic_results', 'value'),
     )
-def economic_results_graph(E_gs,E_gf,electricity_price_buy,electricity_price_sell,tab,results_id):
-    if (electricity_price_buy is None) or (E_gs is None) or (tab!='tab_econmics'): 
+def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,specific_bat_cost_big,tab,results_id):
+    if electricity_price is None: 
+        raise PreventUpdate
+    batteries=(pd.DataFrame(batteries))
+    if (electricity_price[0] is None) or (electricity_price[1] is None) or (batteries is None) or (tab!='tab_econmics'): 
         return html.Div()
-    return dcc.Graph(figure=px.line(y=np.array(E_gs)*(-electricity_price_buy/100)-np.array(E_gf)*electricity_price_sell/100,title='Jahreskosten über Batteriegröße'))
-
+    years=20
+    lifetime=15
+    interest_rate=0.015
+    NetPresentValue=[0]
+    Amortisation=[0]
+    InternalRateOfReturn=[0]
+    I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]],[specific_bat_cost_small,specific_bat_cost_big])
+    for battery in batteries.index[1:]:
+        i, I = eco.invest_costs(batteries.loc[battery]['e_bat'], I_0,exp)
+        cashflow = eco.cash_flow(I,
+                        batteries.loc['0']['Netzeinspeisung'],
+                        batteries.loc[battery]['Netzeinspeisung'],
+                        -batteries.loc['0']['Netzbezug'],
+                        -batteries.loc[battery]['Netzbezug'],
+                        electricity_price[1]/100,
+                        electricity_price[0]/100,
+                        years,
+                        lifetime)
+        NetPresentValue.append(eco.net_present_value(cashflow, interest_rate))
+        Amortisation.append(eco.amortisation(cashflow))
+        InternalRateOfReturn.append(eco.internal_rate_of_return(cashflow))
+    if results_id.startswith('Amortisationszeit'):
+        return dcc.Graph(figure=px.bar(x=batteries['e_bat'], y=Amortisation,title='Amortisationszeit'))
+    elif results_id.startswith('NetPresentValue'):
+        return dcc.Graph(figure=px.bar(x=batteries['e_bat'], y=NetPresentValue,title='NetPresentValue'))
+    elif results_id.startswith('InternalRateOfReturn'):
+        return dcc.Graph(figure=px.bar(x=batteries['e_bat'], y=InternalRateOfReturn,title='InternalRateOfReturn'))
 if __name__ == '__main__':
     app.run_server(debug=True)

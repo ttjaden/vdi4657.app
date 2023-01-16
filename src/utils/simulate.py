@@ -69,6 +69,8 @@ def calc_bs(df, e_bat):
     E=[]
     E_GS=[]
     E_GF=[]
+    E_GF_CHP=[]
+    E_GF_PV=[]
     for idx in batteries.index:
         BAT_soc = []
         BAT_P_bs = []
@@ -78,6 +80,8 @@ def calc_bs(df, e_bat):
         if batteries['e_bat'][idx] == 0.0:
             P_gs = np.minimum(0.0, P_diff)
             P_gf = np.maximum(0.0, P_diff)
+            P_gf_chp = np.minimum(P_gf, df['p_chp'].values)
+            P_gf_pv = np.maximum(0.0, (P_gf-P_gf_chp))
         else:
             res = BAT.simulate(p_load=0, soc=0, dt=dt)
             for p_diff in P_diff:
@@ -88,13 +92,19 @@ def calc_bs(df, e_bat):
             BAT_P_bs=np.asarray(BAT_P_bs)
             P_gs = np.minimum(0.0, (P_diff-BAT_P_bs))
             P_gf = np.maximum(0.0, (P_diff-BAT_P_bs))
+            P_gf_chp = np.minimum(P_gf, df['p_chp'].values)
+            P_gf_pv = np.maximum(0.0, (P_gf-P_gf_chp))
         a=1-((P_gs.mean()*-8.76)/(df['p_el_hh'].mean()*8.76))
         e=((df['p_PV'].mean()*8.76)-(P_gf.mean()*8.76))/(df['p_PV'].mean()*8.76)
         A.append(a)
         E.append(e)
         E_GS.append(P_gs.mean()*8.76)
         E_GF.append(P_gf.mean()*8.76)
+        E_GF_CHP.append(P_gf_chp.mean()*8.76)
+        E_GF_PV.append(P_gf_pv.mean()*8.76)
     batteries['Netzeinspeisung']=E_GF
+    batteries['Netzeinspeisung_PV']=E_GF_PV
+    batteries['Netzeinspeisung_CHP']=E_GF_CHP
     batteries['Netzbezug']=E_GS
     batteries['Autarkiegrad']=A
     batteries['Eigenverbrauch']=E
