@@ -14,8 +14,8 @@ industry_name,Others,Sonstige
 tab_info_1,"The PIEG-Strom Webtool serves as an aid for the design of battery storage systems. After entering various parameters, statements are made about the economic efficiency and the most effective storage size.",Das PIEG-Strom Webtool dient zur Hilfe bei der Auslegung von Batteriespeichern. Nach Eingabe verschiedener Parametern werden Aussagen über die Wirtschaftlichkeit und die effektivste Speichergröße getroffen.
 choose_building,Building selection:,Gebäude:
 choose_technology,Technology:,Technologie:
-increase_autarky,Increase autarky,Autarkiegrad optimieren
-peak_shaving,Peak shaving,Lastspitzenkappung
+increase_autarky,Increase autarky,Eigenversorgung
+peak_shaving,Peak shaving,Peak Shaving
 economics,Economics,Ökonomie
 pv,Photovoltaic,Fotovoltaik
 chp,Combined heat and power,Kraft-Wärme-Kopplung

@@ -95,8 +95,7 @@ header=dbc.Navbar(
                         [
                             html.Div(
                                 [
-                                    html.H4('PIEG-Strom Webtool'),
-                                    html.P('Auslegung von Batteriespeichern'),
+                                    html.H4('Auslegung von Batteriespeichern'),
                                 ],
                                 id='app-title',
                             )
@@ -201,17 +200,17 @@ def change_language(n_language):
         flag='emojione:flag-for-united-kingdom'
     return ([DashIconify(icon=flag, width=50,height=30,),language.loc[language['name']=='lang',lang].iloc[0]],
                 lang,
-                [html.H4('PIEG-Strom Webtool'),html.P(language.loc[language['name']=='header_p',lang].iloc[0])],
+                [html.H4('Auslegung von Batteriespeichern')],
                 [dcc.Tab(label='Anwendung',value='tab_info',children=[html.Div(children=[
-                                    html.H4(children='Was kann PIEG Strom Webtool?'),
-                                    html.Div('Dies ist ein ergänzendes Webtool zur'),
-                                    html.A('"VDI 4657 Blatt 3 - Planung und Integration von Energiespeichern in Gebäudeenergiesystemen - Elektrische Stromspeicher (ESS)"',href='https://www.vdi.de/richtlinien/details/vdi-4657-blatt-3-planung-und-integration-von-energiespeichern-in-gebaeudeenergiesystemen-elektrische-stromspeicher-ess'),
                                     html.Br(),
+                                    html.Div('Dies ist ein ergänzendes Webtool zur VDI 4657-3 "Planung und Integration von Energiespeichern in Gebäudeenergiesystemen - Elektrische Stromspeicher (ESS)"'),
                                     html.Br(),
                                     html.Div('Auswahl des Anwendungsfalls: '),
                                     html.Br(),
-                                    html.Button(html.Div([DashIconify(icon='grommet-icons:optimize',width=100,height=100,),html.Br(),language.loc[language['name']=='increase_autarky',lang].iloc[0]]),id='autakie_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
-                                    html.Button(html.Div([DashIconify(icon='grommet-icons:time',width=100,height=100,),html.Br(),language.loc[language['name']=='peak_shaving',lang].iloc[0]]),id='LSK_click',n_clicks=0,style={'background-color': 'white','color': 'black'}),
+                                    html.Button(html.Div([DashIconify(icon='grommet-icons:optimize',width=75,height=75,),html.Br(),language.loc[language['name']=='increase_autarky',lang].iloc[0]]),id='autakie_click',n_clicks=0,
+                                                                      style={'background-color': 'white','color': 'black', 'font-size': '12px', 'width': '100px', 'display': 'inline-block', 'margin-bottom': '10px', 'margin-right': '5px', 'height':'100px', 'verticalAlign': 'top'}),
+                                    html.Button(html.Div([DashIconify(icon='grommet-icons:time',width=75,height=75,),html.Br(),language.loc[language['name']=='peak_shaving',lang].iloc[0]]),id='LSK_click',n_clicks=0,
+                                                                      style={'background-color': 'white','color': 'black', 'font-size': '12px', 'width': '100px', 'display': 'inline-block', 'margin-bottom': '10px', 'margin-right': '5px', 'height':'100px', 'verticalAlign': 'top'}),
                                 ])]),
                 dcc.Tab(label='System',value='tab_parameter',),
                 dcc.Tab(label=language.loc[language['name']=='economics',lang].iloc[0], value='tab_econmics',)]
