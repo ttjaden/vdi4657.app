@@ -6,10 +6,20 @@ from scipy.optimize import curve_fit
 def invest_params_fit(x, a, b):
     return a * x**b
 
-# Default parameters for invest costs
-def invest_params_default():
-    I_0 = 1375
-    exp = -0.203
+# Default parameters for invest costs for 
+# bs = battery storage
+# pv = photovoltaic
+# chp = combined heat and power
+def invest_params_default(technology='bs'):
+    if technology == 'bs':
+        I_0 = 1375
+        exp = -0.200
+    if technology == 'pv':
+        I_0 = 2100
+        exp = -0.170
+    if technology == 'chp':
+        I_0 = 18500
+        exp = -0.650
     return I_0, exp
 
 # Parameters for invest costs function
@@ -26,7 +36,7 @@ def invest_params(xdata,ydata):
 
 # Function for invest costs
 def invest_costs(capacity, I_0, exp):
-    specific_invest_costs = I_0 * capacity**(exp)           # €/kWh
+    specific_invest_costs = I_0 * capacity**(exp)           # € per capacity
     invest_costs = specific_invest_costs * capacity         # €
     return specific_invest_costs, invest_costs
 
