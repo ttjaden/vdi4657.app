@@ -180,6 +180,7 @@ content = html.Div(
                     dcc.Store(id='power_chp_W'),
                     dcc.Store(id='batteries'),
                     dcc.Store(id='price_electricity'),
+                    dcc.Store(id='price_battery'),
                     dcc.Store(id='parameter_lang'),
                     dcc.Store(id='parameter_use'),
                     dcc.Store(id='parameter_location'),
@@ -190,7 +191,7 @@ content = html.Div(
                     dcc.Store(id='parameter_pv'),
                     dcc.Store(id='parameter_chp'),
                     dcc.Store(id='parameter_hp'),
-                    dcc.Store(id='parameters_all'),
+                    dcc.Store(id='parameters_all',),
                     ],
                 fluid=True)])
 
@@ -208,7 +209,7 @@ app.layout=layout
     Output('button_language', 'value'),
     Output('app-title','children'),
     Output('tabs','children'),
-    Output('parameter_lang','data'),#Output('button_language', 'n_clicks'),
+    Output('parameter_lang','data'),
     Input('button_language', 'n_clicks'),
     Input('parameters_all', 'data'),
 )
@@ -354,9 +355,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
         else:
             return html.Div(children=['LSK']),LSK
     elif tab=='tab_econmics':
-        return html.Div(children=[html.Div(id='battery_cost_para'),html.Br(),
-            dbc.NavItem(button_download,style={'width':'100%'}),
-            dcc.Download(id="download-parameters-xlsx"),]),LSK
+        return html.Div(children=[html.Div(id='battery_cost_para')]),LSK
     else:
         return html.Div(),None
 
@@ -403,7 +402,6 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
     if industry_click is None:
         industry_click=0
     if (efh_click>mfh_click) and (efh_click>industry_click):
-        print(heating)
         if (heating is None) or (len(heating)==0): # for simulating without heating
             return (dbc.Container(
                         [
@@ -575,8 +573,18 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
     Input('n_hp', 'style'),
     Input('button_language','value'),
     Input('last_triggered_building','data'),
+    State('parameters_all','modified_timestamp'),
+    State('parameters_all','data'),
     )
-def built_technology(n_solar,n_chp,n_hp,lang,building):
+def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data):
+    pv_value=10
+    chp_electric_heat_ratio=1
+    hp_technology=''
+    if last_upload is not None:
+        if (ctx.timing_information['__dash_server']['dur']-last_upload/1000)<5:
+            pv_value=(upload_data['pv_kwp']['0'])
+            chp_electric_heat_ratio=(upload_data['chp_electric_heat_ratio']['0'])
+            hp_technology=(upload_data['hp_technology']['0'])
     technology_list=[]
     if n_solar['color']=='white':
         if building=='efh':
@@ -585,7 +593,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building):
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='pv',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv_slider',value=10,persistence='session'), md=5),
+                                dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv_slider',value=pv_value,persistence='session'), md=5),
                                 dbc.Col(html.Div(id='pv_slider_value'), md=4),
                                 ],
                             align='center',
@@ -599,7 +607,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building):
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='pv',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Slider(min=0,max=200,step=5,marks=None, id='pv_slider',value=10,persistence='session'), md=5),
+                                dbc.Col(dcc.Slider(min=0,max=200,step=5,marks=None, id='pv_slider',value=pv_value,persistence='session'), md=5),
                                 dbc.Col(html.Div(id='pv_slider_value'), md=4),
                                 ],
                             align='center',
@@ -619,7 +627,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building):
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='chp',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Slider(min=0.1,max=3,step=0.1,value=0.5,marks=None,id='chp_technology',tooltip={'placement': 'bottom', 'always_visible': False},persistence='session'), md=5),
+                                dbc.Col(dcc.Slider(min=0.1,max=3,step=0.1,value=chp_electric_heat_ratio,marks=None,id='chp_technology',tooltip={'placement': 'bottom', 'always_visible': False},persistence='session'), md=5),
                                 dbc.Col(html.Div(id='chp_technology_value'), md=4),
                                 ],
                             align='center',
@@ -637,7 +645,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building):
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='hp',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Dropdown(['Luft/Wasser (mittl. Effizienz)','Sole/Wasser (mittl. Effizienz)'], id='hp_technology',value=10,persistence='session', optionHeight=50), md=5),
+                                dbc.Col(dcc.Dropdown(['Luft/Wasser (mittl. Effizienz)','Sole/Wasser (mittl. Effizienz)'],value=hp_technology, id='hp_technology',persistence='session', optionHeight=50), md=5),
                                 dbc.Col(html.Div(id='hp_technology_value'), md=4),
                                 ],
                             align='center',
@@ -688,13 +696,14 @@ def next_Tab(autarkie,LSK,upload_data,tab):
     Output('battery_cost_para', 'children'),
     State('batteries','data'),
     Input('tabs','value'),
+    State('parameters_all','data'),
     )
 def next_Tab(batteries,tab):
     if batteries is None:
         return 'Zunächst System definieren.'
     I_0,exp=eco.invest_params_default()
-    specific_bat_cost_small, absolut_bat_cost_small = eco.invest_costs(batteries['e_bat']['1'],I_0,exp)
-    specific_bat_cost_big, absolut_bat_cost_big = eco.invest_costs(batteries['e_bat']['5'],I_0,exp)
+    specific_bat_cost_small,_ = eco.invest_costs(batteries['e_bat']['1'],I_0,exp)
+    specific_bat_cost_big, _ = eco.invest_costs(batteries['e_bat']['5'],I_0,exp)
     if tab=='tab_econmics':
         return html.Div(
             [html.H4('Investitionskosten für Batteriespeicher'),
@@ -740,7 +749,9 @@ def next_Tab(batteries,tab):
                         ],
                         fluid=True,
                         ),
-            ]
+            html.Br(),
+            dbc.NavItem(button_download,style={'width':'100%'}),
+            dcc.Download(id="download-parameters-xlsx"),]
         )
 
 # Specific functions for a certain purpose ################
@@ -925,6 +936,8 @@ def sizing_of_heatpump(building, p_th_load, choosen_hp, hp_active):
         group_id=5
     elif choosen_hp.startswith('Luft'):
         group_id=1
+    else:
+        raise PreventUpdate
     P_hp_el , results_summary, t_in, t_out = sim.calc_hp(building,p_th_load,group_id)
     return (html.Div('(' + str(t_in)+ '° / ' + str(t_out) + '°)'), \
             html.Div('SJAZ: '+str((round(results_summary['SJAZ'],2)))), \
@@ -1029,6 +1042,7 @@ def expertmode(n1):
     State('n_clicks_hp', 'data'),
     State('building', 'data'),
     State('price_electricity', 'data'),
+    State('price_battery', 'data'),
     State('parameter_lang', 'data'),
     State('parameter_use', 'data'),
     State('parameter_location', 'data'),
@@ -1037,7 +1051,7 @@ def expertmode(n1):
     State('parameter_hp', 'data'),
     prevent_initial_call=True,
 )
-def download(n1, last_triggered_building, n_clicks_pv, n_clicks_chp, n_clicks_hp, building, price_electricity, parameter_lang, parameter_use, parameter_location, parameter_pv, parameter_chp, parameter_hp):
+def download(n1, last_triggered_building, n_clicks_pv, n_clicks_chp, n_clicks_hp, building, price_electricity,price_battery, parameter_lang, parameter_use, parameter_location, parameter_pv, parameter_chp, parameter_hp):
     df=pd.DataFrame()
     df['Language']=[parameter_lang]
     df['use_case']=[parameter_use]
@@ -1066,6 +1080,7 @@ def download(n1, last_triggered_building, n_clicks_pv, n_clicks_chp, n_clicks_hp
     df['Building_type']=[building]
     df['Building_size']=[Area]
     df['Electricity_price']=[price_electricity]
+    df['Battery_price']=[price_battery]
     df['Building_size']=[Area]
     
     return dcc.send_data_frame(df.to_excel, "mydf.xlsx", sheet_name="Sheet_name_1")
@@ -1073,6 +1088,7 @@ def download(n1, last_triggered_building, n_clicks_pv, n_clicks_chp, n_clicks_hp
 # Upload
 @app.callback(
     Output('parameters_all', 'data'),
+    Output('parameters_all', 'modified_timestamp'),
     Input('upload-image', 'contents'),
 )
 def upload(file):
@@ -1081,7 +1097,7 @@ def upload(file):
     content_type, content_string = file.split(',')
     decoded = base64.b64decode(content_string)
     df = pd.read_excel(io.BytesIO(decoded))
-    return df.to_dict()
+    return df.to_dict(),ctx.timing_information['__dash_server']['dur']*1000
 
 # Open Navbar (Burger-Button on small screens)
 @app.callback(
@@ -1131,7 +1147,7 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,
     if (E_chp>0):
         batteries=sim.calc_bs(df, np.ceil(E_el_MWH*2/5)*5) #TODO: CHP battery sizing?
     else:
-        batteries=sim.calc_bs(df, np.ceil(np.minimum(E_el_MWH*2.5,3000*E_pv_kwp)/5)*5) #TODO: CHP battery sizing?
+        batteries=sim.calc_bs(df, np.ceil(np.minimum(E_el_MWH*2.5,E_pv_kwp*2.5)/5)*5) #TODO: CHP battery sizing?
     return batteries.to_dict()
 
 # Show selection for different graphs (self sufficiency, self consumption or energy balance)
@@ -1235,7 +1251,7 @@ def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,s
     NetPresentValue=[]
     Amortisation=[]
     InternalRateOfReturn=[]
-    I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]],[specific_bat_cost_small,specific_bat_cost_big])
+    I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]])
     for battery in batteries.index[1:]:
         i, I = eco.invest_costs(batteries.loc[battery]['e_bat'], I_0,exp)
         cashflow = eco.cash_flow(I,
