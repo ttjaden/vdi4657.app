@@ -214,7 +214,7 @@ app.layout=layout
 )
 def change_language(n_language,upload_data):
     if ctx.triggered_id=='parameters_all':
-        lang=(upload_data['language']['0'])
+        lang=(upload_data['Language']['0'])
         if lang=='ger':
             flag='emojione:flag-for-germany'
         else:
@@ -267,8 +267,36 @@ def change_language(n_language,upload_data):
     State('n_clicks_pv','data'),
     State('n_clicks_chp','data'),
     State('n_clicks_hp','data'),
+    Input('parameters_all', 'data'),
 )
-def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
+def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, upload_data):
+    if ctx.triggered_id=='parameters_all':
+        n_clicks_timestamp_efh=None
+        n_clicks_timestamp_mfh=None
+        n_clicks_timestamp_indu=None
+        building=upload_data['Building']['0']
+        if building=='efh':
+            n_clicks_timestamp_efh=1
+        elif building=='mfh':
+            n_clicks_timestamp_mfh=1
+        elif building=='indu':
+            n_clicks_timestamp_indu=1
+        n_clicks_solar = upload_data['n_clicks_pv']['0']
+        n_clicks_chp = upload_data['n_clicks_chp']['0']
+        n_clicks_hp = upload_data['n_clicks_hp']['0']
+        LSK = upload_data['use_case']['0']
+        location = upload_data['location']['0']
+        tab='tab_parameter'
+        if upload_data['include_heating']['0']==0:
+            choose_heating=[]
+        else:
+            choose_heating=['True']
+    else:
+        location=''
+        choose_heating=[]
+        n_clicks_timestamp_efh=None
+        n_clicks_timestamp_mfh=None
+        n_clicks_timestamp_indu=None
     if tab=='tab_parameter':
         if LSK==0:
             if n_clicks_solar is None:
@@ -285,7 +313,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
                             [
                             dbc.Col(html.Div(children=[
                                 html.H3(language.loc[language['name']=='location',lang].iloc[0]),
-                                dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],persistence='session'),
+                                dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],value=location,persistence='session'),
                             ]), md=6),
                             dbc.Col(html.Div(children=[
                                 html.Div(id='region'),
@@ -302,16 +330,16 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
                         dbc.Row(
                             [
                             dbc.Col(html.H3(language.loc[language['name']=='choose_building',lang].iloc[0]), md=4),
-                            dbc.Col(dcc.Checklist(options={'True': 'Heizen und Warmwasser berücksichtigen?'},id='include_heating',persistence='session'), md=8),
+                            dbc.Col(dcc.Checklist(options={'True': 'Heizen und Warmwasser berücksichtigen?'},value=choose_heating, id='include_heating',persistence='session'), md=8),
                             ],
                         align='center',
                         ),
                     ],
                     fluid=True,
                 ),
-                html.Button(html.Div([DashIconify(icon='clarity:home-solid',width=50,height=50,),html.Br(),language.loc[language['name']=='efh_name',lang].iloc[0]],style={'width':'20vh'}),id='efh_click'),
-                html.Button(html.Div([DashIconify(icon='bxs:building-house',width=50,height=50,),html.Br(),language.loc[language['name']=='mfh_name',lang].iloc[0]],style={'width':'20vh'}),id='mfh_click'),
-                html.Button(html.Div([DashIconify(icon='la:industry',width=50,height=50,),html.Br(),language.loc[language['name']=='industry_name',lang].iloc[0]],style={'width':'20vh'}),id='industry_click'),
+                html.Button(html.Div([DashIconify(icon='clarity:home-solid',width=50,height=50,),html.Br(),language.loc[language['name']=='efh_name',lang].iloc[0]],style={'width':'20vh'}),id='efh_click',n_clicks_timestamp=n_clicks_timestamp_efh),#n_clicks_timestamp=1
+                html.Button(html.Div([DashIconify(icon='bxs:building-house',width=50,height=50,),html.Br(),language.loc[language['name']=='mfh_name',lang].iloc[0]],style={'width':'20vh'}),id='mfh_click',n_clicks_timestamp=n_clicks_timestamp_mfh),
+                html.Button(html.Div([DashIconify(icon='la:industry',width=50,height=50,),html.Br(),language.loc[language['name']=='industry_name',lang].iloc[0]],style={'width':'20vh'}),id='industry_click',n_clicks_timestamp=n_clicks_timestamp_indu),
                 html.Br(),
                 html.Br(),
                 html.Div([html.Div(id='wohnfläche'),html.Div(id='building_type'),html.Div(id='building_type_value')],id='bulding_container'),
@@ -322,13 +350,13 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
                     html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'20vh'}),id='n_chp',n_clicks=n_clicks_chp),
                     html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'20vh'}),id='n_hp',n_clicks=n_clicks_hp),
                     html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology')])
-                ),]),'Aut'
+                ),]),LSK
         else:
-            return html.Div(children=['LSK']),'LSK'
+            return html.Div(children=['LSK']),LSK
     elif tab=='tab_econmics':
         return html.Div(children=[html.Div(id='battery_cost_para'),html.Br(),
             dbc.NavItem(button_download,style={'width':'100%'}),
-            dcc.Download(id="download-parameters-xlsx"),]),'eco'
+            dcc.Download(id="download-parameters-xlsx"),]),LSK
     else:
         return html.Div(),None
 
@@ -375,6 +403,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
     if industry_click is None:
         industry_click=0
     if (efh_click>mfh_click) and (efh_click>industry_click):
+        print(heating)
         if (heating is None) or (len(heating)==0): # for simulating without heating
             return (dbc.Container(
                         [
@@ -629,12 +658,24 @@ def built_technology(n_solar,n_chp,n_hp,lang,building):
     Output('LSK_click', 'n_clicks'),
     Input('autakie_click', 'n_clicks'),
     Input('LSK_click', 'n_clicks'),
+    Input('parameters_all', 'data'),
     State('tabs','value')
     )
-def next_Tab(autarkie,LSK,tab):
+def next_Tab(autarkie,LSK,upload_data,tab):
+    
+    if ctx.triggered_id=='parameters_all':
+        if upload_data['use_case']['0']==1:
+            changed_id='LSK'
+            LSK=1
+            autarkie=0
+        else:
+            changed_id='aut'
+            LSK=0
+            autarkie=1
+    else:
+        changed_id = [p['prop_id'] for p in callback_context.triggered][0]#TODO
     if (autarkie==0) & (LSK==0):
         return tab,0,0
-    changed_id = [p['prop_id'] for p in callback_context.triggered][0]
     if changed_id.startswith('aut'):
         return 'tab_parameter',1,0
     elif changed_id.startswith('LSK'):
@@ -1040,7 +1081,6 @@ def upload(file):
     content_type, content_string = file.split(',')
     decoded = base64.b64decode(content_string)
     df = pd.read_excel(io.BytesIO(decoded))
-    print(df)
     return df.to_dict()
 
 # Open Navbar (Burger-Button on small screens)
