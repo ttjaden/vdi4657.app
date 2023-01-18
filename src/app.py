@@ -55,8 +55,16 @@ button_expert = dbc.Button(
 )
 
 button_download = dbc.Button(
-    html.Div(id='button_expert_content',children=[DashIconify(icon='ic:baseline-download',width=50,height=30,),'Parameter Download']),
+    html.Div(id='button_download_content',children=[DashIconify(icon='ic:baseline-download',width=50,height=30,),'Parameter Download']),
     id='button_download',
+    outline=True,
+    color='dark',
+    style={'textTransform': 'none'},
+)
+
+button_reset_price = dbc.Button(
+    html.Div(id='button_reset_price_content',children=[DashIconify(icon='system-uicons:reset',width=50,height=30,),'Standardeinstellungen']),
+    id='button_reset_price',
     outline=True,
     color='dark',
     style={'textTransform': 'none'},
@@ -508,8 +516,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                 {'background-color': '#212529','color': 'white',},
                 {'background-color': 'white','color': 'black'},'mfh')
     if (industry_click>efh_click) and (industry_click>mfh_click):
-        if (heating is None) or (len(heating)==0): # for simulating without heating
-            return (dbc.Container(
+        return (dbc.Container(
                         [
                             dbc.Row(
                                 [
@@ -523,38 +530,6 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                                 dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], md=3),
                                 dbc.Col(dcc.Input(min=5_000,max=1_000_000,step=1000,value=50_000,type='number',style=dict(width = '100%'),id='stromverbrauch',persistence='session'), md=5),
                                 dbc.Col(html.Div(id='stromverbrauch_value'), md=3),
-                                ],
-                            align='center',
-                            ),
-                        ],
-                        fluid=True,
-                        ),
-                    {'background-color': 'white','color': 'black'},
-                    {'background-color': 'white','color': 'black'},
-                    {'background-color': '#212529','color': 'white',},'indu')
-        else:
-            return (dbc.Container(
-                        [
-                            dbc.Row(
-                                [
-                                dbc.Col(language.loc[language['name']=='building_type_industry',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Dropdown(options_slp,id='industry_type',persistence='session', optionHeight=100,maxHeight=400), md=5),
-                                ],
-                            align='center',
-                            ),
-                            dbc.Row(
-                                [
-                                dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], md=3),
-                                dbc.Col(dcc.Input(min=5_000,max=1_000_000,step=1000,value=50_000,type='number',style=dict(width = '100%'),id='stromverbrauch',persistence='session'), md=5),
-                                dbc.Col(html.Div(id='stromverbrauch_value'), md=3),
-                                ],
-                            align='center',
-                            ),
-                            dbc.Row(
-                                [
-                                dbc.Col('Normheizlast', md=3),
-                                dbc.Col(dcc.Slider(min=5,max=150,step=5,value=125,marks=None,id='normheizlast',tooltip={'placement': 'bottom', 'always_visible': False},persistence='session'), md=5),
-                                dbc.Col(html.Div(id='normheizlast_value'), md=3),
                                 ],
                             align='center',
                             ),
@@ -698,7 +673,7 @@ def next_Tab(autarkie,LSK,upload_data,tab):
     Input('tabs','value'),
     State('parameters_all','data'),
     )
-def next_Tab(batteries,tab):
+def next_Tab(batteries,tab, upload_data):
     if batteries is None:
         return 'Zunächst System definieren.'
     I_0,exp=eco.invest_params_default()
@@ -707,12 +682,14 @@ def next_Tab(batteries,tab):
     if tab=='tab_econmics':
         return html.Div(
             [html.H4('Investitionskosten für Batteriespeicher'),
+            button_reset_price,
+            html.Br(),
             dbc.Container(
                         [
                             dbc.Row(
                                 [
                                 dbc.Col(html.Div(['Kleinste Batterie', html.Br(), str(batteries['e_bat']['1'])+' kWh']), md=4),
-                                dbc.Col([dcc.Input(id='specific_bat_cost_small',value=int(round(float(specific_bat_cost_small)/50)*50),type='number',style=dict(width = '50%')),'€/kWh'], md=5),
+                                dbc.Col([dcc.Input(id='specific_bat_cost_small',value=int(round(float(specific_bat_cost_small)/50)*50),type='number',style=dict(width = '50%'), persistence='session'),'€/kWh'], md=5),
                                 dbc.Col(html.Div(id='absolut_bat_cost_small'), md=3),
                                 ],
                             align='center',
@@ -721,7 +698,7 @@ def next_Tab(batteries,tab):
                             dbc.Row(
                                 [
                                 dbc.Col(html.Div(['Größte Batterie', html.Br(), str(batteries['e_bat']['5'])+' kWh']), md=4),
-                                dbc.Col([dcc.Input(id='specific_bat_cost_big', value=int(round(float(specific_bat_cost_big)/50)*50),type='number',style=dict(width = '50%')),'€/kWh'], md=5),
+                                dbc.Col([dcc.Input(id='specific_bat_cost_big', value=int(round(float(specific_bat_cost_big)/50)*50),type='number',style=dict(width = '50%'), persistence='session'),'€/kWh'], md=5),
                                 dbc.Col(html.Div(id='absolut_bat_cost_big'), md=3),
                                 ],
                             align='center',
@@ -834,9 +811,11 @@ def change_solar2_style(n_clicks):
     Input('n_chp', 'n_clicks'),
     Input('n_hp','n_clicks'), 
     Input('include_heating','value'),
+    Input('last_triggered_building', 'data'),
     )
-def change_hp_chp_style(n_chp,n_hp,heating):
-    if (heating is None) or (len(heating)==0):
+def change_hp_chp_style(n_chp,n_hp,heating, building):
+    print(building)
+    if (heating is None) or (len(heating)==0) or (building=='indu'):
         return {'background-color': 'white','color': 'grey'},0,{'background-color': 'white','color': 'grey'},0,0,0
     if ((n_hp%2==0) and (n_chp%2==0)) or (n_chp>=3) or (n_hp>=3):
         return {'background-color': 'white','color': 'black'},0,{'background-color': 'white','color': 'black'},0,0,0
@@ -981,14 +960,6 @@ def print_wohnfläche_value(wohnfläche):
     if wohnfläche<50:
         return html.Div(str(wohnfläche)+ ' WE')
     return html.Div(str(wohnfläche)+ ' m²')
-
-# Show maximum heating load
-@app.callback(
-    Output('normheizlast_value', 'children'),
-    Input('normheizlast', 'value'),
-    )
-def print_normheizlast_value(normheizlast):
-    return html.Div(str(normheizlast)+ ' kW')
     
 # Show photovoltaic power
 @app.callback(
@@ -1042,7 +1013,8 @@ def expertmode(n1):
     State('n_clicks_hp', 'data'),
     State('building', 'data'),
     State('price_electricity', 'data'),
-    State('price_battery', 'data'),
+    State('specific_bat_cost_small', 'value'),
+    State('specific_bat_cost_big', 'value'),
     State('parameter_lang', 'data'),
     State('parameter_use', 'data'),
     State('parameter_location', 'data'),
@@ -1051,7 +1023,7 @@ def expertmode(n1):
     State('parameter_hp', 'data'),
     prevent_initial_call=True,
 )
-def download(n1, last_triggered_building, n_clicks_pv, n_clicks_chp, n_clicks_hp, building, price_electricity,price_battery, parameter_lang, parameter_use, parameter_location, parameter_pv, parameter_chp, parameter_hp):
+def download(n1, last_triggered_building, n_clicks_pv, n_clicks_chp, n_clicks_hp, building, price_electricity,specific_bat_cost_small, specific_bat_cost_big, parameter_lang, parameter_use, parameter_location, parameter_pv, parameter_chp, parameter_hp):
     df=pd.DataFrame()
     df['Language']=[parameter_lang]
     df['use_case']=[parameter_use]
@@ -1080,7 +1052,8 @@ def download(n1, last_triggered_building, n_clicks_pv, n_clicks_chp, n_clicks_hp
     df['Building_type']=[building]
     df['Building_size']=[Area]
     df['Electricity_price']=[price_electricity]
-    df['Battery_price']=[price_battery]
+    df['specific_bat_cost_small']=[specific_bat_cost_small]
+    df['specific_bat_cost_big']=[specific_bat_cost_big]
     df['Building_size']=[Area]
     
     return dcc.send_data_frame(df.to_excel, "mydf.xlsx", sheet_name="Sheet_name_1")
@@ -1098,6 +1071,23 @@ def upload(file):
     decoded = base64.b64decode(content_string)
     df = pd.read_excel(io.BytesIO(decoded))
     return df.to_dict(),ctx.timing_information['__dash_server']['dur']*1000
+
+# reset price
+@app.callback(
+    Output('price_sell', 'value'),
+    Output('price_buy', 'value'),
+    Output('specific_bat_cost_small', 'value'),
+    Output('specific_bat_cost_big', 'value'),
+    Input('button_reset_price', 'n_clicks'),
+    State('batteries','data'),
+)
+def reset_economy(n,batteries):
+    if n is None:
+        raise PreventUpdate
+    I_0,exp=eco.invest_params_default()
+    specific_bat_cost_small,_ = eco.invest_costs(batteries['e_bat']['1'],I_0,exp)
+    specific_bat_cost_big, _ = eco.invest_costs(batteries['e_bat']['5'],I_0,exp)
+    return 6,35,int(round(float(specific_bat_cost_small)/50)*50),int(round(float(specific_bat_cost_big)/50)*50)
 
 # Open Navbar (Burger-Button on small screens)
 @app.callback(
@@ -1251,7 +1241,7 @@ def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,s
     NetPresentValue=[]
     Amortisation=[]
     InternalRateOfReturn=[]
-    I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]])
+    I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]],[specific_bat_cost_small,specific_bat_cost_big])
     for battery in batteries.index[1:]:
         i, I = eco.invest_costs(batteries.loc[battery]['e_bat'], I_0,exp)
         cashflow = eco.cash_flow(I,
@@ -1266,6 +1256,7 @@ def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,s
         NetPresentValue.append(eco.net_present_value(cashflow, interest_rate))
         Amortisation.append(eco.amortisation(cashflow))
         InternalRateOfReturn.append(eco.internal_rate_of_return(cashflow))
+    batteries['e_bat']=batteries['e_bat'].astype('str')
     if results_id.startswith('Amortisationszeit'):
         return dcc.Graph(figure=px.bar(x=batteries['e_bat'][1:], y=Amortisation,title='Amortisationszeit'))
     elif results_id.startswith('NetPresentValue'):
