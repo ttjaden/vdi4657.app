@@ -734,15 +734,23 @@ def next_Tab(batteries,tab, upload_data):
 # Specific functions for a certain purpose ################
 # Weather information
 @app.callback(
-    Output('region', 'children'),
+    Output('parameter_location','data'), 
     Input('standort', 'value'),
+    )
+def standorttoregion(standort):
+    return getregion(standort)
+
+@app.callback(
+    Output('region', 'children'), 
+    Input('parameter_location', 'data'),
     Input('button_language','value'))
-def standorttoregion(standort,lang):
-    region=str(getregion(standort))
-    weather=pd.read_csv('src/assets/data/weather/TRY_'+region+'_a_2015_15min.csv')
+def standorttoregion(region,lang):
+    if region is None:
+        raise PreventUpdate
+    weather=pd.read_csv('src/assets/data/weather/TRY_'+str(region)+'_a_2015_15min.csv')
     average_temperature_C=weather['temperature [degC]'].mean()
     global_irradiance_kWh_m2a=weather['synthetic global irradiance [W/m^2]'].mean()*8.76
-    return html.Div(children=['DWD Region: '+language.loc[language['name']==str(getregion(standort)),lang].iloc[0],html.Br(),
+    return html.Div(children=['DWD Region: '+language.loc[language['name']==str(region),lang].iloc[0],html.Br(),
                     'Durchschnittstemperatur: ' + str(round(average_temperature_C ,1)) + ' °C',html.Br(),
                     'Globalstrahlung: '+ str(int(global_irradiance_kWh_m2a)) + ' kWh/(m²a)'])
 
@@ -814,7 +822,6 @@ def change_solar2_style(n_clicks):
     Input('last_triggered_building', 'data'),
     )
 def change_hp_chp_style(n_chp,n_hp,heating, building):
-    print(building)
     if (heating is None) or (len(heating)==0) or (building=='indu'):
         return {'background-color': 'white','color': 'grey'},0,{'background-color': 'white','color': 'grey'},0,0,0
     if ((n_hp%2==0) and (n_chp%2==0)) or (n_chp>=3) or (n_hp>=3):
@@ -827,15 +834,17 @@ def change_hp_chp_style(n_chp,n_hp,heating, building):
 # Calculation of photovoltaic output time series
 @app.callback(
     Output('c_pv1', 'data'),
-    Output('parameter_location','data'), 
-    Input('standort','value'),)
+    Input('parameter_location','data'), 
+    )
 def calc_pv_power1(location):
+    if location is None:
+        raise PreventUpdate
     orientation=180
     tilt=35
     type='a'
     year=2015
-    pv1=sim.calc_pv(trj=getregion(location)-1,year=year,type=type,tilt=tilt,orientation=orientation)
-    return pv1, location
+    pv1=sim.calc_pv(trj=location-1,year=year,type=type,tilt=tilt,orientation=orientation)
+    return pv1
 @app.callback(
     Output('p_pv1', 'data'),
     Output('parameter_pv','data'),
@@ -853,11 +862,11 @@ def scale_pv1(pv_slider1, pv1):
     Output('building', 'data'),
     Output('building_type_value','children'), 
     Input('include_heating','value'),
-    Input('standort','value'),
+    Input('parameter_location','data'),
     Input('wohnfläche','value'),
     Input('building_type','value'),)
-def calc_heating_timeseries(heating,location,Area,building_type):
-    if (heating is None) or (location is None) or (Area is None) or(building_type is None):
+def calc_heating_timeseries(heating,region,Area,building_type):
+    if (heating is None) or (region is None) or (Area is None) or(building_type is None):
         return None, None, None
     # 1 person for every 50m² in a SFH
     inhabitants = round(Area/50,0)
@@ -878,7 +887,6 @@ def calc_heating_timeseries(heating,location,Area,building_type):
         building=buildings.loc['new',:]
     building=building.to_dict()
     t_room = 20
-    region=getregion(location)
     # Get min temp. for location
     TRJ=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
     building['T_min_ref'] = TRJ['T_min_ref'][region-1]
