@@ -88,6 +88,9 @@ button_info = dbc.Button(
     id='button_info',
     style={'text-transform': 'none'}
 )
+
+encoded_image=base64.b64encode(open('src/assets/logos/Logo_FZJ_200px.png', 'rb').read())
+
 options_slp = [
     {"label": 'Gewerbe allgemein', "value": "LP_G0.csv"},
     {"label": "Gewerbe werktags 8–18 Uhr", "value": "LP_G1.csv"},
@@ -140,6 +143,7 @@ header=dbc.Navbar(
                                     [
                                         dbc.NavItem(button_language,style={'width':'150'}),
                                         dbc.NavItem(button_info,style={'width':'150'}),
+                                        dbc.NavItem(html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()),style={'height':'67px'}))
                                     ],
                                     navbar=True,
                                 ),
@@ -333,19 +337,14 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                             ],
                         align='center',
                         ),
-                    ],
-                    fluid=True,
-                ),
-                html.Br(),
-                dbc.Container(
-                    [
+                        html.Br(),
                         dbc.Row(
                             [
                             dbc.Col(html.H3(language.loc[language['name']=='choose_building',lang].iloc[0]), md=4),
                             dbc.Col(dcc.Checklist(options={'True': 'Heizen und Warmwasser berücksichtigen?'},value=choose_heating, id='include_heating',persistence='session'), md=8),
                             ],
                         align='center',
-                        ),
+                        ), 
                     ],
                     fluid=True,
                 ),
@@ -356,7 +355,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                 html.Br(),
                 html.Div(id='bulding_container'),
                 html.Br(),
-                html.Div(html.H3(language.loc[language['name']=='efh_name',lang].iloc[0])),
+                dbc.Container(html.Div(html.H3(language.loc[language['name']=='choose_technology',lang].iloc[0]))),
                 html.Div(
                     html.Div(children=[html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'20vh'}),id='n_solar',n_clicks=n_clicks_solar),
                     html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'20vh'}),id='n_chp',n_clicks=n_clicks_chp),
@@ -371,10 +370,10 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                             [
                             dbc.Col(html.Div(children=[
                                 html.H3(language.loc[language['name']=='location',lang].iloc[0]),
-                                dcc.Input(id='standort_lsk',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],debounce=True,value=location,persistence='session'),
+                                dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],debounce=True,value=location,persistence='session'),
                             ]), md=6),
                             dbc.Col(html.Div(children=[
-                                html.Div(id='region_lsk'),
+                                html.Div(id='region'),
                             ]), md=6),
                             ],
                         align='center',
