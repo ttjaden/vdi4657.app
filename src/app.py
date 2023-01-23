@@ -275,9 +275,8 @@ def change_language(n_language,upload_data):
 # Render tab content
 @app.callback(
     Output('tab-content', 'children'),
-    Output('parameter_use','data'),
     Input('tabs', 'value'),
-    State('LSK_click','n_clicks'),
+    State('parameter_use','data'),
     Input('button_language','value'),
     State('n_clicks_pv','data'),
     State('n_clicks_chp','data'),
@@ -329,11 +328,9 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                             [
                             dbc.Col(html.Div(children=[
                                 html.H3(language.loc[language['name']=='location',lang].iloc[0]),
-                                dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],debounce=True,value=location,persistence='session'),
+                                dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],value=location,persistence='session'),
                             ]), md=6),
-                            dbc.Col(html.Div(children=[
-                                html.Div(id='region'),
-                            ]), md=6),
+                            dbc.Col(dcc.Loading(type="default",children=html.Div(id='region')), md=6),
                             ],
                         align='center',
                         ),
@@ -361,7 +358,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                     html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'20vh'}),id='n_chp',n_clicks=n_clicks_chp),
                     html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'20vh'}),id='n_hp',n_clicks=n_clicks_hp),
                     html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology')])
-                ),]),LSK
+                ),])
         else:
             return html.Div(children=[html.Br(),
                 dbc.Container(
@@ -403,9 +400,9 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                                             'textAlign': 'center',
                                             'margin': '10px'
                                         },
-                                    ),]),LSK
+                                    ),])
     elif tab=='tab_econmics':
-        return html.Div(id='battery_cost_para'),LSK
+        return html.Div(id='battery_cost_para')
     else:
         return html.Div(),None
 
@@ -647,7 +644,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
                                 [
                                 dbc.Col(language.loc[language['name']=='chp',lang].iloc[0], md=3),
                                 dbc.Col(dcc.Slider(min=0.1,max=3,step=0.1,value=chp_electric_heat_ratio,marks=None,id='chp_technology',tooltip={'placement': 'bottom', 'always_visible': False},persistence='session'), md=5),
-                                dbc.Col(html.Div(id='chp_technology_value'), md=4),
+                                dbc.Col(dcc.Loading(type="circle",children=html.Div(id="chp_technology_value")), md=4),
                                 ],
                             align='center',
                             ),
@@ -665,7 +662,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
                                 [
                                 dbc.Col(language.loc[language['name']=='hp',lang].iloc[0], md=3),
                                 dbc.Col(dcc.Dropdown(['Luft/Wasser (mittl. Effizienz)','Sole/Wasser (mittl. Effizienz)'],value=hp_technology, id='hp_technology',persistence='session', optionHeight=50), md=5),
-                                dbc.Col(html.Div(id='hp_technology_value'), md=4),
+                                dbc.Col(dcc.Loading(type="circle",children=html.Div(id="hp_technology_value")), md=4),
                                 ],
                             align='center',
                             ),
@@ -681,34 +678,25 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
 # Change tabs with buttons on info tab (self-sufficiency or peak shaving)
 @app.callback(
     Output('tabs', 'value'),
-    Output('autakie_click', 'n_clicks'),
-    Output('LSK_click', 'n_clicks'),
+    Output('parameter_use','data'),
     Input('autakie_click', 'n_clicks'),
     Input('LSK_click', 'n_clicks'),
     Input('parameters_all', 'data'),
-    State('tabs','value')
+    State('tabs','value'),
+    State('parameter_use','data')
     )
-def next_Tab(autarkie,LSK,upload_data,tab):
-    
+def next_Tab(autarkie, LSK, upload_data, tab, parameter_use):
     if ctx.triggered_id=='parameters_all':
-        if upload_data['use_case']['0']==1:
-            changed_id='LSK'
-            LSK=1
-            autarkie=0
-        else:
-            changed_id='aut'
-            LSK=0
-            autarkie=1
+        LSK=upload_data['use_case']['0']
     else:
         changed_id = [p['prop_id'] for p in callback_context.triggered][0]#TODO
-    if (autarkie==0) & (LSK==0):
-        return tab,0,0
-    if changed_id.startswith('aut'):
-        return 'tab_parameter',1,0
-    elif changed_id.startswith('LSK'):
-        return 'tab_parameter',0,1
-    else:
-        return tab,0,0
+        if (autarkie==0) & (LSK==0):
+            return tab,parameter_use
+        elif changed_id.startswith('aut'):
+            LSK=0
+        elif changed_id.startswith('LSK'):
+            LSK=1
+    return 'tab_parameter', LSK
 
 # Add investment cost for batteries
 @app.callback(
@@ -716,7 +704,7 @@ def next_Tab(autarkie,LSK,upload_data,tab):
     Output('parameter_economoy', 'data'),
     State('batteries','data'),
     Input('tabs','value'),
-    State('LSK_click','n_clicks'),
+    State('parameter_use','data'),
     State('parameters_all','data'),
     State('parameters_all', 'modified_timestamp'),
     State('parameter_economoy', 'data'),
@@ -729,6 +717,8 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, p
         return html.Div(id='LSK_economy'), last_upload
     if (batteries is None):
         return 'Zunächst System definieren.', last_upload
+    if len(batteries)==3:
+        return 'Bitte Erzeuger im System-Tab auswählen.', last_upload
     I_0,exp=eco.invest_params_default()
     specific_bat_cost_small,_ = eco.invest_costs(batteries['e_bat']['1'],I_0,exp)
     specific_bat_cost_big, _ = eco.invest_costs(batteries['e_bat']['5'],I_0,exp)
@@ -799,7 +789,6 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, p
     Input('LSK_economy', 'children'),#State('upload_load_profile', 'content')
 )
 def print_lsk_economy(trigger):
-    print(ctx.triggered_id)
     return 'Hallo'
 
 # Specific functions for a certain purpose ################
@@ -1229,7 +1218,7 @@ def toggle_navbar_collapse(n, is_open):
     Input('power_heat_pump_W','data'), 
     Input('power_chp_W','data'), 
     Input('p_pv1', 'data'),
-    Input('n_solar', 'n_clicks'),
+    State('n_solar', 'n_clicks'),
     State('n_hp','style'),
     State('n_chp','style'),
     )
@@ -1295,7 +1284,7 @@ def bat_results(batteries,tab,results_id):
     if (batteries is None) or (tab!='tab_parameter'):
         return html.Div()
     elif (len(batteries)==3) or (tab!='tab_parameter'):
-        return html.Div()
+        return html.Div('Bitte Erzeuger auswählen!')
     batteries=pd.DataFrame.from_dict(batteries)
     batteries['e_bat']=batteries['e_bat'].astype('str')
     if results_id=='Autarkiegrad':
@@ -1336,11 +1325,17 @@ def bat_results(batteries,tab,results_id):
     Output('cost_result', 'children'),
     State('batteries', 'data'), 
     Input('tabs', 'value'),
+    State('parameter_use', 'data')
     )
-def economic_results(batteries, tab):
-    if (batteries is None) or (tab!='tab_econmics'): 
+def economic_results(batteries, tab, parameter_use):
+    if tab!='tab_econmics': 
         return html.Div()
-    return html.Div(children=[dcc.RadioItems(['Amortisationszeit','NetPresentValue','InternalRateOfReturn'],value='Amortisationszeit',id='show_economic_results',persistence='session'),html.Div(id='cost_result_graph')])
+    if parameter_use==0:
+        if batteries is None:
+            return html.Div()
+        return html.Div(children=[dcc.RadioItems(['Amortisationszeit','NetPresentValue','InternalRateOfReturn'],value='Amortisationszeit',id='show_economic_results',persistence='session'),html.Div(id='cost_result_graph')])
+    else:
+        return 'economy of LSK'
 
 # Show choosen graph (economy tab)
 @app.callback(
