@@ -151,7 +151,7 @@ def calc_bs_peakshaving(P_gs0):
                     round(E_bs_discharge,1),
                     round(N_full_cylces,1)
                     ]
-    return df, P_bs, P_gs, P_gs0
+    return df
 
 # Calculation of photovoltaic ac power time series
 # normalized to 1 kWp with 1 kW inverter
