@@ -1,7 +1,7 @@
 name,eng,ger
 lang,Language,Sprache
 header_p,Sizing of battery storage systems,Auslegung von Batteriespeichern
-efh_name,Single family house,Einfamilienhaus
+efh_name,SFH,EFH
 location,Location,Standort
 placeholder_location,ZIP-Code (Germany),Postleitzahl oder Adresse
 building_type_efh,Building type,Baustandard
@@ -9,7 +9,7 @@ building_size,Building size in sqm,Wohnraum in qm
 usage,Consumption usage,Verbrauchskennzahlen
 inhabitants,Number of persons,Bewohneranzahl
 energy_cons,Electrical energy consumption,Stromverbrauch
-mfh_name,Apartment house,Mehrfamilienhaus
+mfh_name,MFH,MFH
 industry_name,Others,Sonstige
 tab_info_1,"The PIEG-Strom Webtool serves as an aid for the design of battery storage systems. After entering various parameters, statements are made about the economic efficiency and the most effective storage size.",Das PIEG-Strom Webtool dient zur Hilfe bei der Auslegung von Batteriespeichern. Nach Eingabe verschiedener Parametern werden Aussagen über die Wirtschaftlichkeit und die effektivste Speichergröße getroffen.
 choose_building,Building selection:,Gebäude:
@@ -17,9 +17,9 @@ choose_technology,Technology:,Technologie:
 increase_autarky,Increase autarky,Eigenversorgung
 peak_shaving,Peak shaving,Peak Shaving
 economics,Economics,Ökonomie
-pv,Photovoltaic,Fotovoltaik
-chp,Combined heat and power,Kraft-Wärme-Kopplung
-hp,Heat pump,Wärmepumpe
+pv,PV,PV
+chp,CHP,KWK
+hp,HP,WP
 gas,Gas heater,Gasheizung
 bat,Battery,Batterie
 hyd,H2-Storage,H2-Speicher

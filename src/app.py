@@ -25,7 +25,6 @@ import utils.economy as eco
 ##################################################
 # TODO Space between header and container
 # TODO Translation
-# TODO Save all inputs in a dataframe for import/export
 
 # App configuration
 # Icons from iconify, see https://icon-sets.iconify.design
@@ -143,7 +142,6 @@ header=dbc.Navbar(
                                     [
                                         dbc.NavItem(button_language,style={'width':'150'}),
                                         dbc.NavItem(button_info,style={'width':'150'}),
-                                        dbc.NavItem(html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()),style={'height':'67px'}))
                                     ],
                                     navbar=True,
                                 ),
@@ -160,7 +158,7 @@ header=dbc.Navbar(
         fluid=True,
     ),
     dark=True,
-    color='#212529',
+    color='dark',
     sticky='top',
 )
 
@@ -251,12 +249,30 @@ def change_language(n_language,upload_data):
                                     html.Br(),
                                     html.Div('Dies ist ein ergänzendes Webtool zur VDI 4657-3 "Planung und Integration von Energiespeichern in Gebäudeenergiesystemen - Elektrische Stromspeicher (ESS)"'),
                                     html.Br(),
-                                    html.Div('Auswahl des Anwendungsfalls: '),
+                                    html.Div('Auswahl des Anwendungsfalls: ', style={'textAlign': 'center'}),
                                     html.Br(),
                                     html.Button(html.Div([DashIconify(icon='grommet-icons:optimize',width=75,height=75,),html.Br(),language.loc[language['name']=='increase_autarky',lang].iloc[0]]),id='autakie_click',n_clicks=0,
-                                                                      style={'background-color': 'white','color': 'black', 'font-size': '12px', 'width': '100px', 'display': 'inline-block', 'margin-bottom': '10px', 'margin-right': '5px', 'height':'100px', 'verticalAlign': 'top'}),
+                                                                      style={'background-color': 'white',
+                                                                        'color': 'black',
+                                                                        'font-size': '12px',
+                                                                        'width': '100px',
+                                                                        'display': 'inline-block',
+                                                                        'margin-bottom': '10px',
+                                                                        'margin-right': '5px',
+                                                                        'height':'100px',
+                                                                        'verticalAlign': 'top',
+                                                                        'textAlign': 'center'}),
                                     html.Button(html.Div([DashIconify(icon='grommet-icons:time',width=75,height=75,),html.Br(),language.loc[language['name']=='peak_shaving',lang].iloc[0]]),id='LSK_click',n_clicks=0,
-                                                                      style={'background-color': 'white','color': 'black', 'font-size': '12px', 'width': '100px', 'display': 'inline-block', 'margin-bottom': '10px', 'margin-right': '5px', 'height':'100px', 'verticalAlign': 'top'}),
+                                                                      style={'background-color': 'white',
+                                                                      'color': 'black',
+                                                                      'font-size': '12px',
+                                                                      'width': '100px',
+                                                                      'display': 'inline-block',
+                                                                      'margin-bottom': '10px',
+                                                                      'margin-right': '5px',
+                                                                      'height':'100px',
+                                                                      'verticalAlign': 'top',
+                                                                      'textAlign': 'center'}),
                                     html.Br(),
                                     dcc.Upload(id='upload_parameters',children=html.Div(['Zuvor abgespeicherte Datei ',html.A('hochladen')]),
                                         style={'width': '90%',
@@ -269,6 +285,10 @@ def change_language(n_language,upload_data):
                                             'margin': '10px'
                                         },
                                     ),
+                                    html.Br(),
+                                    html.Div('Entwickelt und gehostet vom'),
+                                    html.Br(),
+                                    html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()),style={'height':'67px'})
                                 ])]),
                 dcc.Tab(label='System',value='tab_parameter',),
                 dcc.Tab(label=language.loc[language['name']=='economics',lang].iloc[0], value='tab_econmics',)],
@@ -332,8 +352,8 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                             dbc.Col(html.Div(children=[
                                 html.H3(language.loc[language['name']=='location',lang].iloc[0]),
                                 dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],value=location,persistence='session'),
-                            ]), md=6),
-                            dbc.Col(dcc.Loading(type="default",children=html.Div(id='region')), md=6),
+                            ]), md=5),
+                            dbc.Col(dcc.Loading(type="default",children=html.Div(id='region')), md=10),
                             ],
                         align='center',
                         ),
@@ -341,25 +361,25 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                         dbc.Row(
                             [
                             dbc.Col(html.H3(language.loc[language['name']=='choose_building',lang].iloc[0]), md=4),
-                            dbc.Col(dcc.Checklist(options={'True': 'Heizen und Warmwasser berücksichtigen?'},value=choose_heating, id='include_heating',persistence='session'), md=8),
+                            dbc.Col(dcc.Checklist(options={'True': ' inkl. Heizung und Warmwasser'},value=choose_heating, id='include_heating',persistence='session'), md=8),
                             ],
                         align='center',
                         ), 
                     ],
                     fluid=True,
                 ),
-                html.Button(html.Div([DashIconify(icon='clarity:home-solid',width=50,height=50,),html.Br(),language.loc[language['name']=='efh_name',lang].iloc[0]],style={'width':'20vh'}),id='efh_click',n_clicks_timestamp=n_clicks_timestamp_efh),#n_clicks_timestamp=1
-                html.Button(html.Div([DashIconify(icon='bxs:building-house',width=50,height=50,),html.Br(),language.loc[language['name']=='mfh_name',lang].iloc[0]],style={'width':'20vh'}),id='mfh_click',n_clicks_timestamp=n_clicks_timestamp_mfh),
-                html.Button(html.Div([DashIconify(icon='la:industry',width=50,height=50,),html.Br(),language.loc[language['name']=='industry_name',lang].iloc[0]],style={'width':'20vh'}),id='industry_click',n_clicks_timestamp=n_clicks_timestamp_indu),
+                html.Button(html.Div([DashIconify(icon='clarity:home-solid',width=50,height=50,),html.Br(),language.loc[language['name']=='efh_name',lang].iloc[0]],style={'width':'10vh'}),id='efh_click',n_clicks_timestamp=n_clicks_timestamp_efh),#n_clicks_timestamp=1
+                html.Button(html.Div([DashIconify(icon='bxs:building-house',width=50,height=50,),html.Br(),language.loc[language['name']=='mfh_name',lang].iloc[0]],style={'width':'10vh'}),id='mfh_click',n_clicks_timestamp=n_clicks_timestamp_mfh),
+                html.Button(html.Div([DashIconify(icon='la:industry',width=50,height=50,),html.Br(),language.loc[language['name']=='industry_name',lang].iloc[0]],style={'width':'10vh'}),id='industry_click',n_clicks_timestamp=n_clicks_timestamp_indu),
                 html.Br(),
                 html.Br(),
                 html.Div(id='bulding_container'),
                 html.Br(),
                 dbc.Container(html.Div(html.H3(language.loc[language['name']=='choose_technology',lang].iloc[0]))),
                 html.Div(
-                    html.Div(children=[html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'20vh'}),id='n_solar',n_clicks=n_clicks_solar),
-                    html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'20vh'}),id='n_chp',n_clicks=n_clicks_chp),
-                    html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'20vh'}),id='n_hp',n_clicks=n_clicks_hp),
+                    html.Div(children=[html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'10vh'}),id='n_solar',n_clicks=n_clicks_solar),
+                    html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'10vh'}),id='n_chp',n_clicks=n_clicks_chp),
+                    html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'10vh'}),id='n_hp',n_clicks=n_clicks_hp),
                     html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology')])
                 ),])
         else:
@@ -720,54 +740,74 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, p
             price_sell=6
             price_buy=35
         return html.Div(
-            [html.H4('Investitionskosten für Batteriespeicher'),
+            [html.Br(),
             button_reset_price,
             html.Br(),
+            html.Br(),
+            html.H4('Investitionskosten'),
             dbc.Container(
                         [
                             dbc.Row(
                                 [
-                                dbc.Col(html.Div(['Kleinste Batterie', html.Br(), str(batteries['e_bat']['1'])+' kWh']), md=4),
-                                dbc.Col([dcc.Input(id='specific_bat_cost_small',value=specific_bat_cost_small,type='number',style=dict(width = '50%'), persistence='session'),'€/kWh'], md=5),
-                                dbc.Col(html.Div(id='absolut_bat_cost_small'), md=3),
+                                dbc.Col(html.Div(['Kleinste Batterie = ']), width=6),
+                                dbc.Col(html.Div([str(batteries['e_bat']['1'])+' kWh']), width=6),
                                 ],
                             align='center',
                             ),
-                            html.Br(),
                             dbc.Row(
                                 [
-                                dbc.Col(html.Div(['Größte Batterie', html.Br(), str(batteries['e_bat']['5'])+' kWh']), md=4),
-                                dbc.Col([dcc.Input(id='specific_bat_cost_big', value=specific_bat_cost_big,type='number',style=dict(width = '50%'), persistence='session'),'€/kWh'], md=5),
-                                dbc.Col(html.Div(id='absolut_bat_cost_big'), md=3),
+                                dbc.Col([dcc.Input(id='specific_bat_cost_small',value=specific_bat_cost_small,type='number',style=dict(width = '50%'), persistence='session'),'€/kWh'], width=6),
+                                dbc.Col(html.Div(id='absolut_bat_cost_small'), width=6),
+                                ],
+                            align='center',
+                            ),
+                            dbc.Row(
+                                [
+                                dbc.Col(html.Div(['Größte Batterie = ']), width=6),
+                                dbc.Col(html.Div([str(batteries['e_bat']['5'])+' kWh']), width=6),
+                                ],
+                            align='center',
+                            ),
+                            dbc.Row(
+                                [
+                                dbc.Col([dcc.Input(id='specific_bat_cost_big', value=specific_bat_cost_big,type='number', style=dict(width = '50%'),persistence='session'),'€/kWh'], width=6),
+                                dbc.Col(html.Div(id='absolut_bat_cost_big'), width=6),
                                 ],
                             align='center',
                             ),
                         ]),
+            html.Br(),
             html.H4('Stromtarif'),
             dbc.Container(
                         [                           
                             dbc.Row(
                                 [
-                                dbc.Col('Einspeisevergütung', md=4),
-                                dbc.Col([dcc.Input(id='price_sell',min=0,value=price_sell,placeholder='ct/kWh',type='number',style=dict(width = '50%',persistence='session')),'ct/kWh'], md=5),
-                                dbc.Col(html.Div(), md=4),
+                                dbc.Col('Einspeisevergütung', width=12)
+                                ]
+                            ),
+                            dbc.Row(
+                                [
+                                dbc.Col([dcc.Input(id='price_sell',min=0,value=price_sell,placeholder='ct/kWh',type='number',style=dict(width = '50%',persistence='session')),'ct/kWh'], width=6),
                                 ],
                             align='center',
                             ),
                             dbc.Row(
                                 [
-                                dbc.Col('Strombezugspreis', md=4),
-                                dbc.Col([dcc.Input(id='price_buy',min=0,value=price_buy,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh'], md=5),
-                                dbc.Col(html.Div(), md=3),
+                                dbc.Col('Strombezugspreis', width=12)
+                                ]
+                            ),
+                            dbc.Row(
+                                [
+                                dbc.Col([dcc.Input(id='price_buy',min=0,value=price_buy,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh'], width=6),
                                 ],
                             align='center',
                             ),
                         ],
-                        fluid=True,
                         ),
             html.Br(),
             dbc.NavItem(button_download,style={'width':'100%'}),
-            dcc.Download(id="download-parameters-xlsx"),]
+            dcc.Download(id="download-parameters-xlsx")
+            ]
         ), last_upload
 
 # show economy tab of LSK
@@ -1406,5 +1446,6 @@ def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,s
         fig=px.bar(x=batteries['e_bat'][1:], y=np.array(InternalRateOfReturn)*100,title='InternalRateOfReturn')
         fig.update_yaxes(ticksuffix = " %")
         return dcc.Graph(figure=fig)
+
 if __name__ == '__main__':
     app.run_server(debug=True)
