@@ -176,9 +176,11 @@ content = html.Div(
                             dcc.Tabs(id='tabs',value='tab_info'),
                             html.Div(id='tab-content')
                         ]),md=4),
-                        dbc.Col(html.Div(children=[html.Div(id='bat_results'),
-                                                    html.Div(id='cost_result'),
-                                                    html.Div(id='cost_result_LSK')])),
+                        dbc.Col(html.Div(children=[html.Div(id=''),
+                                                    dcc.Loading(type="default",children=html.Div(id='bat_results')),
+                                                    dcc.Loading(type="default",children=html.Div(id='bat_results_LSK')),
+                                                    dcc.Loading(type="default",children=html.Div(id='cost_result')),
+                                                    dcc.Loading(type="default",children=html.Div(id='cost_result_LSK'))])),
                     ],align='top',
                     ),
                     dcc.Store(id='last_triggered_building'),
@@ -205,6 +207,7 @@ content = html.Div(
                     dcc.Store(id='parameter_chp'),
                     dcc.Store(id='parameter_hp'),
                     dcc.Store(id='parameters_all'),
+                    dcc.Store(id='parameter_loadprofile'),
                     dcc.Store(id='parameter_economoy'),
                     ],
                 fluid=True)])
@@ -365,24 +368,6 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                     [
                         dbc.Row(
                             [
-                            dbc.Col(html.Div(children=[
-                                html.H3(language.loc[language['name']=='location',lang].iloc[0]),
-                                dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],debounce=True,value=location,persistence='session'),
-                            ]), md=6),
-                            dbc.Col(html.Div(children=[
-                                html.Div(id='region'),
-                            ]), md=6),
-                            ],
-                        align='center',
-                        ),
-                    ],
-                    fluid=True,
-                ),
-                html.Br(),
-                dbc.Container(
-                    [
-                        dbc.Row(
-                            [
                             dbc.Col(html.H3('Lastprofil: '), md=12),
                             ],
                         align='center',
@@ -400,7 +385,8 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                                             'textAlign': 'center',
                                             'margin': '10px'
                                         },
-                                    ),])
+                                    ),
+                html.Div(id='kpi_LSK'),])
     elif tab=='tab_econmics':
         return html.Div(id='battery_cost_para')
     else:
@@ -784,9 +770,10 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, p
             dcc.Download(id="download-parameters-xlsx"),]
         ), last_upload
 
+# show economy tab of LSK
 @app.callback(
     Output('LSK_economy', 'children'),
-    Input('LSK_economy', 'children'),#State('upload_load_profile', 'content')
+    Input('LSK_economy', 'children'),
 )
 def print_lsk_economy(trigger):
     return 'Hallo'
@@ -1181,6 +1168,39 @@ def upload(file):
     df = pd.read_excel(io.BytesIO(decoded))
     return df.to_dict(),ctx.timing_information['__dash_server']['dur']*1000
 
+# Upload load profile
+@app.callback(
+    Output('kpi_LSK', 'children'),#Output('bat_results_LSK', 'children'),df, P_bs, P_gs, P_gs0 = sim.calc_bs_peakshaving(),dcc.Graph(figure=px.line(df))
+    Output('parameter_loadprofile', 'data'),
+    Input('upload_load_profile', 'contents'),
+)
+def upload_loadprofile(file):
+    if file is None:
+        raise PreventUpdate
+    content_type, content_string = file.split(',')
+    decoded = base64.b64decode(content_string)
+    df = pd.read_csv(io.BytesIO(decoded))
+    E_gs, P_gs_max, t_util_a = sim.calc_gs_kpi(df.iloc[:,1])
+    return html.Div([dcc.Graph(figure= px.line(y=df.iloc[:,1])),
+        'Netzbezug: ' + str(E_gs)+ ' kWh',html.Br(),
+        'Maximaler Netzbezug: ' + str(P_gs_max)+ 'kW',html.Br(),
+        'Volllaststunden: ' + str(t_util_a) + ' h',]), df.iloc[:,1].to_list()
+
+# Calculate and show Peak-Shaving for loadprofile
+@app.callback(
+    Output('bat_results_LSK', 'children'),
+    Input('parameter_loadprofile', 'data'),
+)
+def upload_loadprofile(loadprofile):
+    loadprofile=pd.DataFrame({'LP' : loadprofile})
+    df = sim.calc_bs_peakshaving(loadprofile['LP'])
+    fig=px.scatter(data_frame=df,x='P_bs_discharge_max',y='C_bs',color='E_rate',size='t_util')
+    colorscale=[[0, "#ff0000"],[0.05, "#ff3300"],[0.1, "#ff6600"],[0.15, "#ff9900"],[0.2, "#ffcc00"],[0.25, "#ffff00"],[0.3, "#cdee0a"],[0.35, "#9add14"],[0.4, "#67cc1e"],[0.45, "#34bb28"],[0.5, "#00a933"],[0.55, "#34bb28"],[0.6, "#67cc1e"],[0.65, "#9add14"],[0.7, "#cdee0a"],[0.75, "#ffff00"],[0.8, "#ffcc00"],[0.85, "#ff9900"],[0.9, "#ff6600"],[0.95, "#ff3300"],[1, "#ff0000"]]
+    colorbar=dict(tickmode='array',tickvals=[0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0],len=1.05,ticklabeloverflow='allow',outlinewidth=0)
+    fig.update_layout(coloraxis = {'cmin':0,'cmax':3.0,'colorscale':colorscale,'colorbar':colorbar,'autocolorscale':False},)
+    return dcc.Graph(figure=fig)
+
+
 # reset price
 @app.callback(
     Output('price_sell', 'value'),
@@ -1258,15 +1278,16 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,
     State('n_clicks_hp', 'data'),
     State('n_clicks_chp', 'data'),
     State('last_triggered_building', 'data'),
+    State('parameter_use', 'data'),
     )
-def bat_results(batteries,tab,include_heating,n_hp,n_chp, building):
+def bat_results(batteries,tab,include_heating,n_hp,n_chp, building, parameter_use):
     if n_hp is None:
         n_hp=0
     if n_chp is None:
         n_chp=0
     if (batteries is None) or (include_heating is None):
         raise PreventUpdate
-    elif (len(batteries)==3) or (tab!='tab_parameter'):
+    elif (len(batteries)==3) or (tab!='tab_parameter') or (parameter_use!=0):
         return html.Div()
     elif building != 'indu':
         if(len(include_heating)==1) and (n_hp==0) and (n_chp==0):
