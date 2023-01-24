@@ -74,13 +74,18 @@ def calc_bs_peakshaving(P_gs0):
         P_bs_charge[P_bs_charge < 0] = 0            # kW
         P_bs_set = P_bs_discharge - P_bs_charge
         # Energies
-        E_bs_discharge = []                         # kWh
-        E_bs_discharge.append(P_bs_discharge.iloc[0])
+        E_bs_discharge = [int(P_bs_discharge.iloc[0])]   # kWh
         for i in range(1,len(P_bs_discharge)):
             if P_bs_discharge[i] == 0:
-                E_bs_discharge.append(0)
+                if E_bs_discharge[i-1]>0:
+                    E_bs_discharge.append(E_bs_discharge[i-1] - np.minimum(P_bs_charge[i],delta_P_gs)*0.25*eta_ac2bat*eta_bat2ac*eta_bat)
+                else:
+                    E_bs_discharge.append(0)
             else:
-                E_bs_discharge.append(E_bs_discharge[i-1] + P_bs_discharge[i] * 0.25)
+                if E_bs_discharge[i-1]<0:
+                    E_bs_discharge.append(P_bs_discharge[i] * 0.25)
+                else:
+                    E_bs_discharge.append(E_bs_discharge[i-1] + P_bs_discharge[i] * 0.25)
         # Find maximum discharge period in year
         E_bs_discharge_max = max(E_bs_discharge)
         # Calculate battery capacity and KPIs
