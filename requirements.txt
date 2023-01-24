@@ -4,7 +4,7 @@ dash_bootstrap_components
 geopy
 plotly_express
 hplib==1.9
-bslib==0.6
+bslib==0.7
 pvlib==0.9.4
 pandas
 numpy
