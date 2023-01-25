@@ -749,7 +749,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, p
                         [
                             dbc.Row(
                                 [
-                                dbc.Col(html.Div(['Kleinste Batterie = ']), width=6),
+                                dbc.Col(html.Div(['kleinste Batterie']), width=6),
                                 dbc.Col(html.Div([str(batteries['e_bat']['1'])+' kWh']), width=6),
                                 ],
                             align='center',
@@ -763,7 +763,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, p
                             ),
                             dbc.Row(
                                 [
-                                dbc.Col(html.Div(['Größte Batterie = ']), width=6),
+                                dbc.Col(html.Div(['größte Batterie']), width=6),
                                 dbc.Col(html.Div([str(batteries['e_bat']['5'])+' kWh']), width=6),
                                 ],
                             align='center',
