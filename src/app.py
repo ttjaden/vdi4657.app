@@ -109,106 +109,93 @@ options_slp = [
 ]
 
 header=dbc.Navbar(
-    dbc.Container(
-        [
-            dbc.Row(
-                [
-                    dbc.Col(
-                        [
-                            html.Div(
-                                [
-                                    html.H4('Auslegung von Batteriespeichern'),
-                                ],
-                                id='app-title',
-                            )
-                        ],
-                        md=True,
-                        align='center',
-                    ),
+    dbc.Container([
+        dbc.Row([
+            dbc.Col([
+                html.Div([
+                    html.H4('Auslegung von Batteriespeichern'),
+                    ],
+                    id='app-title'
+                    )
                 ],
                 align='center',
-            ),
-            dcc.ConfirmDialog(
-                id='info_dialog',
-                message='Dummy text',
                 ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        [
-                            dbc.NavbarToggler(id='navbar-toggler'),
-                            dbc.Collapse(
-                                dbc.Nav(
-                                    [
-                                        dbc.NavItem(button_language,style={'width':'150'}),
-                                        dbc.NavItem(button_info,style={'width':'150'}),
-                                    ],
-                                    navbar=True,
-                                ),
-                                id='navbar-collapse',
-                                navbar=True,
-                            ),
+            ]),
+        dbc.Row([
+            dbc.Col([
+                dbc.NavbarToggler(id='navbar-toggler'),
+                dbc.Collapse(
+                    dbc.Nav([
+                        dbc.NavItem(button_language,style={'width':'150'}),
+                        dbc.NavItem(button_info,style={'width':'150'}),
+                        dcc.ConfirmDialog(id='info_dialog', message='Dummy text'),
                         ],
-                        md=3,
+                        navbar=True,
+                        ),
+                    id='navbar-collapse',
+                    navbar=True,
                     ),
                 ],
-                align='center',
+                width=3,
+                ),
+            ],
+            align='center',
             ),
         ],
         fluid=True,
-    ),
+        ),
     dark=True,
     color='dark',
     sticky='top',
-)
+    )
 
 ################################################
 # Main-Page
 
-content = html.Div(
-                children=[dbc.Container(
-                    [
-                    dbc.Row(
-                        [
-                        dbc.Col(html.Div(id='scroll',children=[
-                            dcc.Tabs(id='tabs',value='tab_info'),
-                            html.Div(id='tab-content')
-                        ]),md=4),
-                        dbc.Col(html.Div(children=[html.Div(id=''),
-                                                    dcc.Loading(type="default",children=html.Div(id='bat_results')),
-                                                    dcc.Loading(type="default",children=html.Div(id='bat_results_LSK')),
-                                                    dcc.Loading(type="default",children=html.Div(id='cost_result')),
-                                                    dcc.Loading(type="default",children=html.Div(id='cost_result_LSK'))])),
-                    ],align='top',
-                    ),
-                    dcc.Store(id='last_triggered_building'),
-                    dcc.Store(id='n_clicks_pv'),
-                    dcc.Store(id='n_clicks_chp'),
-                    dcc.Store(id='n_clicks_hp'),
-                    dcc.Store(id='parameter_include_heating'),
-                    dcc.Store(id='parameter_wohnfläche'),
-                    dcc.Store(id='parameter_building_type'),
-                    dcc.Store(id='p_el_hh'),
-                    dcc.Store(id='p_th_load'),
-                    dcc.Store(id='building'),
-                    dcc.Store(id='c_pv1'),
-                    dcc.Store(id='p_pv1'),
-                    dcc.Store(id='power_heat_pump_W'),
-                    dcc.Store(id='power_chp_W'),
-                    dcc.Store(id='batteries'),
-                    dcc.Store(id='price_electricity'),
-                    dcc.Store(id='parameter_lang'),
-                    dcc.Store(id='parameter_use'),
-                    dcc.Store(id='parameter_location_int'),
-                    dcc.Store(id='parameter_location_string'),
-                    dcc.Store(id='parameter_pv'),
-                    dcc.Store(id='parameter_chp'),
-                    dcc.Store(id='parameter_hp'),
-                    dcc.Store(id='parameters_all'),
-                    dcc.Store(id='parameter_loadprofile'),
-                    dcc.Store(id='parameter_economoy'),
-                    ],
-                fluid=True)])
+content = html.Div(children=[
+    dbc.Container([
+        dbc.Row([
+            dbc.Col(html.Div(id='scroll',children=[
+                dcc.Tabs(id='tabs',value='tab_info'),
+                html.Div(id='tab-content'),
+                ]
+                ), width=12, md=6 ,lg=5, xl=4),
+            dbc.Col(html.Div(
+                children=[dcc.Loading(type="default",children=html.Div(id='bat_results')),
+                    dcc.Loading(type="default",children=html.Div(id='bat_results_LSK')),
+                    dcc.Loading(type="default",children=html.Div(id='cost_result')),
+                    dcc.Loading(type="default",children=html.Div(id='cost_result_LSK')),
+                    ]
+                )),
+            ]),
+        ],fluid=True),
+    dcc.Store(id='last_triggered_building'),
+    dcc.Store(id='n_clicks_pv'),
+    dcc.Store(id='n_clicks_chp'),
+    dcc.Store(id='n_clicks_hp'),
+    dcc.Store(id='parameter_include_heating'),
+    dcc.Store(id='parameter_wohnfläche'),
+    dcc.Store(id='parameter_building_type'),
+    dcc.Store(id='p_el_hh'),
+    dcc.Store(id='p_th_load'),
+    dcc.Store(id='building'),
+    dcc.Store(id='c_pv1'),
+    dcc.Store(id='p_pv1'),
+    dcc.Store(id='power_heat_pump_W'),
+    dcc.Store(id='power_chp_W'),
+    dcc.Store(id='batteries'),
+    dcc.Store(id='price_electricity'),
+    dcc.Store(id='parameter_lang'),
+    dcc.Store(id='parameter_use'),
+    dcc.Store(id='parameter_location_int'),
+    dcc.Store(id='parameter_location_string'),
+    dcc.Store(id='parameter_pv'),
+    dcc.Store(id='parameter_chp'),
+    dcc.Store(id='parameter_hp'),
+    dcc.Store(id='parameters_all'),
+    dcc.Store(id='parameter_loadprofile'),
+    dcc.Store(id='parameter_economoy'),
+    ],)
 
 # Create layout
 layout = html.Div(id='app-page-content',children=[header,content])
@@ -345,43 +332,41 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                 n_clicks_hp=0
             return html.Div(className='para',id='para',children=[
                 html.Br(),
-                dbc.Container(
-                    [
-                        dbc.Row(
-                            [
-                            dbc.Col(html.Div(children=[
-                                html.H3(language.loc[language['name']=='location',lang].iloc[0]),
-                                dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],value=location,persistence='session'),
-                            ]), md=5),
-                            dbc.Col(dcc.Loading(type="default",children=html.Div(id='region')), md=10),
-                            ],
-                        align='center',
-                        ),
-                        html.Br(),
-                        dbc.Row(
-                            [
-                            dbc.Col(html.H3(language.loc[language['name']=='choose_building',lang].iloc[0]), md=4),
-                            dbc.Col(dcc.Checklist(options={'True': ' inkl. Heizung und Warmwasser'},value=choose_heating, id='include_heating',persistence='session'), md=8),
-                            ],
+                dbc.Container([
+                    dbc.Row(dbc.Col(html.H3(language.loc[language['name']=='location',lang].iloc[0])),),
+                    dbc.Row([
+                        dbc.Col(dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],value=location,persistence='session',style=dict(width = '100%'))),
+                        dbc.Col(dcc.Loading(type="default",children=html.Div(id='region')),align='start',width=12, lg=7),
+                        ]),
+                    html.Br(),
+                    html.Br(),
+                    dbc.Row([
+                        dbc.Col(html.H3(language.loc[language['name']=='choose_building',lang].iloc[0]), width=12, md=4),
+                        dbc.Col(dcc.Checklist(options={'True': ' inkl. Heizung und Warmwasser'},value=choose_heating, id='include_heating',persistence='session'), md=8),
+                        ],
                         align='center',
                         ), 
+                    dbc.Row([
+                        dbc.Col(html.Button(html.Div([DashIconify(icon='clarity:home-solid',width=50,height=50,),html.Br(),language.loc[language['name']=='efh_name',lang].iloc[0]],style={'width':'120px'}),id='efh_click',n_clicks_timestamp=n_clicks_timestamp_efh), width=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon='bxs:building-house',width=50,height=50,),html.Br(),language.loc[language['name']=='mfh_name',lang].iloc[0]],style={'width':'120px'}),id='mfh_click',n_clicks_timestamp=n_clicks_timestamp_mfh), width=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon='la:industry',width=50,height=50,),html.Br(),language.loc[language['name']=='industry_name',lang].iloc[0]],style={'width':'120px'}),id='industry_click',n_clicks_timestamp=n_clicks_timestamp_indu), width=4),
+                    ]),
+                    html.Br(),
+                    html.Br(),
+                    dbc.Row(id='bulding_container'),
+                    html.Br(),
+                    dbc.Row(dbc.Col(html.H3(language.loc[language['name']=='choose_technology',lang].iloc[0]))),
+                    dbc.Row([
+                        dbc.Col(html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'120px'}),id='n_solar',n_clicks=n_clicks_solar),width=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'120px'}),id='n_chp',n_clicks=n_clicks_chp),width=4),
+                        dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'120px'}),id='n_hp',n_clicks=n_clicks_hp),width=4),
+                    ]),
+                    dbc.Row(html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology'))
                     ],
                     fluid=True,
-                ),
-                html.Button(html.Div([DashIconify(icon='clarity:home-solid',width=50,height=50,),html.Br(),language.loc[language['name']=='efh_name',lang].iloc[0]],style={'width':'10vh'}),id='efh_click',n_clicks_timestamp=n_clicks_timestamp_efh),#n_clicks_timestamp=1
-                html.Button(html.Div([DashIconify(icon='bxs:building-house',width=50,height=50,),html.Br(),language.loc[language['name']=='mfh_name',lang].iloc[0]],style={'width':'10vh'}),id='mfh_click',n_clicks_timestamp=n_clicks_timestamp_mfh),
-                html.Button(html.Div([DashIconify(icon='la:industry',width=50,height=50,),html.Br(),language.loc[language['name']=='industry_name',lang].iloc[0]],style={'width':'10vh'}),id='industry_click',n_clicks_timestamp=n_clicks_timestamp_indu),
-                html.Br(),
-                html.Br(),
-                html.Div(id='bulding_container'),
-                html.Br(),
-                dbc.Container(html.Div(html.H3(language.loc[language['name']=='choose_technology',lang].iloc[0]))),
-                html.Div(
-                    html.Div(children=[html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'10vh'}),id='n_solar',n_clicks=n_clicks_solar),
-                    html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'10vh'}),id='n_chp',n_clicks=n_clicks_chp),
-                    html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'10vh'}),id='n_hp',n_clicks=n_clicks_hp),
-                    html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology')])
-                ),])
+                    ),
+                    ])
+                
         else:
             return html.Div(children=[html.Br(),
                 dbc.Container(
@@ -842,7 +827,7 @@ def standorttoregion(region,lang):
     weather=pd.read_csv('src/assets/data/weather/TRY_'+str(region)+'_a_2015_15min.csv')
     average_temperature_C=weather['temperature [degC]'].mean()
     global_irradiance_kWh_m2a=weather['synthetic global irradiance [W/m^2]'].mean()*8.76
-    return html.Div(children=['DWD Region: ',language.loc[language['name']==str(region),lang].iloc[0]])
+    return ['DWD Region: ',language.loc[language['name']==str(region),lang].iloc[0]]
 
 # Electric load profile information
 @app.callback(
