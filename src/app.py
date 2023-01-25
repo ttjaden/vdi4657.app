@@ -842,9 +842,7 @@ def standorttoregion(region,lang):
     weather=pd.read_csv('src/assets/data/weather/TRY_'+str(region)+'_a_2015_15min.csv')
     average_temperature_C=weather['temperature [degC]'].mean()
     global_irradiance_kWh_m2a=weather['synthetic global irradiance [W/m^2]'].mean()*8.76
-    return html.Div(children=['DWD Region: '+language.loc[language['name']==str(region),lang].iloc[0],html.Br(),
-                    'Durchschnittstemperatur: ' + str(round(average_temperature_C ,1)) + ' °C',html.Br(),
-                    'Globalstrahlung: '+ str(int(global_irradiance_kWh_m2a)) + ' kWh/(m²a)'])
+    return html.Div(children=['DWD Region: ',language.loc[language['name']==str(region),lang].iloc[0]])
 
 # Electric load profile information
 @app.callback(
