@@ -1414,16 +1414,16 @@ def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,s
     batteries=(pd.DataFrame(batteries))
     if (electricity_price[0] is None) or (electricity_price[1] is None) or (batteries is None) or (tab!='tab_econmics'): 
         return html.Div()
-    years=20
+    years=15
     lifetime=15
-    interest_rate=0.015
+    interest_rate=0.00
     NetPresentValue=[]
     Amortisation=[]
     InternalRateOfReturn=[]
     I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]],[specific_bat_cost_small,specific_bat_cost_big])
     for battery in batteries.index[1:]:
         i, I = eco.invest_costs(batteries.loc[battery]['e_bat'], I_0,exp)
-        cashflow = eco.cash_flow(I,
+        cashflow = eco.cash_flow_self_consumption(I,
                         batteries.loc['0']['Netzeinspeisung'],
                         batteries.loc[battery]['Netzeinspeisung'],
                         -batteries.loc['0']['Netzbezug'],
