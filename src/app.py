@@ -96,7 +96,7 @@ button_info = dbc.Button(
     style={'text-transform': 'none'}
 )
 
-encoded_image=base64.b64encode(open(DATA_PATH.joinpath('logos/Logo_FZJ_200px.png'), 'rb').read())
+encoded_image=base64.b64encode(open(ASSETS_PATH.joinpath('logos/Logo_FZJ_200px.png'), 'rb').read())
 
 options_slp = [
     {"label": 'Gewerbe allgemein', "value": "LP_G0.csv"},
