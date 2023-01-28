@@ -43,10 +43,10 @@ DATA_PATH = PATH.joinpath('data').resolve()
 
 app.title = 'Auslegung von Batteriespeichern'
 # Table for translation (work in progress)
-language=pd.read_csv('src/utils/translate.csv')
+language=pd.read_csv(DATA_PATH.joinpath('translate.csv'))
 
 # Weather information for all regions
-weather_summary=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
+weather_summary=pd.read_csv(DATA_PATH.joinpath('weather/TRJ-Tabelle.csv'))
 
 ##################################################
 # Definiton of graphical elements / content ######
@@ -845,7 +845,7 @@ def standorttoregion(standort):
 def standorttoregion(region,lang):
     if region is None:
         raise PreventUpdate
-    weather=pd.read_csv('src/assets/data/weather/TRY_'+str(region)+'_a_2015_15min.csv')
+    weather=pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+str(region)+'_a_2015_15min.csv'))
     average_temperature_C=weather['temperature [degC]'].mean()
     global_irradiance_kWh_m2a=weather['synthetic global irradiance [W/m^2]'].mean()*8.76
     return ['DWD Region: ',language.loc[language['name']==str(region),lang].iloc[0]]
@@ -858,15 +858,15 @@ def standorttoregion(region,lang):
     Input('industry_type','value'))
 def get_p_el_hh(e_hh,building,building_type):
     if building=='efh':
-        p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_EFH.csv')
+        p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_EFH.csv'))
     elif building=='mfh':
         if e_hh<15000:
-            p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_MFH_k.csv')
+            p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_MFH_k.csv'))
 
         elif e_hh<45000:
-            p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_MFH_m.csv')
+            p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_MFH_m.csv'))
         elif e_hh>45000:
-            p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/LP_W_MFH_g.csv')
+            p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_MFH_g.csv'))
     else:
         if building_type==None:
             raise PreventUpdate
@@ -882,7 +882,7 @@ def get_p_el_hh(e_hh,building,building_type):
                 building_type='LP_Ö_Büro_k.csv'
             else:
                 building_type='LP_Ö_Büro_m.csv'
-        p_el=pd.read_csv('src/assets/data/electrical_loadprofiles/'+building_type)
+        p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/'+building_type))
     return (p_el.iloc[:,1].values*e_hh/1000).tolist()
 
 # Change button style
@@ -982,7 +982,7 @@ def calc_heating_timeseries(heating,region,Area,building_type):
     building=building.to_dict()
     t_room = 20
     # Get min temp. for location
-    TRJ=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
+    TRJ=pd.read_csv(DATA_PATH.joinpath('weather/TRJ-Tabelle.csv'))
     building['T_min_ref'] = TRJ['T_min_ref'][region-1]
     building['Area']=Area
     building['Inhabitants']=inhabitants
@@ -991,11 +991,11 @@ def calc_heating_timeseries(heating,region,Area,building_type):
     P_tww = 1000+200*building['Inhabitants']    # additional heating load for DHW in W 1000 W + 200 W/person
     P_th_max=(t_room - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
     # Calc heating load time series with 24h average outside temperature
-    weather = pd.read_csv('src/assets/data/weather/TRY_'+str(region)+'_a_2015_15min.csv', header=0, index_col=0)
+    weather = pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+str(region)+'_a_2015_15min.csv'), header=0, index_col=0)
     weather.loc[weather['temperature 24h [degC]']<building['T_limit'],'p_th_heating']=(t_room-weather.loc[weather['temperature 24h [degC]']<building['T_limit'],'temperature 24h [degC]'])* building['Q_sp'] * Area
     weather.loc[weather['temperature 24h [degC]']>=building['T_limit'],'p_th_heating']=0
     # Load domestic hot water load profile
-    load = pd.read_csv('src/assets/data/thermal_loadprofiles/dhw_'+str(int(inhabitants)) +'_15min.csv', header=0, index_col=0)
+    load = pd.read_csv(DATA_PATH.joinpath('thermal_loadprofiles/dhw_'+str(int(inhabitants)) +'_15min.csv'), header=0, index_col=0)
     load['p_th_heating [W]']=weather['p_th_heating'].values
     load_dict=load[['load [W]','p_th_heating [W]']].to_dict()
     return load_dict, building, 'Max. Heizlast: '+str(int(round(P_th_max)))+' W'

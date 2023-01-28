@@ -1,11 +1,16 @@
 import pandas as pd
 from hplib import hplib as hpl
 from bslib import bslib as bsl
+import pathlib
 import numpy as np
 from pvlib.location import Location
 from pvlib.pvsystem import PVSystem
 from pvlib.modelchain import ModelChain
 from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
+
+# Relative paths
+PATH = pathlib.Path(__file__).parent
+DATA_PATH = PATH.joinpath('../data').resolve()
 
 # Thermal storage
 class HeatStorage():
@@ -156,7 +161,7 @@ def calc_bs_peakshaving(P_gs0):
 # Calculation of photovoltaic ac power time series
 # normalized to 1 kWp with 1 kW inverter
 def calc_pv(trj, year, type, tilt, orientation):
-    locations=pd.read_csv('src/assets/data/weather/TRJ-Tabelle.csv')
+    locations=pd.read_csv(DATA_PATH.joinpath('weather/TRJ-Tabelle.csv'))
     location = Location(locations['lat'][trj], locations['lon'][trj],'Europe/Berlin', locations['height'][trj], locations['station'][trj])
     module_parameters = dict(pdc0=1000, gamma_pdc=-0.003)
     inverter_parameters = dict(pdc0=1000*0.96)
@@ -166,7 +171,7 @@ def calc_pv(trj, year, type, tilt, orientation):
             inverter_parameters=inverter_parameters,
             temperature_model_parameters=temperature_parameters)
     mc_sys_s = ModelChain.with_pvwatts(sys_s, location, name=locations['station'][trj]+'_Süd')
-    weather_csv = pd.read_csv('src/assets/data/weather/TRY_'+str(locations['TRY'][trj])+'_'+type+'_'+str(year)+'_15min.csv', header=0, index_col=0)
+    weather_csv = pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+str(locations['TRY'][trj])+'_'+type+'_'+str(year)+'_15min.csv'), header=0, index_col=0)
     weather = pd.concat([weather_csv['synthetic global irradiance [W/m^2]'],
                         weather_csv['synthetic diffuse irradiance [W/m^2]'],
                         weather_csv['wind speed [m/s]'],
@@ -249,7 +254,7 @@ def calc_bs(df, e_bat):
 # Calculation of heat pump
 def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     # read load and weather
-    weather = pd.read_csv('src/assets/data/weather/TRY_'+building['location']+'_a_2015_15min.csv', header=0, index_col=0)
+    weather = pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+building['location']+'_a_2015_15min.csv'), header=0, index_col=0)
     p_th_load=pd.DataFrame(p_th_load)
     P_th_tww = p_th_load['load [W]']
     P_th_h = p_th_load['p_th_heating [W]']
@@ -481,7 +486,7 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
 # Calculation of combined heat and power
 def calc_chp(building, p_th_load, power_to_heat_ratio, chp_to_peak_ratio=0.3, t_room=20, T_sp_tww_set=50):
     # read load and weather
-    weather = pd.read_csv('src/assets/data/weather/TRY_'+building['location']+'_a_2015_15min.csv', header=0, index_col=0)
+    weather = pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+building['location']+'_a_2015_15min.csv'), header=0, index_col=0)
     p_th_load=pd.DataFrame(p_th_load)
     P_th_tww = p_th_load['load [W]']
     P_th_h = p_th_load['p_th_heating [W]']
