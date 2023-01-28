@@ -34,8 +34,9 @@ app = Dash(__name__,
           meta_tags=[{'name': 'viewport', 'inhalt': 'width=device-width, initial-scale=1'},
           ],
           )
+server = app.server
 
-app.title = 'Auslegung von Batteriespeicher'
+app.title = 'Auslegung von Batteriespeichern'
 # Table for translation (work in progress)
 language=pd.read_csv('src/utils/translate.csv')
 

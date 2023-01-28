@@ -1,6 +1,7 @@
 dash
 dash_iconify
 dash_bootstrap_components
+dash-tools
 geopy
 plotly_express
 hplib==1.9
@@ -10,3 +11,4 @@ pandas
 numpy
 numpy-financial
 openpyxl
+gunicorn
