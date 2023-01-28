@@ -11,6 +11,7 @@ from dash_iconify import DashIconify
 # Data management
 import pandas as pd
 import numpy as np
+import pathlib
 # Plots
 import plotly_express as px
 # Additional informations
@@ -35,6 +36,10 @@ app = Dash(__name__,
           ],
           )
 server = app.server
+
+# Relative paths
+PATH = pathlib.Path(__file__).parent
+DATA_PATH = PATH.joinpath('data').resolve()
 
 app.title = 'Auslegung von Batteriespeichern'
 # Table for translation (work in progress)
