@@ -232,7 +232,7 @@ def calc_bs(df, e_bat):
             P_gf_chp = np.minimum(P_gf, df['p_chp'].values)
             P_gf_pv = np.maximum(0.0, (P_gf-P_gf_chp))
         a=1-((P_gs.mean()*-8.76)/(df['p_el_hh'].mean()*8.76))
-        e=((df['p_PV'].mean()*8.76)-(P_gf.mean()*8.76))/(df['p_PV'].mean()*8.76)
+        e=((df['p_PV'].mean()*8.76)+(df['p_chp'].mean()*8.76)-(P_gf.mean()*8.76))/((df['p_PV'].mean()*8.76)+(df['p_chp'].mean()*8.76))
         A.append(a)
         E.append(e)
         E_GS.append(P_gs.mean()*8.76)

@@ -18,8 +18,11 @@ increase_autarky,Increase autarky,Eigenversorgung
 peak_shaving,Peak shaving,Peak Shaving
 economics,Economics,Ökonomie
 pv,PV,PV
+photovoltaik,Photovoltaic: ,Photovoltaik: 
 chp,CHP,KWK
+combined_heat_power,Combined heat and power: ,Kraftwärme-Kopplung: 
 hp,HP,WP
+heatpump, Heat pump: , Wärmepumpe
 gas,Gas heater,Gasheizung
 bat,Battery,Batterie
 hyd,H2-Storage,H2-Speicher
@@ -65,7 +68,7 @@ choose_use_case,Selection of the use case: ,Auswahl des Anwendungsfalls:
 use_case,Use case,Anwendung
 choose_building_type,Choose a building type,Einen Gebäudetyp wählen
 heating, incl. heating and hot water, inkl. Heizung und Warmwasser
-max_heatload,Max. heating load: ,Max. Heizlast: 
+max_heatload,Standard heating load: ,Normheizlast: : 
 invest_cost,Investment costs,Investitionskosten
 small_battery,smallest battery,kleinste Batterie
 large_battery,largest battery,größte Batterie
@@ -96,7 +99,7 @@ loadprofile,Loadprofile:,Lastprofil:
 upload_info,Upload loadprofile in 15min steps,15 min. Lastprofil hochladen
 upload_info1,"Of type .xls, .xlsx or .csv","Vom Typ .xls, .xlsx oder .csv"
 upload_info2,The column with the highest average value is used,Genutzt wird die Spalte mit dem höchsten Durschnittswert
-upload_info3,Assumed is the unit watt,Angenommen wird die Einheit Watt
+upload_info3,Assumed is the unit kilowatt [kW],Angenommen wird die Einheit Kilowatt [kW]
 grid_supply,Grid supply: ,Netzbezug: 
 max_grid_supply,Maximum grid supply: ,Maximaler Netzbezug: 
 load_hours,Full load hours,Volllaststunden

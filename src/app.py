@@ -42,7 +42,7 @@ PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath('data').resolve()
 ASSETS_PATH = PATH.joinpath('assets').resolve()
 
-app.title = 'Auslegung von Batteriespeichern'
+app.title = 'VDI 4657-3 Webtool'
 # Table for translation (work in progress)
 language=pd.read_csv(DATA_PATH.joinpath('translate.csv'))
 
@@ -91,9 +91,9 @@ button_info = dbc.Button(
 encoded_image=base64.b64encode(open(ASSETS_PATH.joinpath('logos/Logo_FZJ_200px.png'), 'rb').read())
 
 options_building_type_ger=[
-    {"label": 'Bestand, unsaniert', "value": "Bestand, unsaniert"},
-    {"label": 'Bestand, saniert', "value": "Bestand, saniert"},
-    {"label": 'Neubau, nach 2016', "value": "Neubau, nach 2016"},
+    {"label": html.Div([html.Span('Bestand, unsaniert',id='tooltip_building1'), dbc.Tooltip('Vorlauf: 35°C',target='tooltip_building1')]), "value": "Bestand, unsaniert"},
+    {"label": html.Div([html.Span('Bestand, saniert',id='tooltip_building2'), dbc.Tooltip('Vorlauf: 45°C',target='tooltip_building2')]), "value": "Bestand, saniert"},
+    {"label": html.Div([html.Span('Neubau, nach 2016',id='tooltip_building3'), dbc.Tooltip('Vorlauf: 55°C',target='tooltip_building3')]), "value": "Neubau, nach 2016"},
     ]
 options_building_type_eng=[
     {"label": 'Existing building, unrenovated', "value": "Bestand, unsaniert"},
@@ -101,16 +101,16 @@ options_building_type_eng=[
     {"label": 'New building, after 2016', "value": "Neubau, nach 2016"},
     ]
 options_slp_ger = [
-    {"label": 'Gewerbe allgemein', "value": "LP_G0.csv"},
-    {"label": "Gewerbe werktags 8–18 Uhr", "value": "LP_G1.csv"},
-    {"label": "Gewerbe mit starkem bis überwiegendem Verbrauch in den Abendstunden", "value": "LP_G2.csv"},
-    {"label": 'Gewerbe durchlaufend', "value": "LP_G3.csv"},
-    {"label": 'Laden/Friseur', "value": "LP_G4.csv"},
-    {"label": 'Bäckerei mit Backstube', "value": "LP_G5.csv"},
-    {"label": 'Wochenendbetrieb', "value": "LP_G6.csv"},
-    {"label": 'Landwirtschaftsbetriebe allgemein', "value": "LP_L0.csv"},
-    {"label": 'Landwirtschaftsbetriebe mit Milchwirtschaft/Nebenerwerbs-Tierzucht', "value": "LP_L1.csv"},
-    {"label": 'Übrige Landwirtschaftsbetriebe', "value": "LP_L2.csv"},
+    {"label": 'G0: Gewerbe allgemein', "value": "LP_G0.csv"},
+    {"label": "G1: Gewerbe werktags 8–18 Uhr", "value": "LP_G1.csv"},
+    {"label": "G2: Gewerbe mit starkem bis überwiegendem Verbrauch in den Abendstunden", "value": "LP_G2.csv"},
+    {"label": 'G3: Gewerbe durchlaufend', "value": "LP_G3.csv"},
+    {"label": 'G4: Laden/Friseur', "value": "LP_G4.csv"},
+    {"label": 'G5: Bäckerei mit Backstube', "value": "LP_G5.csv"},
+    {"label": 'G6: Wochenendbetrieb', "value": "LP_G6.csv"},
+    {"label": 'L0: Landwirtschaftsbetriebe allgemein', "value": "LP_L0.csv"},
+    {"label": 'L1: Landwirtschaftsbetriebe mit Milchwirtschaft/Nebenerwerbs-Tierzucht', "value": "LP_L1.csv"},
+    {"label": 'L2: Übrige Landwirtschaftsbetriebe', "value": "LP_L2.csv"},
     {"label": 'Büro', "value": "LP_Ö_Büro"},
     {"label": 'Schule', "value": "LP_Ö_Schule"},
     {"label": 'Produzierendes Gewerbe / Metallverarbeitung', "value": "LP_G_MV.csv"},
@@ -118,16 +118,16 @@ options_slp_ger = [
     {"label": 'Möbelhaus', "value": "LP_G_MH.csv"},
 ]
 options_slp_eng = [
-    {"label": 'General trade', "value": "LP_G0.csv"},
-    {"label": "Trade during weekdays 8-18", "value": "LP_G1.csv"},
-    {"label": "Trade with strong to predominant consumption in the evening hours", "value": "LP_G2.csv"},
-    {"label": 'Continuous trade', "value": "LP_G3.csv"},
-    {"label": 'Store/hairdresser', "value": "LP_G4.csv"},
-    {"label": 'Bakery with bakery', "value": "LP_G5.csv"},
-    {"label": 'Weekend operation', "value": "LP_G6.csv"},
-    {"label": 'Farms in general', "value": "LP_L0.csv"},
-    {"label": 'Farms with dairy farming/part-time animal breeding', "value": "LP_L1.csv"},
-    {"label": 'Other farms', "value": "LP_L2.csv"},
+    {"label": 'G0: General trade', "value": "LP_G0.csv"},
+    {"label": "G1: Trade during weekdays 8-18", "value": "LP_G1.csv"},
+    {"label": "G2: Trade with strong to predominant consumption in the evening hours", "value": "LP_G2.csv"},
+    {"label": 'G3: Continuous trade', "value": "LP_G3.csv"},
+    {"label": 'G4: Store/hairdresser', "value": "LP_G4.csv"},
+    {"label": 'G5: Bakery with bakery', "value": "LP_G5.csv"},
+    {"label": 'G6: Weekend operation', "value": "LP_G6.csv"},
+    {"label": 'L0: Farms in general', "value": "LP_L0.csv"},
+    {"label": 'L1: Farms with dairy farming/part-time animal breeding', "value": "LP_L1.csv"},
+    {"label": 'L2: Other farms', "value": "LP_L2.csv"},
     {"label": 'Office', "value": "LP_Ö_Büro"},
     {"label": 'School', "value": "LP_Ö_Schule"},
     {"label": 'Manufacturing trade/metal processing', "value": "LP_G_MV.csv"},
@@ -186,7 +186,7 @@ content = html.Div(children=[
                 dcc.Tabs(id='tabs',value='tab_info'),
                 html.Div(id='tab-content'),
                 ]
-                ), width=12, md=6 ,lg=5, xl=4),
+                ), width=12, md=5, lg=5, xl=4),
             dbc.Col(html.Div(
                 children=[html.Div(id='bat_results'),
                     html.Div(id='bat_results_LSK'),
@@ -221,6 +221,8 @@ content = html.Div(children=[
     dcc.Store(id='parameter_hp'),
     dcc.Store(id='parameters_all'),
     dcc.Store(id='parameter_loadprofile'),
+    dcc.Store('show_economic_results'),
+    dcc.Store('show_bat_results'),
     dcc.Loading(type='default',children=dcc.Store(id='parameter_peak_shaving')),
     dcc.Store(id='parameter_economoy'),
     ],)
@@ -291,7 +293,8 @@ def change_language(n_language,upload_data):
                             'height':'100px',
                             'verticalAlign': 'top',
                             'textAlign': 'center'}),
-                            width={'size':1,'offset': 3})
+                            width={'size':1,'offset': 3},
+                            )
                         ],
                         )
                 ]),
@@ -402,9 +405,10 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                         dbc.Col(html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'120px'}),id='n_solar',n_clicks=n_clicks_solar),width=4),
                         dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'120px'}),id='n_chp',n_clicks=n_clicks_chp),width=4),
                         dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'120px'}),id='n_hp',n_clicks=n_clicks_hp),width=4),
-                    ])]
+                    ])],
+                    fluid=True
                     ),
-                dbc.Container(html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology'))
+                dbc.Container(html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology'),fluid=True)
                 
             ])
         else:
@@ -623,7 +627,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                 [
                 dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], width=6),
                 dbc.Col(html.Div(id='stromverbrauch_value'), width=4),
-                dbc.Col(dcc.Input(min=5_000,max=1_000_000,step=1000,value=electricity_consumption_indu,type='number',style=dict(width = '100%'),id='stromverbrauch',persistence='session'), width=11),
+                dbc.Col(dcc.Slider(min=5_000,max=200_000,step=1000,marks=None,value=electricity_consumption_indu,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
                 ],
             align='center',
             ),
@@ -645,6 +649,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
     )
 def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data):
     pv_value=10
+    chp_max_power=0.3
     chp_electric_heat_ratio=1
     hp_technology=''
     if last_upload is not None:
@@ -652,13 +657,13 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
             pv_value=(upload_data['pv_kwp']['0'])
             chp_electric_heat_ratio=(upload_data['chp_electric_heat_ratio']['0'])
             hp_technology=(upload_data['hp_technology']['0'])
-    technology_list=[]
+    technology_list=[html.Br()]
     if n_solar['color']=='white':
         if building=='efh':
             technology_list.append(
                             dbc.Row(
                                 [
-                                dbc.Col(language.loc[language['name']=='pv',lang].iloc[0], width=6),
+                                dbc.Col(html.H6(language.loc[language['name']=='photovoltaik',lang].iloc[0]), width=6),
                                 dbc.Col(html.Div(id='pv_slider_value'), width=4),
                                 dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='session'), width=12),
                                 ],
@@ -668,7 +673,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
             technology_list.append(
                             dbc.Row(
                                 [
-                                dbc.Col(language.loc[language['name']=='pv',lang].iloc[0], width=6),
+                                dbc.Col(html.H6(language.loc[language['name']=='photovoltaik',lang].iloc[0]), width=6),
                                 dbc.Col(html.Div(id='pv_slider_value'), width=4),
                                 dbc.Col(dcc.Slider(min=0,max=200,step=5,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='session'), width=12),
                                 ],
@@ -684,12 +689,24 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
         technology_list.append(
                             dbc.Row(
                                 [
-                                dbc.Col(language.loc[language['name']=='chp',lang].iloc[0], width=6),
-                                dbc.Col(dcc.Loading(type="circle",children=html.Div(id="chp_technology_value"))),
+                                dbc.Col(html.H6(language.loc[language['name']=='combined_heat_power',lang].iloc[0]), width=6),
+                                dbc.Col(dcc.Loading(type="circle",children=html.Div(id="chp_load_hours"))),
+                                ],
+                            align='center',
+                            ),)
+        technology_list.append(
+                            dbc.Row(
+                                [
+                                dbc.Col('  Peak-ratio', width=6),
+                                dbc.Col(id='chp_technology_value'),
+                                dbc.Col(dcc.Slider(min=0.1,max=1,step=0.1,value=chp_max_power,marks=None,id='chp_max_power',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                                dbc.Col('  Power to Heat-ratio', width=6),
+                                dbc.Col(id='chp_technology_value2'),
                                 dbc.Col(dcc.Slider(min=0.1,max=3,step=0.1,value=chp_electric_heat_ratio,marks=None,id='chp_technology',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
                                 ],
                             align='center',
-                            ))
+                            ),
+                            )
     else:
         technology_list.append(
             html.Div([html.Div(id='chp_technology'),html.Div(id='chp_technology_value')])
@@ -698,7 +715,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
         technology_list.append(
                             dbc.Row(
                                 [
-                                dbc.Col(language.loc[language['name']=='hp',lang].iloc[0], width=6),
+                                dbc.Col(html.H6(language.loc[language['name']=='heatpump',lang].iloc[0]), width=6),
                                 dbc.Col(dcc.Loading(type="circle",children=html.Div(id="hp_technology_value")), width=4),
                                 dbc.Col(dcc.Dropdown(['Luft/Wasser (mittl. Effizienz)','Sole/Wasser (mittl. Effizienz)'],value=hp_technology, id='hp_technology',persistence='session', optionHeight=50), width=11),
                                 ],
@@ -1067,31 +1084,33 @@ def sizing_of_heatpump(building, p_th_load, choosen_hp, hp_active):
     else:
         raise PreventUpdate
     P_hp_el , results_summary, t_in, t_out = sim.calc_hp(building,p_th_load,group_id)
-    return (html.Div('(' + str(t_in)+ '° / ' + str(t_out) + '°)'), \
-            html.Div('SJAZ: '+str((round(results_summary['SJAZ'],2)))), \
-            html.Div('Heizstab: ' + str(int(round(results_summary['percent_heating_rod_el'])))+' % el')), \
+    return (html.Div('SJAZ: '+str((round(results_summary['SJAZ'],2)))+ ', ' +str(round(results_summary['Energy_consumption_kWh'],0))+' kWh')), \
             P_hp_el.values.tolist(),\
             choosen_hp
 
 # Calculation of heat pump power and efficiency time series
 @app.callback(
+    Output('chp_load_hours', 'children'), 
     Output('chp_technology_value', 'children'), 
+    Output('chp_technology_value2', 'children'), 
     Output('power_chp_W', 'data'),
     Output('parameter_chp','data'),
     Input('building','data'),
     Input('p_th_load','data'),
+    Input('chp_max_power','value'),
     Input('chp_technology','value'),
     State('n_chp', 'style'),
     Input('button_language', 'value')
     )
-def sizing_of_chp(building, p_th_load, choosen_chp, chp_active, lang):
+def sizing_of_chp(building, p_th_load,chp_max_ratio, choosen_chp, chp_active, lang):
     if (choosen_chp is None) or chp_active['color']!='white':
         raise PreventUpdate
-    results_timeseries, P_th_max, P_th_chp, P_el_chp, runtime = sim.calc_chp(building,p_th_load,choosen_chp,)
-    return html.Div([html.Div(str(int(round(P_el_chp))) + ' kWel / ' + str(int(round(P_th_chp)))+' kWth'),\
-                    html.Div(str(int(round(runtime)))+ language.loc[language['name']=='load_hours',lang].iloc[0])]), \
-                    results_timeseries['P_chp_h_el'].values.tolist(), \
-                    choosen_chp
+    results_timeseries, P_th_max, P_th_chp, P_el_chp, runtime = sim.calc_chp(building,p_th_load,choosen_chp,chp_to_peak_ratio=chp_max_ratio)
+    return (html.Div(str(int(round(runtime)))+ language.loc[language['name']=='load_hours',lang].iloc[0]),
+            html.Div(str((round(P_th_chp/1000,1)))+' kWth'),
+            html.Div(str((round(P_el_chp/1000,1))) + ' kWel'),
+            results_timeseries['P_chp_h_el'].values.tolist(), \
+            choosen_chp)
 
 # Save parameter 'include heating'
 @app.callback(
@@ -1115,7 +1134,7 @@ def print_wohnfläche_value(wohnfläche, building, electricity_consumption):
     if building is None: 
         raise PreventUpdate
     if building=='mfh':
-        return [wohnfläche*2,wohnfläche*70], wohnfläche*2000
+        return [wohnfläche*2,wohnfläche*70], wohnfläche*1500
     return [wohnfläche/50, wohnfläche], electricity_consumption
 
 #Show living area in m² or residential units
@@ -1303,10 +1322,10 @@ def upload_loadprofile(file, name, lang):
         if len(df.columns)==1:
             df = pd.read_excel(io.BytesIO(decoded), decimal=',')
     biggest_column=(df.mean().sort_values(ascending=False).index[0])
-    E_gs, P_gs_max, t_util_a = sim.calc_gs_kpi(df.iloc[:,1])
-    return html.Div([language.loc[language['name']=='grid_supply',lang].iloc[0] + str(int(round(E_gs/1000000,3)))+ ' MWh',html.Br(),
+    E_gs, P_gs_max, t_util_a = sim.calc_gs_kpi(df.iloc[:,1]*1000)
+    return html.Div([language.loc[language['name']=='grid_supply',lang].iloc[0] + str(int(round(E_gs/1000,0)))+ ' kWh',html.Br(),
         language.loc[language['name']=='max_grid_supply',lang].iloc[0]+ str(round(P_gs_max/1000,2))+ ' kW',html.Br(),
-        language.loc[language['name']=='load_hours',lang].iloc[0] + ': ' + str(t_util_a) + ' h']), df.loc[:,biggest_column].to_list()
+        language.loc[language['name']=='load_hours',lang].iloc[0] + ': ' + str(t_util_a) + ' h']), (df.loc[:,biggest_column]*1000).to_list()
 
 # Calculate Peak-shaving
 @app.callback(
@@ -1396,8 +1415,9 @@ def toggle_navbar_collapse(n, is_open):
     State('n_solar', 'n_clicks'),
     State('n_hp','style'),
     State('n_chp','style'),
+    State('last_triggered_building', 'data'),
     )
-def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,n_chp_style):
+def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,n_chp_style, building):
     if p_el_hh is None:
         raise PreventUpdate
     df=pd.DataFrame()
@@ -1418,10 +1438,17 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,
     E_el_MWH = df['p_el_hh'].mean()*8.76/1000
     E_pv_kwp = df['p_PV'].mean()*8.76/1000
     E_chp = df['p_chp'].mean()*8.76/1000
-    if (E_chp>0):
-        batteries=sim.calc_bs(df, np.ceil(E_el_MWH*2/5)*5) #TODO: CHP battery sizing?
+    if building!='efh':
+        if (E_chp>0):
+            max_battery_size = np.ceil(round(E_el_MWH,0)/5)*5
+        else:
+            max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*1.5,E_pv_kwp*1.5)/5)*5
     else:
-        batteries=sim.calc_bs(df, np.ceil(np.minimum(E_el_MWH*2.5,E_pv_kwp*2.5)/5)*5) #TODO: CHP battery sizing?
+        if (E_chp>0):
+            max_battery_size = np.ceil(round(E_el_MWH,0)*1.5/5)*5#TODO: CHP battery sizing?
+        else:
+            max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*2.5,E_pv_kwp*2.5)/5)*5 #TODO: CHP battery sizing?
+    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size))
     return batteries.to_dict()
 
 # Show selection for different graphs (self sufficiency, self consumption or energy balance)
@@ -1448,33 +1475,39 @@ def bat_results(batteries,tab,include_heating,n_hp,n_chp, building, parameter_us
     elif building != 'indu':
         if(len(include_heating)==1) and (n_hp==0) and (n_chp==0):
             return html.Div()
-    return html.Div(children=[html.Br(),dcc.Store('show_bat_results'),
+    return html.Div(children=[html.Br(),
     dbc.Container([
         dbc.Row([
-            dbc.Col(dcc.RadioItems(options={'Autarkiegrad': language.loc[language['name']=='self_sufficiency',lang].iloc[0] },value='Autarkiegrad',id='Autarkiegrad',persistence='session')),
-            dbc.Col(dcc.RadioItems(options={'Eigenverbrauch': language.loc[language['name']=='self_consumption',lang].iloc[0] },id='Eigenverbrauch',persistence='session')),
-            dbc.Col(dcc.RadioItems(options={'Energiebilanz': language.loc[language['name']=='energy_balance',lang].iloc[0] },id='Energiebilanz',persistence='session'))])
-        ]),html.Div(id='bat_result_graph')])
+            dbc.Col(width=1),
+            dbc.Col(dbc.Button(language.loc[language['name']=='self_sufficiency',lang].iloc[0],id='Autarkiegrad',color='dark',n_clicks=0)),
+            dbc.Col(dbc.Button(language.loc[language['name']=='self_consumption',lang].iloc[0],id='Eigenverbrauch',color='dark',n_clicks=0)),
+            dbc.Col(dbc.Button(language.loc[language['name']=='energy_balance',lang].iloc[0],id='Energiebilanz', color='dark',n_clicks=0))
+            ]),html.Br()
+        ], fluid=True),html.Div(id='bat_result_graph')])
 
 # return choosen value for bat_results    
 @app.callback(
     Output('show_bat_results', 'data'),
-    Output('Autarkiegrad', 'value'),
-    Output('Eigenverbrauch', 'value'),
-    Output('Energiebilanz', 'value'),
-    Input('Autarkiegrad', 'value'),
-    Input('Eigenverbrauch', 'value'),
-    Input('Energiebilanz', 'value'),
+    Output('Autarkiegrad', 'style'),
+    Output('Eigenverbrauch', 'style'),
+    Output('Energiebilanz', 'style'),
+    Input('Autarkiegrad', 'n_clicks'),
+    Input('Eigenverbrauch', 'n_clicks'),
+    Input('Energiebilanz', 'n_clicks'),
+    State('show_bat_results', 'data'),
     )
-def bat_choosen_results(aut, eig, energy):
-    if ctx.triggered_id is None:
-        return aut, aut, None, None
-    elif ctx.triggered_id=='Autarkiegrad':
-        return ctx.triggered_id, ctx.triggered_id, None, None
-    elif ctx.triggered_id=='Eigenverbrauch':
-        return ctx.triggered_id, None, ctx.triggered_id, None
-    elif ctx.triggered_id=='Energiebilanz':
-        return ctx.triggered_id, None, None, ctx.triggered_id
+def bat_choosen_results(aut, eig, energy, data):
+    show_graph=ctx.triggered_id
+    if ((ctx.triggered_id=='Autarkiegrad')and(aut==0))or ((ctx.triggered_id=='Eigenverbrauch')and(eig==0)) or ((ctx.triggered_id=='Energiebilanz')and(energy==0)):
+        show_graph=data
+    if data is None: 
+        show_graph='Autarkiegrad'
+    if show_graph=='Autarkiegrad':
+        return show_graph, {'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
+    elif show_graph=='Eigenverbrauch':
+        return show_graph,{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'}
+    elif show_graph=='Energiebilanz':
+        return show_graph, {'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',}
 
 # show choosen graph    
 @app.callback(
@@ -1494,7 +1527,7 @@ def bat_results(batteries,tab,results_id, lang):
     if lang=='ger':
         if results_id=='Autarkiegrad':
             fig=px.bar(data_frame=batteries,x='e_bat',y=['Autarkiegrad ohne Stromspeicher','Erhöhung der Autarkie durch Stromspeicher'],
-                color_discrete_map={'Autarkiegrad ohne Stromspeicher': '#fecda4', 'Erhöhung der Autarkie durch Stromspeicher' : '#90da9d'},
+                color_discrete_map={'Autarkiegrad ohne Stromspeicher': '#ffe43b', 'Erhöhung der Autarkie durch Stromspeicher' : '#ffbd29'},
                 labels={"e_bat": "nutzbare Speicherkapazität in kWh",
                         "value": "%",
                         'variable': ''
@@ -1502,7 +1535,7 @@ def bat_results(batteries,tab,results_id, lang):
                 )
         elif results_id=='Eigenverbrauch':
             fig=px.bar(data_frame=batteries,x='e_bat',y=['Eigenverbrauch ohne Stromspeicher','Erhöhung des Eigenverbrauchs durch Stromspeicher'],
-                color_discrete_map={'Eigenverbrauch ohne Stromspeicher': '#fecda4', 'Erhöhung des Eigenverbrauchs durch Stromspeicher' : '#90da9d'},
+                color_discrete_map={'Eigenverbrauch ohne Stromspeicher': '#ffe43b', 'Erhöhung des Eigenverbrauchs durch Stromspeicher' : '#ffbd29'},
                 labels={"e_bat": "nutzbare Speicherkapazität in kWh",
                         "value": "%",
                         'variable': ''
@@ -1510,7 +1543,7 @@ def bat_results(batteries,tab,results_id, lang):
                 )
         elif results_id=='Energiebilanz':
             fig=px.bar(data_frame=batteries,x='e_bat',y=['Netzeinspeisung','Netzbezug'],
-                color_discrete_map={'Netzeinspeisung': '#fae0a4', 'Netzbezug' : '#a7adb4'},
+                color_discrete_map={'Netzeinspeisung': '#c8c8c8', 'Netzbezug' : '#646464'},
                 labels={"e_bat": "nutzbare Speicherkapazität in kWh",
                         "value": "Netzbezug/Netzeinspeisung in kWh/a",
                         'variable': ''
@@ -1571,35 +1604,42 @@ def economic_results(batteries, tab, parameter_use, lang):
     if parameter_use==0:
         if batteries is None:
             return html.Div()
-        return html.Div(children=[html.Br(),dcc.Store('show_economic_results'),
+        return html.Div(children=[html.Br(),
     dbc.Container([
         dbc.Row([
-            dbc.Col(dcc.RadioItems(options={'Amortisationszeit': language.loc[language['name']=='payback',lang].iloc[0] },value='Amortisationszeit',id='Amortisationszeit',persistence='session')),
-            dbc.Col(dcc.RadioItems(options={'NetPresentValue': language.loc[language['name']=='NPV',lang].iloc[0] },id='NetPresentValue',persistence='session')),
-            dbc.Col(dcc.RadioItems(options={'InternalRateOfReturn': language.loc[language['name']=='IROR',lang].iloc[0] },id='InternalRateOfReturn',persistence='session'))])
-        ]),html.Div(id='cost_result_graph')])
+            dbc.Col(width=1),
+            dbc.Col(dbc.Button(language.loc[language['name']=='payback',lang].iloc[0],id='Amortisationszeit', color='dark',)),
+            dbc.Col(dbc.Button(language.loc[language['name']=='NPV',lang].iloc[0],id='NetPresentValue', color='dark')),
+            dbc.Col(dbc.Button(language.loc[language['name']=='IROR',lang].iloc[0],id='InternalRateOfReturn', color='dark'))
+            ]),html.Br(),html.Br(),
+        dbc.Row(id='cost_result_graph')
+        ])])
     else:
         return 'economy of LSK'
 
 # return choosen value for economy_results    
 @app.callback(
     Output('show_economic_results', 'data'),
-    Output('Amortisationszeit', 'value'),
-    Output('NetPresentValue', 'value'),
-    Output('InternalRateOfReturn', 'value'),
-    Input('Amortisationszeit', 'value'),
-    Input('NetPresentValue', 'value'),
-    Input('InternalRateOfReturn', 'value'),
+    Output('Amortisationszeit', 'style'),
+    Output('NetPresentValue', 'style'),
+    Output('InternalRateOfReturn', 'style'),
+    Input('Amortisationszeit', 'n_clicks'),
+    Input('NetPresentValue', 'n_clicks'),
+    Input('InternalRateOfReturn', 'n_clicks'),
+    State('show_economic_results', 'data')
     )
-def eco_results(aut, eig, energy):
-    if ctx.triggered_id is None:
-        return aut, aut, None, None
-    elif ctx.triggered_id=='Amortisationszeit':
-        return ctx.triggered_id, ctx.triggered_id, None, None
-    elif ctx.triggered_id=='NetPresentValue':
-        return ctx.triggered_id, None, ctx.triggered_id, None
-    elif ctx.triggered_id=='InternalRateOfReturn':
-        return ctx.triggered_id, None, None, ctx.triggered_id
+def eco_results(aut, eig, energy, data):
+    show_graph=ctx.triggered_id
+    if ((ctx.triggered_id=='Amortisationszeit')and(aut==0))or ((ctx.triggered_id=='NetPresentValue')and(eig==0)) or ((ctx.triggered_id=='InternalRateOfReturn')and(energy==0)):
+        show_graph=data
+    if data is None: 
+        show_graph='Amortisationszeit'
+    if show_graph=='Amortisationszeit':
+        return show_graph, {'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
+    elif show_graph=='NetPresentValue':
+        return show_graph,{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'}
+    elif show_graph=='InternalRateOfReturn':
+        return show_graph, {'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',}
 
 # Show choosen graph (economy tab)
 @app.callback(
@@ -1661,11 +1701,11 @@ def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,s
                 title= language.loc[language['name']=='eco_text_5',lang].iloc[0]
         else:
             title = language.loc[language['name']=='eco_text_6',lang].iloc[0]
-        fig=px.bar(data_frame=batteries, x='e_bat', y='Amortisation', hover_data=['Investitionskosten'],title=title, 
+        fig=px.bar(data_frame=batteries, x='e_bat', y='Amortisation', hover_data=['Investitionskosten'], 
                 labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                     "Amortisation": language.loc[language['name']=='payback_years',lang].iloc[0],
                     })
-        return dcc.Graph(figure=fig,config={'displayModeBar': False})
+        return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
     elif results_id.startswith('NetPresentValue'):
         NetPresentValue_max=max(NetPresentValue)
         best_value_battery = batteries['e_bat'].values[NetPresentValue.index(NetPresentValue_max)]
@@ -1673,12 +1713,12 @@ def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,s
             title = language.loc[language['name']=='eco_text_3',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_7',lang].iloc[0]
         else:
             title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
-        fig=px.bar(data_frame=batteries, x='e_bat', y='NetPresentValue', hover_data=['Investitionskosten'], title=title,
+        fig=px.bar(data_frame=batteries, x='e_bat', y='NetPresentValue', hover_data=['Investitionskosten'],
                 labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                     "NetPresentValue": language.loc[language['name']=='NPV',lang].iloc[0],
                     })
         fig.update_yaxes(ticksuffix = " €")
-        return dcc.Graph(figure=fig, config={'displayModeBar': False})
+        return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
     elif results_id.startswith('InternalRateOfReturn'):
         InternalRateOfReturn_max=max(InternalRateOfReturn)
         best_value_battery = batteries['e_bat'].values[InternalRateOfReturn.index(InternalRateOfReturn_max)]
@@ -1686,12 +1726,12 @@ def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,s
             title = language.loc[language['name']=='eco_text_9',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_10',lang].iloc[0] + str(round(InternalRateOfReturn_max*100,2)) + ' %.'
         else:
             title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
-        fig=px.bar(data_frame=batteries, x='e_bat', y='InternalRateOfReturn', hover_data=['Investitionskosten'], title=title,
+        fig=px.bar(data_frame=batteries, x='e_bat', y='InternalRateOfReturn', hover_data=['Investitionskosten'],
                 labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                     "InternalRateOfReturn": language.loc[language['name']=='IROR',lang].iloc[0],
                     })
         fig.update_yaxes(ticksuffix = " %")
-        return dcc.Graph(figure=fig, config={'displayModeBar': False})
+        return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
 
 if __name__ == '__main__':
     app.run_server(debug=True)
