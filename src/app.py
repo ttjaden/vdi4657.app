@@ -25,10 +25,10 @@ import utils.economy as eco
 # TO DOs ##########################################
 ##################################################
 # TODO Space between header and container
-# TODO Translation
 
 # App configuration
 # Icons from iconify, see https://icon-sets.iconify.design
+
 app = Dash(__name__,
           suppress_callback_exceptions=True, 
           external_stylesheets=[dbc.themes.BOOTSTRAP,{'href': 'https://use.fontawesome.com/releases/v5.8.1/css/all.css','rel': 'stylesheet','integrity': 'sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf','crossorigin': 'anonymous'}],
@@ -96,9 +96,9 @@ options_building_type_ger=[
     {"label": html.Div([html.Span('Neubau, nach 2016',id='tooltip_building3'), dbc.Tooltip('Vorlauf: 55°C',target='tooltip_building3')]), "value": "Neubau, nach 2016"},
     ]
 options_building_type_eng=[
-    {"label": 'Existing building, unrenovated', "value": "Bestand, unsaniert"},
-    {"label": 'Existing building, renovated', "value": "Bestand, saniert"},
-    {"label": 'New building, after 2016', "value": "Neubau, nach 2016"},
+    {"label": html.Div([html.Span('Existing building, unrenovated',id='tooltip_building1'), dbc.Tooltip('Heater temperature: 35°C',target='tooltip_building1')]), "value": "Bestand, unsaniert"},
+    {"label": html.Div([html.Span('Existing building, renovated',id='tooltip_building2'), dbc.Tooltip('Heater temperature: 45°C',target='tooltip_building2')]), "value": "Bestand, saniert"},
+    {"label": html.Div([html.Span('New building, after 2016',id='tooltip_building3'), dbc.Tooltip('Heater temperature: 55°C',target='tooltip_building3')]), "value": "Neubau, nach 2016"},
     ]
 options_slp_ger = [
     {"label": 'G0: Gewerbe allgemein', "value": "LP_G0.csv"},
@@ -212,6 +212,7 @@ content = html.Div(children=[
     dcc.Store(id='power_chp_W'),
     dcc.Store(id='batteries'),
     dcc.Store(id='price_electricity'),
+    dcc.Store(id='price_electricity_peak'),
     dcc.Store(id='parameter_lang'),
     dcc.Store(id='parameter_use'),
     dcc.Loading(type='default',children=dcc.Store(id='parameter_location_int')),
@@ -761,11 +762,10 @@ def next_Tab(autarkie, LSK, upload_data, tab, parameter_use):
     State('parameters_all','data'),
     State('parameters_all', 'modified_timestamp'),
     State('parameter_economoy', 'data'),
-    State('price_electricity', 'data'),
     State('parameter_peak_shaving', 'data'),
     Input('button_language', 'value'),
     )
-def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, price_electricity, df_peak_shaving_results, lang):
+def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, df_peak_shaving_results, lang):
     if (LSK is None):
         return 'Zunächst System definieren.', last_upload
 
@@ -792,6 +792,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, p
             capacity_bat_big=df['Usable storage capacity in kWh'].values[-1]
         specific_bat_cost_small,_ = eco.invest_costs(capacity_bat_small, I_0, exp)
         specific_bat_cost_big, _ = eco.invest_costs(capacity_bat_big, I_0, exp)
+        
     if tab=='tab_econmics':
         if (last_upload!=parameter_economy):
             capacity_bat_small
@@ -805,6 +806,32 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, p
             specific_bat_cost_big=int(round(float(specific_bat_cost_big)/50)*50)
             price_sell=6
             price_buy=35
+        if LSK==0:
+            cost_use_case=dbc.Row(
+                [
+                dbc.Col(language.loc[language['name']=='price_buy',lang].iloc[0], width=12),
+                dbc.Col([dcc.Input(id='price_buy',min=0,value=price_buy,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh'], width=6),
+                dbc.Col(language.loc[language['name']=='price_sell',lang].iloc[0], width=12),
+                dbc.Col([dcc.Input(id='price_sell',min=0,value=price_sell,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh',html.Div(id='energy_price_below2500'),html.Div(id='energy_price_above2500'),html.Div(id='power_price_below2500'),html.Div(id='power_price_above2500')], width=6),
+                ],
+                align='center',
+                )
+        else:
+            energy_tariff_below2500, energy_tariff_above2500, power_tariff_below2500, power_tariff_above2500=eco.grid_costs_default()
+            cost_use_case=dbc.Row(
+                [
+                dbc.Col('Arbeitspreis bei unter 2500 Volllaststunden: ', width=12),
+                dbc.Col([dcc.Input(id='energy_price_below2500',min=0,value=energy_tariff_below2500*100,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh'], width=6),
+                dbc.Col('Arbeitspreis bei über 2500 Volllaststunden: ', width=12),
+                dbc.Col([dcc.Input(id='energy_price_above2500',min=0,value=energy_tariff_above2500*100,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh'], width=6),
+                dbc.Col('Leistungspreis bei unter 2500 Volllaststunden: ', width=12),
+                dbc.Col([dcc.Input(id='power_price_below2500',min=0,value=power_tariff_below2500,placeholder='€/kW',type='number',style=dict(width = '50%'),persistence='session'),'€/kW'], width=6),
+                dbc.Col('Leistungspreis bei über 2500 Volllaststunden: ', width=12),
+                dbc.Col([dcc.Input(id='power_price_above2500',min=0,value=power_tariff_above2500,placeholder='€/kW',type='number',style=dict(width = '50%'),persistence='session'),'€/kW', html.Div(id='price_buy'),html.Div(id='price_sell')], width=6),
+                ],
+                align='center',
+                )
+        
         return html.Div(
             [html.Br(),
             html.H4(language.loc[language['name']=='invest_cost',lang].iloc[0]),
@@ -842,29 +869,8 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, p
             html.Br(),
             html.H4(language.loc[language['name']=='tariff',lang].iloc[0]),
             dbc.Container(
-                        [                           
-                            dbc.Row(
-                                [
-                                dbc.Col(language.loc[language['name']=='price_sell',lang].iloc[0], width=12)
-                                ]
-                            ),
-                            dbc.Row(
-                                [
-                                dbc.Col([dcc.Input(id='price_sell',min=0,value=price_sell,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh'], width=6),
-                                ],
-                            align='center',
-                            ),
-                            dbc.Row(
-                                [
-                                dbc.Col(language.loc[language['name']=='price_buy',lang].iloc[0], width=12)
-                                ]
-                            ),
-                            dbc.Row(
-                                [
-                                dbc.Col([dcc.Input(id='price_buy',min=0,value=price_buy,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh'], width=6),
-                                ],
-                            align='center',
-                            ),
+                        [
+                            cost_use_case,
                             html.Br(),
                             html.Br(),
                             dbc.Row(
@@ -1168,7 +1174,7 @@ def save_parameter_building_type(building_type):
 def print_pv_slider_value(pv_slider):
     return html.Div(str(pv_slider)+ ' kWp')
 
-# Save electricity price
+# Save electricity price autarky
 @app.callback(
     Output('price_electricity', 'data'),
     Input('price_buy', 'value'),
@@ -1177,6 +1183,18 @@ def print_pv_slider_value(pv_slider):
     )
 def save_price_buy(price_buy,price_sell, tabs):
     return [price_buy, price_sell]
+
+# Save electricity price peak shaving
+@app.callback(
+    Output('price_electricity_peak', 'data'),
+    Input('energy_price_below2500', 'value'),
+    Input('energy_price_above2500', 'value'),
+    Input('power_price_below2500', 'value'),
+    Input('power_price_above2500', 'value'),
+    Input('button_reset_price', 'n_clicks'),
+    )
+def save_price_buy_peak(energy_tariff_below2500, energy_tariff_above2500, power_tariff_below2500, power_tariff_above2500, tabs):
+    return [energy_tariff_below2500/100, energy_tariff_above2500/100, power_tariff_below2500, power_tariff_above2500]
 
 # Show investment cost batteries
 @app.callback(
@@ -1322,7 +1340,7 @@ def upload_loadprofile(file, name, lang):
         if len(df.columns)==1:
             df = pd.read_excel(io.BytesIO(decoded), decimal=',')
     biggest_column=(df.mean().sort_values(ascending=False).index[0])
-    E_gs, P_gs_max, t_util_a = sim.calc_gs_kpi(df.iloc[:,1]*1000)
+    E_gs, P_gs_max, t_util_a = sim.calc_gs_kpi(df.loc[:,biggest_column]*1000)
     return html.Div([language.loc[language['name']=='grid_supply',lang].iloc[0] + str(int(round(E_gs/1000,0)))+ ' kWh',html.Br(),
         language.loc[language['name']=='max_grid_supply',lang].iloc[0]+ str(round(P_gs_max/1000,2))+ ' kW',html.Br(),
         language.loc[language['name']=='load_hours',lang].iloc[0] + ': ' + str(t_util_a) + ' h']), (df.loc[:,biggest_column]*1000).to_list()
@@ -1334,10 +1352,10 @@ def upload_loadprofile(file, name, lang):
     Input('button_language', 'value'),
 )
 def calculate_peak_shaving(loadprofile, lang):
-    loadprofile=pd.DataFrame({'LP' : loadprofile})
+    loadprofile=pd.DataFrame({'LP' : loadprofile}) #W
     df = sim.calc_bs_peakshaving(loadprofile['LP'])
-    df['P_bs_discharge_max'] = df['P_bs_discharge_max']/1000
-    df['C_bs'] = df['C_bs']/1000
+    df['P_bs_discharge_max'] = df['P_bs_discharge_max']/1000    #kW
+    df['C_bs'] = df['C_bs']/1000                                #kWh
     df.rename(columns={'P_bs_discharge_max':language.loc[language['name']=='cut_peak',lang].iloc[0], 'C_bs':language.loc[language['name']=='usable_battery_size',lang].iloc[0], 't_util':language.loc[language['name']=='load_hours',lang].iloc[0], 'E_rate': language.loc[language['name']=='e_rate',lang].iloc[0]}, inplace=True)
     return df.to_dict()
 
@@ -1364,6 +1382,10 @@ def upload_loadprofile(df, tab, use_case, lang):
 @app.callback(
     Output('price_sell', 'value'),
     Output('price_buy', 'value'),
+    Output('energy_price_below2500', 'value'),
+    Output('energy_price_above2500', 'value'),
+    Output('power_price_below2500', 'value'),
+    Output('power_price_above2500', 'value'),
     Output('specific_bat_cost_small', 'value'),
     Output('specific_bat_cost_big', 'value'),
     Input('button_reset_price', 'n_clicks'),
@@ -1378,7 +1400,18 @@ def reset_economy(n,LSK,batteries,df_peak_shaving_results):
     if LSK==0:
         capacity_bat_small = batteries['e_bat']['1']
         capacity_bat_big = batteries['e_bat']['5']
+        price_sell=6
+        price_buy=35
+        energy_price_below2500 = ''
+        energy_price_above2500 = ''
+        power_price_below2500 = ''
+        power_price_above2500 = ''
     else:
+        price_sell=''
+        price_buy=''
+        energy_price_below2500, energy_price_above2500, power_price_below2500, power_price_above2500=eco.grid_costs_default()
+        energy_price_below2500=energy_price_below2500*100
+        energy_price_above2500=energy_price_above2500*100
         df=(pd.DataFrame().from_dict(df_peak_shaving_results))
         try:
             df=(df.loc[(df['Entladerate']>0.5) &  (df['Entladerate']<2.5)])
@@ -1390,7 +1423,7 @@ def reset_economy(n,LSK,batteries,df_peak_shaving_results):
             capacity_bat_big=df['Usable storage capacity in kWh'].values[-1]
     specific_bat_cost_small,_ = eco.invest_costs(capacity_bat_small, I_0, exp)
     specific_bat_cost_big, _ = eco.invest_costs(capacity_bat_big, I_0, exp)
-    return 6,35,int(round(float(specific_bat_cost_small)/50)*50),int(round(float(specific_bat_cost_big)/50)*50)
+    return price_sell,price_buy,energy_price_below2500, energy_price_above2500, power_price_below2500, power_price_above2500,int(round(float(specific_bat_cost_small)/50)*50),int(round(float(specific_bat_cost_big)/50)*50)
 
 # Open Navbar (Burger-Button on small screens)
 @app.callback(
@@ -1604,7 +1637,7 @@ def economic_results(batteries, tab, parameter_use, lang):
     if parameter_use==0:
         if batteries is None:
             return html.Div()
-        return html.Div(children=[html.Br(),
+    return html.Div(children=[html.Br(),
     dbc.Container([
         dbc.Row([
             dbc.Col(width=1),
@@ -1614,8 +1647,6 @@ def economic_results(batteries, tab, parameter_use, lang):
             ]),html.Br(),html.Br(),
         dbc.Row(id='cost_result_graph')
         ])])
-    else:
-        return 'economy of LSK'
 
 # return choosen value for economy_results    
 @app.callback(
@@ -1645,93 +1676,185 @@ def eco_results(aut, eig, energy, data):
 @app.callback(
     Output('cost_result_graph', 'children'),
     State('batteries', 'data'),
+    State('parameter_peak_shaving', 'data'),
     Input('price_electricity','data'),
+    Input('price_electricity_peak','data'),
     Input('specific_bat_cost_small','value'),
     Input('specific_bat_cost_big','value'),
     Input('tabs', 'value'),
     Input('show_economic_results', 'data'),
+    State('parameter_use', 'data'),
     Input('button_language', 'value'),
     )
-def economic_results_graph(batteries,electricity_price,specific_bat_cost_small,specific_bat_cost_big,tab,results_id, lang):
-    if electricity_price is None: 
+def economic_results_graph(batteries,batteries_peak,electricity_price,electricity_price_peak,specific_bat_cost_small,specific_bat_cost_big,tab,results_id, LSK, lang):
+    if ((electricity_price is None) and (LSK==0)) or ((electricity_price_peak is None) and (LSK==1)): 
         raise PreventUpdate
-    batteries=(pd.DataFrame(batteries))
-    if (electricity_price[0] is None) or (electricity_price[1] is None) or (batteries is None) or (tab!='tab_econmics'): 
-        return html.Div()
-    years=15
-    lifetime=15
-    interest_rate=0.00
-    Invest_cost=[]
-    NetPresentValue=[]
-    Amortisation=[]
-    InternalRateOfReturn=[]
-    I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]],[specific_bat_cost_small,specific_bat_cost_big])
-    for battery in batteries.index[1:]:
-        i, I = eco.invest_costs(batteries.loc[battery]['e_bat'], I_0,exp)
-        Invest_cost.append(str(round(I))+ ' €')
-        cashflow = eco.cash_flow_self_consumption(I,
-                        batteries.loc['0']['Netzeinspeisung'],
-                        batteries.loc[battery]['Netzeinspeisung'],
-                        -batteries.loc['0']['Netzbezug'],
-                        -batteries.loc[battery]['Netzbezug'],
-                        electricity_price[1]/100,
-                        electricity_price[0]/100,
-                        years,
-                        lifetime)
-        NetPresentValue.append(eco.net_present_value(cashflow, interest_rate))
-        Amortisation.append(eco.amortisation(cashflow))
-        InternalRateOfReturn.append(eco.internal_rate_of_return(cashflow))
-    batteries=batteries.iloc[1:,:]
-    batteries['e_bat']=batteries['e_bat'].astype('str')
-    batteries['Investitionskosten']=Invest_cost
-    batteries['NetPresentValue']=NetPresentValue
-    batteries['Amortisation']=Amortisation
-    batteries['InternalRateOfReturn']=np.array(InternalRateOfReturn)*100
-    if results_id.startswith('Amortisationszeit'):
-        Amortisation0=np.array(Amortisation)[np.where(np.array(Amortisation)>0)]
-        if len(Amortisation0)==1:
-            Amortisation_min=np.where(np.array(Amortisation)==(min(Amortisation0)))[0]
-            title = language.loc[language['name']=='eco_text_1',lang].iloc[0] + batteries['e_bat'].values[Amortisation_min[0]] + language.loc[language['name']=='eco_text_2',lang].iloc[0]
-        elif len(Amortisation0)>0:
-            Amortisation_min=np.where(np.array(Amortisation)==(min(Amortisation0)))[0]
-            if len(Amortisation_min)==1:
-                fastest_amort_battery = batteries['e_bat'].values[Amortisation_min[0]]
-                title = language.loc[language['name']=='eco_text_3',lang].iloc[0]+ fastest_amort_battery + language.loc[language['name']=='eco_text_4',lang].iloc[0]
+    if (LSK==0):
+        batteries=(pd.DataFrame(batteries))
+        if (electricity_price[0] is None) or (electricity_price[1] is None) or (batteries is None) or (tab!='tab_econmics'): 
+            return html.Div()
+        years=15
+        lifetime=15
+        interest_rate=0.015
+        Invest_cost=[]
+        NetPresentValue=[]
+        Amortisation=[]
+        InternalRateOfReturn=[]
+        I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]],[specific_bat_cost_small,specific_bat_cost_big])
+        for battery in batteries.index[1:]:
+            i, I = eco.invest_costs(batteries.loc[battery]['e_bat'], I_0,exp)
+            Invest_cost.append(str(round(I))+ ' €')
+            cashflow = eco.cash_flow_self_consumption(I,
+                            batteries.loc['0']['Netzeinspeisung'],
+                            batteries.loc[battery]['Netzeinspeisung'],
+                            -batteries.loc['0']['Netzbezug'],
+                            -batteries.loc[battery]['Netzbezug'],
+                            electricity_price[1]/100,
+                            electricity_price[0]/100,
+                            years,
+                            lifetime)
+            NetPresentValue.append(eco.net_present_value(cashflow, interest_rate))
+            Amortisation.append(eco.amortisation(cashflow))
+            InternalRateOfReturn.append(eco.internal_rate_of_return(cashflow))
+        batteries=batteries.iloc[1:,:]
+        batteries['e_bat']=batteries['e_bat'].astype('str')
+        batteries['Investitionskosten']=Invest_cost
+        batteries['NetPresentValue']=NetPresentValue
+        batteries['Amortisation']=Amortisation
+        batteries['InternalRateOfReturn']=np.array(InternalRateOfReturn)*100
+        if results_id.startswith('Amortisationszeit'):
+            Amortisation0=np.array(Amortisation)[np.where(np.array(Amortisation)>0)]
+            if len(Amortisation0)==1:
+                Amortisation_min=np.where(np.array(Amortisation)==(min(Amortisation0)))[0]
+                title = language.loc[language['name']=='eco_text_1',lang].iloc[0] + batteries['e_bat'].values[Amortisation_min[0]] + language.loc[language['name']=='eco_text_2',lang].iloc[0]
+            elif len(Amortisation0)>0:
+                Amortisation_min=np.where(np.array(Amortisation)==(min(Amortisation0)))[0]
+                if len(Amortisation_min)==1:
+                    fastest_amort_battery = batteries['e_bat'].values[Amortisation_min[0]]
+                    title = language.loc[language['name']=='eco_text_3',lang].iloc[0]+ fastest_amort_battery + language.loc[language['name']=='eco_text_4',lang].iloc[0]
+                else:
+                    title= language.loc[language['name']=='eco_text_5',lang].iloc[0]
             else:
-                title= language.loc[language['name']=='eco_text_5',lang].iloc[0]
-        else:
-            title = language.loc[language['name']=='eco_text_6',lang].iloc[0]
-        fig=px.bar(data_frame=batteries, x='e_bat', y='Amortisation', hover_data=['Investitionskosten'], 
-                labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
-                    "Amortisation": language.loc[language['name']=='payback_years',lang].iloc[0],
-                    })
-        return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
-    elif results_id.startswith('NetPresentValue'):
-        NetPresentValue_max=max(NetPresentValue)
-        best_value_battery = batteries['e_bat'].values[NetPresentValue.index(NetPresentValue_max)]
-        if NetPresentValue_max>0:
-            title = language.loc[language['name']=='eco_text_3',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_7',lang].iloc[0]
-        else:
-            title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
-        fig=px.bar(data_frame=batteries, x='e_bat', y='NetPresentValue', hover_data=['Investitionskosten'],
-                labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
-                    "NetPresentValue": language.loc[language['name']=='NPV',lang].iloc[0],
-                    })
-        fig.update_yaxes(ticksuffix = " €")
-        return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
-    elif results_id.startswith('InternalRateOfReturn'):
-        InternalRateOfReturn_max=max(InternalRateOfReturn)
-        best_value_battery = batteries['e_bat'].values[InternalRateOfReturn.index(InternalRateOfReturn_max)]
-        if InternalRateOfReturn_max>0:
-            title = language.loc[language['name']=='eco_text_9',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_10',lang].iloc[0] + str(round(InternalRateOfReturn_max*100,2)) + ' %.'
-        else:
-            title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
-        fig=px.bar(data_frame=batteries, x='e_bat', y='InternalRateOfReturn', hover_data=['Investitionskosten'],
-                labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
-                    "InternalRateOfReturn": language.loc[language['name']=='IROR',lang].iloc[0],
-                    })
-        fig.update_yaxes(ticksuffix = " %")
-        return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
-
+                title = language.loc[language['name']=='eco_text_6',lang].iloc[0]
+            fig=px.bar(data_frame=batteries, x='e_bat', y='Amortisation', hover_data=['Investitionskosten'], 
+                    labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
+                        "Amortisation": language.loc[language['name']=='payback_years',lang].iloc[0],
+                        })
+            return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
+        elif results_id.startswith('NetPresentValue'):
+            NetPresentValue_max=max(NetPresentValue)
+            best_value_battery = batteries['e_bat'].values[NetPresentValue.index(NetPresentValue_max)]
+            if NetPresentValue_max>0:
+                title = language.loc[language['name']=='eco_text_3',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_7',lang].iloc[0]
+            else:
+                title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
+            fig=px.bar(data_frame=batteries, x='e_bat', y='NetPresentValue', hover_data=['Investitionskosten'],
+                    labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
+                        "NetPresentValue": language.loc[language['name']=='NPV',lang].iloc[0],
+                        })
+            fig.update_yaxes(ticksuffix = " €")
+            return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
+        elif results_id.startswith('InternalRateOfReturn'):
+            InternalRateOfReturn_max=max(InternalRateOfReturn)
+            best_value_battery = batteries['e_bat'].values[InternalRateOfReturn.index(InternalRateOfReturn_max)]
+            if InternalRateOfReturn_max>0:
+                title = language.loc[language['name']=='eco_text_9',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_10',lang].iloc[0] + str(round(InternalRateOfReturn_max*100,2)) + ' %.'
+            else:
+                title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
+            fig=px.bar(data_frame=batteries, x='e_bat', y='InternalRateOfReturn', hover_data=['Investitionskosten'],
+                    labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
+                        "InternalRateOfReturn": language.loc[language['name']=='IROR',lang].iloc[0],
+                        })
+            fig.update_yaxes(ticksuffix = " %")
+            return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
+    else:
+        df=pd.DataFrame().from_dict(batteries_peak)
+        try:
+            df=(df.loc[(df['Entladerate']>0.5) &  (df['Entladerate']<2.5)])
+            capacity_bat_small=df['nutzbare Speicherkapazität in kWh'].values[0]
+            capacity_bat_big=df['nutzbare Speicherkapazität in kWh'].values[-1]
+        except:
+            df=(df.loc[(df['Discharge rate']>0.5) &  (df['Discharge rate']<2.5)])
+            capacity_bat_small=df['Usable storage capacity in kWh'].values[0]
+            capacity_bat_big=df['Usable storage capacity in kWh'].values[-1]
+        years=15
+        lifetime=15
+        interest_rate=0.015
+        Invest_cost=[]
+        NetPresentValue=[]
+        Amortisation=[]
+        InternalRateOfReturn=[]
+        I_0, exp = eco.invest_params([capacity_bat_small,capacity_bat_big],[specific_bat_cost_small,specific_bat_cost_big])
+        for battery in df.index:
+            i, I = eco.invest_costs(df.loc[battery]['nutzbare Speicherkapazität in kWh'], I_0,exp)
+            Invest_cost.append(str(round(I))+ ' €')
+            cashflow = eco.cash_flow_peak_shaving(I,
+                batteries_peak['E_gs']['0']/1000,
+                df.loc[battery]['E_gs']/1000,
+                batteries_peak['Volllaststunden']['0'],
+                df.loc[battery]['Volllaststunden'],
+                batteries_peak['P_gs_max']['0']/1000,
+                df.loc[battery]['P_gs_max']/1000,
+                electricity_price_peak[0],
+                electricity_price_peak[1],
+                electricity_price_peak[2],
+                electricity_price_peak[3],
+                years,
+                lifetime,
+                )
+            NetPresentValue.append(eco.net_present_value(cashflow, interest_rate))
+            Amortisation.append(eco.amortisation(cashflow))
+            InternalRateOfReturn.append(eco.internal_rate_of_return(cashflow))
+        df['nutzbare Speicherkapazität in kWh']=df['nutzbare Speicherkapazität in kWh'].astype('str')
+        df['Investitionskosten']=Invest_cost
+        df['NetPresentValue']=NetPresentValue
+        df['Amortisation']=Amortisation
+        df['InternalRateOfReturn']=np.array(InternalRateOfReturn)*100
+        if results_id.startswith('Amortisationszeit'):
+            Amortisation0=np.array(Amortisation)[np.where(np.array(Amortisation)>0)]
+            if len(Amortisation0)==1:
+                Amortisation_min=np.where(np.array(Amortisation)==(min(Amortisation0)))[0]
+                title = language.loc[language['name']=='eco_text_1',lang].iloc[0] + df['nutzbare Speicherkapazität in kWh'].values[Amortisation_min[0]] + language.loc[language['name']=='eco_text_2',lang].iloc[0]
+            elif len(Amortisation0)>0:
+                Amortisation_min=np.where(np.array(Amortisation)==(min(Amortisation0)))[0]
+                if len(Amortisation_min)==1:
+                    fastest_amort_battery = df['nutzbare Speicherkapazität in kWh'].values[Amortisation_min[0]]
+                    title = language.loc[language['name']=='eco_text_3',lang].iloc[0]+ fastest_amort_battery + language.loc[language['name']=='eco_text_4',lang].iloc[0]
+                else:
+                    title= language.loc[language['name']=='eco_text_5',lang].iloc[0]
+            else:
+                title = language.loc[language['name']=='eco_text_6',lang].iloc[0]
+            fig=px.bar(data_frame=df, x='nutzbare Speicherkapazität in kWh', y='Amortisation', hover_data=['Investitionskosten'], 
+                    labels={"nutzbare Speicherkapazität in kWh": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
+                        "Amortisation": language.loc[language['name']=='payback_years',lang].iloc[0],
+                        })
+            return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
+        elif results_id.startswith('NetPresentValue'):
+            NetPresentValue_max=max(NetPresentValue)
+            best_value_battery = df['nutzbare Speicherkapazität in kWh'].values[NetPresentValue.index(NetPresentValue_max)]
+            if NetPresentValue_max>0:
+                title = language.loc[language['name']=='eco_text_3',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_7',lang].iloc[0]
+            else:
+                title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
+            fig=px.bar(data_frame=df, x='nutzbare Speicherkapazität in kWh', y='NetPresentValue', hover_data=['Investitionskosten'],
+                    labels={"nutzbare Speicherkapazität in kWh": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
+                        "NetPresentValue": language.loc[language['name']=='NPV',lang].iloc[0],
+                        })
+            fig.update_yaxes(ticksuffix = " €")
+            return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
+        elif results_id.startswith('InternalRateOfReturn'):
+            InternalRateOfReturn_max=max(InternalRateOfReturn)
+            best_value_battery = df['nutzbare Speicherkapazität in kWh'].values[InternalRateOfReturn.index(InternalRateOfReturn_max)]
+            if InternalRateOfReturn_max>0:
+                title = language.loc[language['name']=='eco_text_9',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_10',lang].iloc[0] + str(round(InternalRateOfReturn_max*100,2)) + ' %.'
+            else:
+                title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
+            fig=px.bar(data_frame=df, x='nutzbare Speicherkapazität in kWh', y='InternalRateOfReturn', hover_data=['Investitionskosten'],
+                    labels={"nutzbare Speicherkapazität in kWh": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
+                        "InternalRateOfReturn": language.loc[language['name']=='IROR',lang].iloc[0],
+                        })
+            fig.update_yaxes(ticksuffix = " %")
+            return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
+        
 if __name__ == '__main__':
     app.run_server(debug=True)
