@@ -21,8 +21,10 @@ pv,PV,PV
 photovoltaik,Photovoltaic: ,Photovoltaik: 
 chp,CHP,KWK
 combined_heat_power,Combined heat and power: ,Kraftwärme-Kopplung: 
+chp_peak_ratio,Thermal power ratio: ,Thermische Leistung: 
+chp_electric_number,Electricity ratio: ,Stromkennzahl: 
 hp,HP,WP
-heatpump, Heat pump: , Wärmepumpe
+heatpump, Heat pump: , Wärmepumpe: 
 gas,Gas heater,Gasheizung
 bat,Battery,Batterie
 hyd,H2-Storage,H2-Speicher
