@@ -441,7 +441,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                         'margin': '10px'
                     },
                                     ),
-                html.Div(id='kpi_LSK'),])
+                dcc.Loading(type="default",children=html.Div(id='kpi_LSK')),])
     elif tab=='tab_econmics':
         return html.Div(id='battery_cost_para')
     else:
@@ -784,19 +784,17 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
         df=(pd.DataFrame().from_dict(df_peak_shaving_results))
         try:
             df=(df.loc[(df['Entladerate']>0.5) &  (df['Entladerate']<2.5)])
-            capacity_bat_small=df['nutzbare Speicherkapazität in kWh'].values[0]
-            capacity_bat_big=df['nutzbare Speicherkapazität in kWh'].values[-1]
+            capacity_bat_small=round(df['nutzbare Speicherkapazität in kWh'].values[0],1)
+            capacity_bat_big=round(df['nutzbare Speicherkapazität in kWh'].values[-1],1)
         except:
             df=(df.loc[(df['Discharge rate']>0.5) &  (df['Discharge rate']<2.5)])
-            capacity_bat_small=df['Usable storage capacity in kWh'].values[0]
-            capacity_bat_big=df['Usable storage capacity in kWh'].values[-1]
+            capacity_bat_small=round(df['Usable storage capacity in kWh'].values[0],1)
+            capacity_bat_big=round(df['Usable storage capacity in kWh'].values[-1],1)
         specific_bat_cost_small,_ = eco.invest_costs(capacity_bat_small, I_0, exp)
         specific_bat_cost_big, _ = eco.invest_costs(capacity_bat_big, I_0, exp)
         
     if tab=='tab_econmics':
         if (last_upload!=parameter_economy):
-            capacity_bat_small
-            capacity_bat_big
             specific_bat_cost_small = upload_data['specific_bat_cost_small']['0']
             specific_bat_cost_big = upload_data['specific_bat_cost_big']['0']
             price_sell = int(upload_data['Electricity_price']['0'].split(',')[1][:-1])
@@ -816,6 +814,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                 ],
                 align='center',
                 )
+            download_parameter_button=dcc.Download(id="download-parameters-xlsx")
         else:
             energy_tariff_below2500, energy_tariff_above2500, power_tariff_below2500, power_tariff_above2500=eco.grid_costs_default()
             cost_use_case=dbc.Row(
@@ -831,6 +830,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                 ],
                 align='center',
                 )
+            download_parameter_button=html.Div()
         
         return html.Div(
             [html.Br(),
@@ -882,7 +882,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                                     color='dark',
                                     style={'textTransform': 'none'},
                                     ), width=6),
-                                dbc.Col([dbc.NavItem(button_download,style={'width':'100%'}),dcc.Download(id="download-parameters-xlsx")], width=6),
+                                dbc.Col([dbc.NavItem(button_download,style={'width':'100%'}),download_parameter_button], width=6),
                                 ]
                             )
                         ],
@@ -1215,12 +1215,12 @@ def show_investmentcost_small(specific_bat_cost_small, specific_bat_cost_big, LS
         df=(pd.DataFrame().from_dict(df_peak_shaving_results))
         try:
             df=(df.loc[(df['Entladerate']>0.5) &  (df['Entladerate']<2.5)])
-            capacity_bat_small=df['nutzbare Speicherkapazität in kWh'].values[0]
-            capacity_bat_big=df['nutzbare Speicherkapazität in kWh'].values[-1]
+            capacity_bat_small=round(df['nutzbare Speicherkapazität in kWh'].values[0],1)
+            capacity_bat_big=round(df['nutzbare Speicherkapazität in kWh'].values[-1],1)
         except:
             df=(df.loc[(df['Discharge rate']>0.5) &  (df['Discharge rate']<2.5)])
-            capacity_bat_small=df['Usable storage capacity in kWh'].values[0]
-            capacity_bat_big=df['Usable storage capacity in kWh'].values[-1]
+            capacity_bat_small=round(df['Usable storage capacity in kWh'].values[0],1)
+            capacity_bat_big=round(df['Usable storage capacity in kWh'].values[-1],1)
     return html.Div([str(round(specific_bat_cost_small * capacity_bat_small))+ ' €']),\
             html.Div([str(round(specific_bat_cost_big * capacity_bat_big))+ ' €'])
 
@@ -1322,26 +1322,31 @@ def upload_loadprofile(file, name, lang):
     content_type, content_string = file.split(',')
     decoded = base64.b64decode(content_string)
     if 'csv' in name:
-        #print(io.StringIO(decoded.decode('utf-8')).read().count('\n')) #TODO: Nur letzte 35041 Zeilen
         # Assume that the user uploaded a CSV file
+        decoded_split=decoded.decode('utf-8').split('\n')
+        if decoded_split[-1:]=='':
+            decoded_split=(decoded_split[:-1])
         try:
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=',')
+            df = pd.read_csv(io.StringIO('\n'.join(decoded_split[-35042:])), sep=',')
             sep=','
         except:
             pass
         if len(df.columns)==1:
             sep=';'
-        df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep=sep)
+        df = pd.read_csv(io.StringIO('\n'.join(decoded_split[-35042:])), sep=sep)
         if(len(df.mean())==0):
-            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')),decimal=',', sep=sep)
+            df = pd.read_csv(io.StringIO('\n'.join(decoded_split[-35042:])),decimal=',', sep=sep)
     elif 'xls' in name:
         # Assume that the user uploaded an excel file
         df = pd.read_excel(io.BytesIO(decoded), decimal='.')
+        if (len(df))>35040:
+            df = pd.read_excel(io.BytesIO(decoded),header=len(df)-35040, decimal='.')
         if len(df.columns)==1:
-            df = pd.read_excel(io.BytesIO(decoded), decimal=',')
+            df = pd.read_excel(io.BytesIO(decoded), header=len(df)-35040, decimal=',')
     biggest_column=(df.mean().sort_values(ascending=False).index[0])
     E_gs, P_gs_max, t_util_a = sim.calc_gs_kpi(df.loc[:,biggest_column]*1000)
-    return html.Div([language.loc[language['name']=='grid_supply',lang].iloc[0] + str(int(round(E_gs/1000,0)))+ ' kWh',html.Br(),
+    return html.Div([language.loc[language['name']=='choosen_column',lang].iloc[0] + biggest_column,html.Br(),
+        language.loc[language['name']=='grid_supply',lang].iloc[0] + str(int(round(E_gs/1000,0)))+ ' kWh',html.Br(),
         language.loc[language['name']=='max_grid_supply',lang].iloc[0]+ str(round(P_gs_max/1000,2))+ ' kW',html.Br(),
         language.loc[language['name']=='load_hours',lang].iloc[0] + ': ' + str(t_util_a) + ' h']), (df.loc[:,biggest_column]*1000).to_list()
 
@@ -1415,12 +1420,12 @@ def reset_economy(n,LSK,batteries,df_peak_shaving_results):
         df=(pd.DataFrame().from_dict(df_peak_shaving_results))
         try:
             df=(df.loc[(df['Entladerate']>0.5) &  (df['Entladerate']<2.5)])
-            capacity_bat_small=df['nutzbare Speicherkapazität in kWh'].values[0]
-            capacity_bat_big=df['nutzbare Speicherkapazität in kWh'].values[-1]
+            capacity_bat_small=round(df['nutzbare Speicherkapazität in kWh'].values[0],1)
+            capacity_bat_big=round(df['nutzbare Speicherkapazität in kWh'].values[-1],1)
         except:
             df=(df.loc[(df['Discharge rate']>0.5) &  (df['Discharge rate']<2.5)])
-            capacity_bat_small=df['Usable storage capacity in kWh'].values[0]
-            capacity_bat_big=df['Usable storage capacity in kWh'].values[-1]
+            capacity_bat_small=round(df['Usable storage capacity in kWh'].values[0],1)
+            capacity_bat_big=round(df['Usable storage capacity in kWh'].values[-1],1)
     specific_bat_cost_small,_ = eco.invest_costs(capacity_bat_small, I_0, exp)
     specific_bat_cost_big, _ = eco.invest_costs(capacity_bat_big, I_0, exp)
     return price_sell,price_buy,energy_price_below2500, energy_price_above2500, power_price_below2500, power_price_above2500,int(round(float(specific_bat_cost_small)/50)*50),int(round(float(specific_bat_cost_big)/50)*50)
@@ -1771,12 +1776,12 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
         df=pd.DataFrame().from_dict(batteries_peak)
         try:
             df=(df.loc[(df['Entladerate']>0.5) &  (df['Entladerate']<2.5)])
-            capacity_bat_small=df['nutzbare Speicherkapazität in kWh'].values[0]
-            capacity_bat_big=df['nutzbare Speicherkapazität in kWh'].values[-1]
+            capacity_bat_small=round(df['nutzbare Speicherkapazität in kWh'].values[0],1)
+            capacity_bat_big=round(df['nutzbare Speicherkapazität in kWh'].values[-1],1)
         except:
             df=(df.loc[(df['Discharge rate']>0.5) &  (df['Discharge rate']<2.5)])
-            capacity_bat_small=df['Usable storage capacity in kWh'].values[0]
-            capacity_bat_big=df['Usable storage capacity in kWh'].values[-1]
+            capacity_bat_small=round(df['Usable storage capacity in kWh'].values[0],1)
+            capacity_bat_big=round(df['Usable storage capacity in kWh'].values[-1],1)
         years=15
         lifetime=15
         interest_rate=0.015
@@ -1805,7 +1810,6 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             NetPresentValue.append(eco.net_present_value(cashflow, interest_rate))
             Amortisation.append(eco.amortisation(cashflow))
             InternalRateOfReturn.append(eco.internal_rate_of_return(cashflow))
-        df['nutzbare Speicherkapazität in kWh']=df['nutzbare Speicherkapazität in kWh'].astype('str')
         df['Investitionskosten']=Invest_cost
         df['NetPresentValue']=NetPresentValue
         df['Amortisation']=Amortisation
@@ -1814,17 +1818,17 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             Amortisation0=np.array(Amortisation)[np.where(np.array(Amortisation)>0)]
             if len(Amortisation0)==1:
                 Amortisation_min=np.where(np.array(Amortisation)==(min(Amortisation0)))[0]
-                title = language.loc[language['name']=='eco_text_1',lang].iloc[0] + df['nutzbare Speicherkapazität in kWh'].values[Amortisation_min[0]] + language.loc[language['name']=='eco_text_2',lang].iloc[0]
+                title = language.loc[language['name']=='eco_text_1',lang].iloc[0] + str(round(df['nutzbare Speicherkapazität in kWh'].values[Amortisation_min[0]],1)) + language.loc[language['name']=='eco_text_2',lang].iloc[0]
             elif len(Amortisation0)>0:
                 Amortisation_min=np.where(np.array(Amortisation)==(min(Amortisation0)))[0]
                 if len(Amortisation_min)==1:
                     fastest_amort_battery = df['nutzbare Speicherkapazität in kWh'].values[Amortisation_min[0]]
-                    title = language.loc[language['name']=='eco_text_3',lang].iloc[0]+ fastest_amort_battery + language.loc[language['name']=='eco_text_4',lang].iloc[0]
+                    title = language.loc[language['name']=='eco_text_3',lang].iloc[0]+ str(round(fastest_amort_battery),1) + language.loc[language['name']=='eco_text_4',lang].iloc[0]
                 else:
                     title= language.loc[language['name']=='eco_text_5',lang].iloc[0]
             else:
                 title = language.loc[language['name']=='eco_text_6',lang].iloc[0]
-            fig=px.bar(data_frame=df, x='nutzbare Speicherkapazität in kWh', y='Amortisation', hover_data=['Investitionskosten'], 
+            fig=px.line(data_frame=df, x='nutzbare Speicherkapazität in kWh', y='Amortisation', hover_data=['Investitionskosten'], 
                     labels={"nutzbare Speicherkapazität in kWh": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                         "Amortisation": language.loc[language['name']=='payback_years',lang].iloc[0],
                         })
@@ -1833,10 +1837,10 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             NetPresentValue_max=max(NetPresentValue)
             best_value_battery = df['nutzbare Speicherkapazität in kWh'].values[NetPresentValue.index(NetPresentValue_max)]
             if NetPresentValue_max>0:
-                title = language.loc[language['name']=='eco_text_3',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_7',lang].iloc[0]
+                title = language.loc[language['name']=='eco_text_3',lang].iloc[0] + str(round(best_value_battery,1)) + language.loc[language['name']=='eco_text_7',lang].iloc[0]
             else:
                 title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
-            fig=px.bar(data_frame=df, x='nutzbare Speicherkapazität in kWh', y='NetPresentValue', hover_data=['Investitionskosten'],
+            fig=px.line(data_frame=df, x='nutzbare Speicherkapazität in kWh', y='NetPresentValue', hover_data=['Investitionskosten'],
                     labels={"nutzbare Speicherkapazität in kWh": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                         "NetPresentValue": language.loc[language['name']=='NPV',lang].iloc[0],
                         })
@@ -1846,10 +1850,10 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             InternalRateOfReturn_max=max(InternalRateOfReturn)
             best_value_battery = df['nutzbare Speicherkapazität in kWh'].values[InternalRateOfReturn.index(InternalRateOfReturn_max)]
             if InternalRateOfReturn_max>0:
-                title = language.loc[language['name']=='eco_text_9',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_10',lang].iloc[0] + str(round(InternalRateOfReturn_max*100,2)) + ' %.'
+                title = language.loc[language['name']=='eco_text_9',lang].iloc[0] + str(round(best_value_battery,1)) + language.loc[language['name']=='eco_text_10',lang].iloc[0] + str(round(InternalRateOfReturn_max*100,2)) + ' %.'
             else:
                 title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
-            fig=px.bar(data_frame=df, x='nutzbare Speicherkapazität in kWh', y='InternalRateOfReturn', hover_data=['Investitionskosten'],
+            fig=px.line(data_frame=df, x='nutzbare Speicherkapazität in kWh', y='InternalRateOfReturn', hover_data=['Investitionskosten'],
                     labels={"nutzbare Speicherkapazität in kWh": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                         "InternalRateOfReturn": language.loc[language['name']=='IROR',lang].iloc[0],
                         })

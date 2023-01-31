@@ -100,6 +100,7 @@ upload_info,Upload loadprofile in 15min steps,15 min. Lastprofil hochladen
 upload_info1,"Of type .xls, .xlsx or .csv","Vom Typ .xls, .xlsx oder .csv"
 upload_info2,The column with the highest average value is used,Genutzt wird die Spalte mit dem höchsten Durschnittswert
 upload_info3,Assumed is the unit kilowatt [kW],Angenommen wird die Einheit Kilowatt [kW]
+choosen_column,Choosen column: ,Ausgewählte Spalte: 
 grid_supply,Grid supply: ,Netzbezug: 
 max_grid_supply,Maximum grid supply: ,Maximaler Netzbezug: 
 load_hours,Full load hours,Volllaststunden
