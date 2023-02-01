@@ -187,7 +187,7 @@ content = html.Div(children=[
                 dcc.Tabs(id='tabs',value='tab_info'),
                 html.Div(id='tab-content'),
                 ]
-                ), width=12, md=5, lg=5, xl=4),
+                ), width=12,xs=12, sm=12, md=12, lg=12, xl=4, xxl=4),
             dbc.Col(html.Div(
                 children=[html.Div(id='bat_results'),
                     html.Div(id='bat_results_LSK'),
@@ -1842,7 +1842,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                         "Amortisation": language.loc[language['name']=='payback_years',lang].iloc[0],
                         })
             fig.update_layout(margin=dict(l=20, r=20, b=20),)
-            return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
+            return [dbc.Col(html.H6(title), width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
         elif results_id.startswith('NetPresentValue'):
             NetPresentValue_max=max(NetPresentValue)
             best_value_battery = df[language.loc[language['name']=='usable_battery_size',lang].iloc[0]].values[NetPresentValue.index(NetPresentValue_max)]
