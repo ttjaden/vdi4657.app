@@ -92,14 +92,14 @@ button_info = dbc.Button(
 encoded_image=base64.b64encode(open(ASSETS_PATH.joinpath('logos/Logo_FZJ_200px.png'), 'rb').read())
 
 options_building_type_ger=[
-    {"label": html.Div([html.Span('Bestand, unsaniert',id='tooltip_building1'), dbc.Tooltip('Vorlauf: 35°C',target='tooltip_building1')]), "value": "Bestand, unsaniert"},
+    {"label": html.Div([html.Span('Bestand, unsaniert',id='tooltip_building1'), dbc.Tooltip('Vorlauf: 55°C',target='tooltip_building1')]), "value": "Bestand, unsaniert"},
     {"label": html.Div([html.Span('Bestand, saniert',id='tooltip_building2'), dbc.Tooltip('Vorlauf: 45°C',target='tooltip_building2')]), "value": "Bestand, saniert"},
-    {"label": html.Div([html.Span('Neubau, nach 2016',id='tooltip_building3'), dbc.Tooltip('Vorlauf: 55°C',target='tooltip_building3')]), "value": "Neubau, nach 2016"},
+    {"label": html.Div([html.Span('Neubau, nach 2016',id='tooltip_building3'), dbc.Tooltip('Vorlauf: 35°C',target='tooltip_building3')]), "value": "Neubau, nach 2016"},
     ]
 options_building_type_eng=[
-    {"label": html.Div([html.Span('Existing building, unrenovated',id='tooltip_building1'), dbc.Tooltip('Heater temperature: 35°C',target='tooltip_building1')]), "value": "Bestand, unsaniert"},
+    {"label": html.Div([html.Span('Existing building, unrenovated',id='tooltip_building1'), dbc.Tooltip('Heater temperature: 55°C',target='tooltip_building1')]), "value": "Bestand, unsaniert"},
     {"label": html.Div([html.Span('Existing building, renovated',id='tooltip_building2'), dbc.Tooltip('Heater temperature: 45°C',target='tooltip_building2')]), "value": "Bestand, saniert"},
-    {"label": html.Div([html.Span('New building, after 2016',id='tooltip_building3'), dbc.Tooltip('Heater temperature: 55°C',target='tooltip_building3')]), "value": "Neubau, nach 2016"},
+    {"label": html.Div([html.Span('New building, after 2016',id='tooltip_building3'), dbc.Tooltip('Heater temperature: 35°C',target='tooltip_building3')]), "value": "Neubau, nach 2016"},
     ]
 options_slp_ger = [
     {"label": 'G0: Gewerbe allgemein', "value": "LP_G0.csv"},
@@ -184,15 +184,14 @@ content = html.Div(children=[
     dbc.Container([
         dbc.Row([
             dbc.Col(html.Div(id='scroll',children=[
-                dcc.Tabs(id='tabs',value='tab_info'),
+                dcc.Tabs(id='tabs',value='tab_info',mobile_breakpoint=400),
                 html.Div(id='tab-content'),
                 ]
-                ), width=12,xs=12, sm=12, md=12, lg=12, xl=4, xxl=4),
+                ), width=12,xs=12, sm=12, md=12, lg=4, xl=4, xxl=4),
             dbc.Col(html.Div(
                 children=[html.Div(id='bat_results'),
                     html.Div(id='bat_results_LSK'),
                     html.Div(id='cost_result'),
-                    html.Div(id='cost_result_LSK'),
                     ]
                 )),
             ]),
@@ -815,7 +814,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                 ],
                 align='center',
                 )
-            download_parameter_button=dbc.Col([dbc.NavItem(button_download,style={'width':'100%'}),dcc.Download(id="download-parameters-xlsx")], width=6)
+            download_parameter_button=dbc.Col([dbc.NavItem(button_download,style={'width':'100%'}),dcc.Download(id="download-parameters-xlsx")], width={'offset':1, 'size':6})
         else:
             energy_tariff_below2500, energy_tariff_above2500, power_tariff_below2500, power_tariff_above2500=eco.grid_costs_default()
             cost_use_case=dbc.Row(
@@ -885,7 +884,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                         color="primary",
                         active=True,
                         style={'textTransform': 'none','color': '#023D6B','background-color': 'white',},
-                        ), width=6),
+                        ), width={'offset':1,'size':4}),
                     download_parameter_button
                     ]
                 )
@@ -1382,7 +1381,10 @@ def upload_loadprofile(df, tab, use_case, lang):
     colorbar=dict(tickmode='array',tickvals=[0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0],len=1.05,ticklabeloverflow='allow',outlinewidth=0)
     fig.update_layout(coloraxis = {'cmin':0,'cmax':3.0,'colorscale':colorscale,'colorbar':colorbar,'autocolorscale':False},)
     fig.update_layout(margin=dict(l=20, r=20, b=20),)
-    return dcc.Graph(figure=fig, config={'displayModeBar': False})
+    return [html.Br(),
+            dbc.Col(html.H3(language.loc[language['name']=='results',lang].iloc[0]),width=12),
+            html.Br(),
+            html.Br(),dcc.Graph(figure=fig, config={'displayModeBar': False})]
 
 
 # reset price
@@ -1518,8 +1520,11 @@ def bat_results(batteries,tab,include_heating,n_hp,n_chp, building, parameter_us
     return html.Div(children=[html.Br(),
     dbc.Container([
         dbc.Row([
-            dbc.Col(width=1),
-            dbc.Col(dbc.Button(language.loc[language['name']=='self_sufficiency',lang].iloc[0],id='Autarkiegrad',color="primary", active=True)),#,style={'color':'#023D6B'}
+            html.Br(),
+            dbc.Col(html.H3(language.loc[language['name']=='results',lang].iloc[0]),width=12),
+            html.Br(),
+            html.Br(),
+            dbc.Col(dbc.Button(language.loc[language['name']=='self_sufficiency',lang].iloc[0],id='Autarkiegrad',color="primary", active=True)),
             dbc.Col(dbc.Button(language.loc[language['name']=='self_consumption',lang].iloc[0],id='Eigenverbrauch',color="primary", active=True)),
             dbc.Col(dbc.Button(language.loc[language['name']=='energy_balance',lang].iloc[0],id='Energiebilanz',color="primary", active=True))
             ]),html.Br()
@@ -1647,8 +1652,10 @@ def economic_results(batteries, tab, parameter_use, lang):
             return html.Div()
     return html.Div(children=[html.Br(),
     dbc.Container([
-        dbc.Row([
-            dbc.Col(width=1),
+        dbc.Row([html.Br(),
+            dbc.Col(html.H3(language.loc[language['name']=='results',lang].iloc[0]),width=12),
+            html.Br(),
+            html.Br(),
             dbc.Col(dbc.Button(language.loc[language['name']=='payback',lang].iloc[0],id='Amortisationszeit',color="primary", active=True)),
             dbc.Col(dbc.Button(language.loc[language['name']=='NPV',lang].iloc[0],id='NetPresentValue',color="primary", active=True)),
             dbc.Col(dbc.Button(language.loc[language['name']=='IROR',lang].iloc[0],id='InternalRateOfReturn',color="primary", active=True))
@@ -1703,7 +1710,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             return html.Div()
         years=15
         lifetime=15
-        interest_rate=0.015
+        interest_rate=0.0
         Invest_cost=[]
         NetPresentValue=[]
         Amortisation=[]
@@ -1793,7 +1800,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             capacity_bat_big=round(df['Usable storage capacity in kWh'].values[-1],1)
         years=15
         lifetime=15
-        interest_rate=0.015
+        interest_rate=0.0
         Invest_cost=[]
         NetPresentValue=[]
         Amortisation=[]
