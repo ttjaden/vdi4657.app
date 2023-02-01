@@ -67,8 +67,9 @@ button_download = dbc.Button(
     html.Div(id='button_download_content',children=[DashIconify(icon='ic:baseline-download',width=50,height=30,),html.Div('Parameter Download')]),
     id='button_download',
     outline=True,
-    color='dark',
-    style={'textTransform': 'none'},
+    color="primary",
+    active=True,
+    style={'textTransform': 'none','color': '#023D6B','background-color': 'white',},
 )
 
 button_language = dbc.Button(
@@ -881,8 +882,9 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                         html.Div(children=[DashIconify(icon='system-uicons:reset',width=50,height=30,),html.Div(language.loc[language['name']=='default',lang].iloc[0])],),
                         id='button_reset_price',
                         outline=True,
-                        color='dark',
-                        style={'textTransform': 'none'},
+                        color="primary",
+                        active=True,
+                        style={'textTransform': 'none','color': '#023D6B','background-color': 'white',},
                         ), width=6),
                     download_parameter_button
                     ]
@@ -1517,9 +1519,9 @@ def bat_results(batteries,tab,include_heating,n_hp,n_chp, building, parameter_us
     dbc.Container([
         dbc.Row([
             dbc.Col(width=1),
-            dbc.Col(dbc.Button(language.loc[language['name']=='self_sufficiency',lang].iloc[0],id='Autarkiegrad',color='#023D6B',n_clicks=0)),
-            dbc.Col(dbc.Button(language.loc[language['name']=='self_consumption',lang].iloc[0],id='Eigenverbrauch',color='#023D6B',n_clicks=0)),
-            dbc.Col(dbc.Button(language.loc[language['name']=='energy_balance',lang].iloc[0],id='Energiebilanz', color='#023D6B',n_clicks=0))
+            dbc.Col(dbc.Button(language.loc[language['name']=='self_sufficiency',lang].iloc[0],id='Autarkiegrad',color="primary", active=True)),#,style={'color':'#023D6B'}
+            dbc.Col(dbc.Button(language.loc[language['name']=='self_consumption',lang].iloc[0],id='Eigenverbrauch',color="primary", active=True)),
+            dbc.Col(dbc.Button(language.loc[language['name']=='energy_balance',lang].iloc[0],id='Energiebilanz',color="primary", active=True))
             ]),html.Br()
         ], fluid=True),html.Div(id='bat_result_graph')])
 
@@ -1647,9 +1649,9 @@ def economic_results(batteries, tab, parameter_use, lang):
     dbc.Container([
         dbc.Row([
             dbc.Col(width=1),
-            dbc.Col(dbc.Button(language.loc[language['name']=='payback',lang].iloc[0],id='Amortisationszeit', color='#023D6B',)),
-            dbc.Col(dbc.Button(language.loc[language['name']=='NPV',lang].iloc[0],id='NetPresentValue', color='#023D6B')),
-            dbc.Col(dbc.Button(language.loc[language['name']=='IROR',lang].iloc[0],id='InternalRateOfReturn', color='#023D6B'))
+            dbc.Col(dbc.Button(language.loc[language['name']=='payback',lang].iloc[0],id='Amortisationszeit',color="primary", active=True)),
+            dbc.Col(dbc.Button(language.loc[language['name']=='NPV',lang].iloc[0],id='NetPresentValue',color="primary", active=True)),
+            dbc.Col(dbc.Button(language.loc[language['name']=='IROR',lang].iloc[0],id='InternalRateOfReturn',color="primary", active=True))
             ]),html.Br(),html.Br(),
         dbc.Row(id='cost_result_graph')
         ])])
@@ -1742,7 +1744,8 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                     title= language.loc[language['name']=='eco_text_5',lang].iloc[0]
             else:
                 title = language.loc[language['name']=='eco_text_6',lang].iloc[0]
-            fig=px.bar(data_frame=batteries, x='e_bat', y='Amortisation', hover_data=['Investitionskosten'], 
+            fig=px.bar(data_frame=batteries, x='e_bat', y='Amortisation', hover_data=['Investitionskosten'],
+                    color_discrete_sequence=['#023D6B'], 
                     labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                         "Amortisation": language.loc[language['name']=='payback_years',lang].iloc[0],
                         })
@@ -1756,6 +1759,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             else:
                 title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
             fig=px.bar(data_frame=batteries, x='e_bat', y='NetPresentValue', hover_data=['Investitionskosten'],
+                    color_discrete_sequence=['#023D6B'], 
                     labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                         "NetPresentValue": language.loc[language['name']=='NPV',lang].iloc[0],
                         })
@@ -1770,6 +1774,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             else:
                 title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
             fig=px.bar(data_frame=batteries, x='e_bat', y='InternalRateOfReturn', hover_data=['Investitionskosten'],
+                    color_discrete_sequence=['#023D6B'], 
                     labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                         "InternalRateOfReturn": language.loc[language['name']=='IROR',lang].iloc[0],
                         })
