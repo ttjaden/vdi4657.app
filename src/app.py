@@ -180,22 +180,20 @@ header=dbc.Navbar(
 ################################################
 # Main-Page
 
-content = html.Div(children=[
-    dbc.Container([
-        dbc.Row([
-            dbc.Col(html.Div(id='scroll',children=[
-                dcc.Tabs(id='tabs',value='tab_info',mobile_breakpoint=400),
-                html.Div(id='tab-content'),
+content = dbc.Container([
+    dbc.Row([
+        dbc.Col(html.Div(id='scroll',children=[
+            dcc.Tabs(id='tabs',value='tab_info',mobile_breakpoint=400),
+            html.Div(id='tab-content'),
+            ]
+            ), width=12,xs=12, sm=12, md=12, lg=4, xl=4, xxl=4),
+        dbc.Col(html.Div(
+            children=[html.Div(id='bat_results'),
+                html.Div(id='bat_results_LSK'),
+                html.Div(id='cost_result'),
                 ]
-                ), width=12,xs=12, sm=12, md=12, lg=4, xl=4, xxl=4),
-            dbc.Col(html.Div(
-                children=[html.Div(id='bat_results'),
-                    html.Div(id='bat_results_LSK'),
-                    html.Div(id='cost_result'),
-                    ]
-                )),
-            ]),
-        ],fluid=True),
+            )),
+        ]),
     dcc.Store(id='last_triggered_building'),
     dcc.Store(id='n_clicks_pv'),
     dcc.Store(id='n_clicks_chp'),
@@ -226,7 +224,7 @@ content = html.Div(children=[
     dcc.Store('show_bat_results'),
     dcc.Loading(type='default',children=dcc.Store(id='parameter_peak_shaving')),
     dcc.Store(id='parameter_economoy'),
-    ],)
+    ],fluid=True)
 
 # Create layout
 layout = html.Div(id='app-page-content',children=[header,content])
