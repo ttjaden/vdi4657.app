@@ -1380,7 +1380,7 @@ def upload_loadprofile(df, tab, use_case, lang):
     fig.update_layout(coloraxis = {'cmin':0,'cmax':3.0,'colorscale':colorscale,'colorbar':colorbar,'autocolorscale':False},)
     fig.update_layout(margin=dict(l=20, r=20, b=20),)
     return [html.Br(),
-            dbc.Col(html.H3(language.loc[language['name']=='results',lang].iloc[0]),width=12),
+            html.H3(language.loc[language['name']=='results',lang].iloc[0]),
             html.Br(),
             html.Br(),dcc.Graph(figure=fig, config={'displayModeBar': False})]
 
@@ -1517,11 +1517,8 @@ def bat_results(batteries,tab,include_heating,n_hp,n_chp, building, parameter_us
             return html.Div()
     return html.Div(children=[html.Br(),
     dbc.Container([
+        dbc.Row(dbc.Col(html.H3(language.loc[language['name']=='results',lang].iloc[0]))),
         dbc.Row([
-            html.Br(),
-            dbc.Col(html.H3(language.loc[language['name']=='results',lang].iloc[0]),width=12),
-            html.Br(),
-            html.Br(),
             dbc.Col(dbc.Button(language.loc[language['name']=='self_sufficiency',lang].iloc[0],id='Autarkiegrad',color="primary", active=True)),
             dbc.Col(dbc.Button(language.loc[language['name']=='self_consumption',lang].iloc[0],id='Eigenverbrauch',color="primary", active=True)),
             dbc.Col(dbc.Button(language.loc[language['name']=='energy_balance',lang].iloc[0],id='Energiebilanz',color="primary", active=True))
@@ -1648,12 +1645,9 @@ def economic_results(batteries, tab, parameter_use, lang):
     if parameter_use==0:
         if batteries is None:
             return html.Div()
-    return html.Div(children=[html.Br(),
+    return html.Div(children=[html.Br(),html.H3(language.loc[language['name']=='results',lang].iloc[0]),
     dbc.Container([
-        dbc.Row([html.Br(),
-            dbc.Col(html.H3(language.loc[language['name']=='results',lang].iloc[0]),width=12),
-            html.Br(),
-            html.Br(),
+        dbc.Row([
             dbc.Col(dbc.Button(language.loc[language['name']=='payback',lang].iloc[0],id='Amortisationszeit',color="primary", active=True)),
             dbc.Col(dbc.Button(language.loc[language['name']=='NPV',lang].iloc[0],id='NetPresentValue',color="primary", active=True)),
             dbc.Col(dbc.Button(language.loc[language['name']=='IROR',lang].iloc[0],id='InternalRateOfReturn',color="primary", active=True))
