@@ -172,7 +172,7 @@ header=dbc.Navbar(
         fluid=True,
         ),
     dark=True,
-    color='dark',
+    color='#023D6B',
     sticky='top',
     )
 
@@ -519,7 +519,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                             align='center',
                             ),
                         ],
-                    {'background-color': '#212529','color': 'white',},
+                    {'background-color': '#023D6B','color': 'white',},
                     {'background-color': 'white','color': 'black'},
                     {'background-color': 'white','color': 'black'},'efh')
         else: # with heating system
@@ -551,7 +551,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                                 align='center',
                                 )
                         ],
-                    {'background-color': '#212529','color': 'white',},
+                    {'background-color': '#023D6B','color': 'white',},
                     {'background-color': 'white','color': 'black'},
                     {'background-color': 'white','color': 'black'},'efh')
     if (mfh_click>efh_click) and (mfh_click>industry_click):
@@ -576,7 +576,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                             align='center'),
                         ],
                     {'background-color': 'white','color': 'black'},
-                    {'background-color': '#212529','color': 'white',},
+                    {'background-color': '#023D6B','color': 'white',},
                     {'background-color': 'white','color': 'black'},'mfh')
         else:
             return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=['True'], id='include_heating',persistence='session'),
@@ -608,7 +608,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                                 )
                         ],
                 {'background-color': 'white','color': 'black'},
-                {'background-color': '#212529','color': 'white',},
+                {'background-color': '#023D6B','color': 'white',},
                 {'background-color': 'white','color': 'black'},'mfh')
     if (industry_click>efh_click) and (industry_click>mfh_click):
         if lang=='eng':
@@ -635,7 +635,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
             ],
             {'background-color': 'white','color': 'black'},
             {'background-color': 'white','color': 'black'},
-            {'background-color': '#212529','color': 'white',},'indu')
+            {'background-color': '#023D6B','color': 'white',},'indu')
 
 # Add technology to the tab 'tab_parameter'
 @app.callback(
@@ -868,27 +868,26 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                         ]),
             html.Br(),
             html.H4(language.loc[language['name']=='tariff',lang].iloc[0]),
-            dbc.Container(
-                        [
-                            cost_use_case,
-                            html.Br(),
-                            html.Br(),
-                            dbc.Row(
-                                [
-                                dbc.Col(dbc.Button(
-                                    html.Div(children=[DashIconify(icon='system-uicons:reset',width=50,height=30,),html.Div(language.loc[language['name']=='default',lang].iloc[0])],),
-                                    id='button_reset_price',
-                                    outline=True,
-                                    color='dark',
-                                    style={'textTransform': 'none'},
-                                    ), width=6),
-                                download_parameter_button
-                                ]
-                            )
-                        ],
-                        ),
+            dbc.Container(cost_use_case),
             html.Br(),
-            
+            html.H4(language.loc[language['name']=='eco_help',lang].iloc[0]),
+            dbc.Container([
+                dbc.Row(dbc.Col(language.loc[language['name']=='eco_help_info',lang].iloc[0])),
+                html.Br(),
+                html.Br(),
+                dbc.Row(
+                    [
+                    dbc.Col(dbc.Button(
+                        html.Div(children=[DashIconify(icon='system-uicons:reset',width=50,height=30,),html.Div(language.loc[language['name']=='default',lang].iloc[0])],),
+                        id='button_reset_price',
+                        outline=True,
+                        color='dark',
+                        style={'textTransform': 'none'},
+                        ), width=6),
+                    download_parameter_button
+                    ]
+                )
+            ]),
             ]
         ), last_upload
 
@@ -962,7 +961,7 @@ def get_p_el_hh(e_hh,building,building_type):
     )
 def change_solar_style(n_clicks):
     if (n_clicks%2)==1:
-        return {'background-color': '#212529','color': 'white',},1
+        return {'background-color': '#023D6B','color': 'white',},1
     else:
         return {'background-color': 'white','color': 'black'},0
 @app.callback(
@@ -971,7 +970,7 @@ def change_solar_style(n_clicks):
     )
 def change_solar2_style(n_clicks):
     if (n_clicks%2)==1:
-        return {'background-color': '#212529','color': 'white',}
+        return {'background-color': '#023D6B','color': 'white',}
     else:
         return {'background-color': 'white','color': 'black'}
 @app.callback(
@@ -992,9 +991,9 @@ def change_hp_chp_style(n_chp,n_hp,heating, building):
     if ((n_hp%2==0) and (n_chp%2==0)) or (n_chp>=3) or (n_hp>=3):
         return {'background-color': 'white','color': 'black'},0,{'background-color': 'white','color': 'black'},0,0,0
     elif (n_chp%2)==1:
-        return {'background-color': '#212529','color': 'white'},2,{'background-color': 'white','color': 'black'},0,1,0
+        return {'background-color': '#023D6B','color': 'white'},2,{'background-color': 'white','color': 'black'},0,1,0
     elif n_hp%2==1:
-        return {'background-color': 'white','color': 'black'},0,{'background-color': '#212529','color': 'white'},2,0,1
+        return {'background-color': 'white','color': 'black'},0,{'background-color': '#023D6B','color': 'white'},2,0,1
 
 # Calculation of photovoltaic output time series
 @app.callback(
@@ -1310,7 +1309,7 @@ def upload(file):
 
 # Upload load profile
 @app.callback(
-    Output('kpi_LSK', 'children'),#Output('bat_results_LSK', 'children'),df, P_bs, P_gs, P_gs0 = sim.calc_bs_peakshaving(),dcc.Graph(figure=px.line(df))
+    Output('kpi_LSK', 'children'),
     Output('parameter_loadprofile', 'data'),
     Input('upload_load_profile', 'contents'),
     Input('upload_load_profile', 'filename'),
@@ -1380,6 +1379,7 @@ def upload_loadprofile(df, tab, use_case, lang):
     colorscale=[[0, "#ff0000"],[0.05, "#ff3300"],[0.1, "#ff6600"],[0.15, "#ff9900"],[0.2, "#ffcc00"],[0.25, "#ffff00"],[0.3, "#cdee0a"],[0.35, "#9add14"],[0.4, "#67cc1e"],[0.45, "#34bb28"],[0.5, "#00a933"],[0.55, "#34bb28"],[0.6, "#67cc1e"],[0.65, "#9add14"],[0.7, "#cdee0a"],[0.75, "#ffff00"],[0.8, "#ffcc00"],[0.85, "#ff9900"],[0.9, "#ff6600"],[0.95, "#ff3300"],[1, "#ff0000"]]
     colorbar=dict(tickmode='array',tickvals=[0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0],len=1.05,ticklabeloverflow='allow',outlinewidth=0)
     fig.update_layout(coloraxis = {'cmin':0,'cmax':3.0,'colorscale':colorscale,'colorbar':colorbar,'autocolorscale':False},)
+    fig.update_layout(margin=dict(l=20, r=20, b=20),)
     return dcc.Graph(figure=fig, config={'displayModeBar': False})
 
 
@@ -1517,9 +1517,9 @@ def bat_results(batteries,tab,include_heating,n_hp,n_chp, building, parameter_us
     dbc.Container([
         dbc.Row([
             dbc.Col(width=1),
-            dbc.Col(dbc.Button(language.loc[language['name']=='self_sufficiency',lang].iloc[0],id='Autarkiegrad',color='dark',n_clicks=0)),
-            dbc.Col(dbc.Button(language.loc[language['name']=='self_consumption',lang].iloc[0],id='Eigenverbrauch',color='dark',n_clicks=0)),
-            dbc.Col(dbc.Button(language.loc[language['name']=='energy_balance',lang].iloc[0],id='Energiebilanz', color='dark',n_clicks=0))
+            dbc.Col(dbc.Button(language.loc[language['name']=='self_sufficiency',lang].iloc[0],id='Autarkiegrad',color='#023D6B',n_clicks=0)),
+            dbc.Col(dbc.Button(language.loc[language['name']=='self_consumption',lang].iloc[0],id='Eigenverbrauch',color='#023D6B',n_clicks=0)),
+            dbc.Col(dbc.Button(language.loc[language['name']=='energy_balance',lang].iloc[0],id='Energiebilanz', color='#023D6B',n_clicks=0))
             ]),html.Br()
         ], fluid=True),html.Div(id='bat_result_graph')])
 
@@ -1541,11 +1541,11 @@ def bat_choosen_results(aut, eig, energy, data):
     if data is None: 
         show_graph='Autarkiegrad'
     if show_graph=='Autarkiegrad':
-        return show_graph, {'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
+        return show_graph, {'background-color': '#023D6B','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
     elif show_graph=='Eigenverbrauch':
-        return show_graph,{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'}
+        return show_graph,{'background-color': 'white','color': 'black'},{'background-color': '#023D6B','color': 'white',},{'background-color': 'white','color': 'black'}
     elif show_graph=='Energiebilanz':
-        return show_graph, {'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',}
+        return show_graph, {'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#023D6B','color': 'white',}
 
 # show choosen graph    
 @app.callback(
@@ -1626,6 +1626,7 @@ def bat_results(batteries,tab,results_id, lang):
         xanchor="right",
         x=1
         ))
+    fig.update_layout(margin=dict(l=20, r=20, b=20),)
     return dcc.Graph(figure=fig, config={'displayModeBar': False})
 
 # Show selection for different graphs (economy tab)
@@ -1646,9 +1647,9 @@ def economic_results(batteries, tab, parameter_use, lang):
     dbc.Container([
         dbc.Row([
             dbc.Col(width=1),
-            dbc.Col(dbc.Button(language.loc[language['name']=='payback',lang].iloc[0],id='Amortisationszeit', color='dark',)),
-            dbc.Col(dbc.Button(language.loc[language['name']=='NPV',lang].iloc[0],id='NetPresentValue', color='dark')),
-            dbc.Col(dbc.Button(language.loc[language['name']=='IROR',lang].iloc[0],id='InternalRateOfReturn', color='dark'))
+            dbc.Col(dbc.Button(language.loc[language['name']=='payback',lang].iloc[0],id='Amortisationszeit', color='#023D6B',)),
+            dbc.Col(dbc.Button(language.loc[language['name']=='NPV',lang].iloc[0],id='NetPresentValue', color='#023D6B')),
+            dbc.Col(dbc.Button(language.loc[language['name']=='IROR',lang].iloc[0],id='InternalRateOfReturn', color='#023D6B'))
             ]),html.Br(),html.Br(),
         dbc.Row(id='cost_result_graph')
         ])])
@@ -1671,11 +1672,11 @@ def eco_results(aut, eig, energy, data):
     if data is None: 
         show_graph='Amortisationszeit'
     if show_graph=='Amortisationszeit':
-        return show_graph, {'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
+        return show_graph, {'background-color': '#023D6B','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
     elif show_graph=='NetPresentValue':
-        return show_graph,{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',},{'background-color': 'white','color': 'black'}
+        return show_graph,{'background-color': 'white','color': 'black'},{'background-color': '#023D6B','color': 'white',},{'background-color': 'white','color': 'black'}
     elif show_graph=='InternalRateOfReturn':
-        return show_graph, {'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#212529','color': 'white',}
+        return show_graph, {'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#023D6B','color': 'white',}
 
 # Show choosen graph (economy tab)
 @app.callback(
@@ -1745,6 +1746,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                     labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                         "Amortisation": language.loc[language['name']=='payback_years',lang].iloc[0],
                         })
+            fig.update_layout(margin=dict(l=20, r=20, b=20),)
             return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
         elif results_id.startswith('NetPresentValue'):
             NetPresentValue_max=max(NetPresentValue)
@@ -1758,6 +1760,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                         "NetPresentValue": language.loc[language['name']=='NPV',lang].iloc[0],
                         })
             fig.update_yaxes(ticksuffix = " €")
+            fig.update_layout(margin=dict(l=20, r=20, b=20),)
             return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
         elif results_id.startswith('InternalRateOfReturn'):
             InternalRateOfReturn_max=max(InternalRateOfReturn)
@@ -1771,6 +1774,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                         "InternalRateOfReturn": language.loc[language['name']=='IROR',lang].iloc[0],
                         })
             fig.update_yaxes(ticksuffix = " %")
+            fig.update_layout(margin=dict(l=20, r=20, b=20),)
             return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
     else:
         df=pd.DataFrame().from_dict(batteries_peak)
@@ -1832,6 +1836,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                     labels={
                         "Amortisation": language.loc[language['name']=='payback_years',lang].iloc[0],
                         })
+            fig.update_layout(margin=dict(l=20, r=20, b=20),)
             return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
         elif results_id.startswith('NetPresentValue'):
             NetPresentValue_max=max(NetPresentValue)
@@ -1845,6 +1850,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                         "NetPresentValue": language.loc[language['name']=='NPV',lang].iloc[0],
                         })
             fig.update_yaxes(ticksuffix = " €")
+            fig.update_layout(margin=dict(l=20, r=20, b=20),)
             return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
         elif results_id.startswith('InternalRateOfReturn'):
             InternalRateOfReturn_max=max(InternalRateOfReturn)
@@ -1858,6 +1864,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                         "InternalRateOfReturn": language.loc[language['name']=='IROR',lang].iloc[0],
                         })
             fig.update_yaxes(ticksuffix = " %")
+            fig.update_layout(margin=dict(l=20, r=20, b=20),)
             return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
         
 if __name__ == '__main__':
