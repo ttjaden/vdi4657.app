@@ -1821,7 +1821,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             InternalRateOfReturn.append(eco.internal_rate_of_return(cashflow))
         df[language.loc[language['name']=='invest_cost',lang].iloc[0]]=Invest_cost
         df['NetPresentValue']=NetPresentValue
-        df['Amortisation']=Amortisation
+        df['Amortisation']=np.where(np.array(Amortisation)==0,15,np.array(Amortisation))
         df['InternalRateOfReturn']=np.array(InternalRateOfReturn)*100
         if results_id.startswith('Amortisationszeit'):
             Amortisation0=np.array(Amortisation)[np.where(np.array(Amortisation)>0)]
