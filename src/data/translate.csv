@@ -1,11 +1,11 @@
-name,eng,ger
+name,This is a supplementary web app to VDI 4657-3 "Planning and integration of energy storage systems in building energy systems - Electrical power storage (EPS)".,Anwendungsfall
 lang,Language,Sprache
 header_p,Sizing of battery storage systems,Auslegung von Batteriespeichern
 efh_name,SFH,EFH
 location,Location,Standort
 placeholder_location,ZIP-Code (Germany),Postleitzahl oder Adresse
 building_type,Building type,Gebäudetyp
-building_size,Building size,Wohnfläche
+building_size,Living area,Wohnfläche
 usage,Consumption usage,Verbrauchskennzahlen
 inhabitants,Number of persons,Bewohneranzahl
 energy_cons,Electrical energy consumption,Stromverbrauch
@@ -14,22 +14,22 @@ industry_name,Others,Sonstige
 tab_info_1,"The PIEG-Strom Webtool serves as an aid for the design of battery storage systems. After entering various parameters, statements are made about the economic efficiency and the most effective storage size.",Das PIEG-Strom Webtool dient zur Hilfe bei der Auslegung von Batteriespeichern. Nach Eingabe verschiedener Parametern werden Aussagen über die Wirtschaftlichkeit und die effektivste Speichergröße getroffen.
 choose_building,Building:,Gebäude:
 choose_technology,Technology:,Technologie:
-increase_autarky,Increase autarky,Eigenversorgung
+increase_autarky,Self-sufficieny,Eigenversorgung
 peak_shaving,Peak shaving,Peak Shaving
 economics,Economics,Ökonomie
 pv,PV,PV
 photovoltaik,Photovoltaic: ,Photovoltaik: 
 chp,CHP,KWK
-combined_heat_power,Combined heat and power: ,Kraftwärme-Kopplung: 
-chp_peak_ratio,Thermal power ratio: ,Thermische Leistung: 
-chp_electric_number,Electricity ratio: ,Stromkennzahl: 
+combined_heat_power,Combined heat and power: ,Kraft-Wärme-Kopplung: 
+chp_peak_ratio,Share on design heat load,Anteil an Norm Heizlast: 
+chp_electric_number,power-to-heat ratio: ,Stromkennzahl: 
 hp,HP,WP
 heatpump, Heat pump: , Wärmepumpe: 
 gas,Gas heater,Gasheizung
 bat,Battery,Batterie
 hyd,H2-Storage,H2-Speicher
-n_dwellings,Number of dwellings,Anzahl Wohnungen
-housing_units,Housing units,Wohneinheiten
+n_dwellings,Number of dwellings,Anzahl Wohneinheiten
+housing_units,Number of dwellings,Anzahl Wohneinheiten
 building_type_industry,Business sector,Geschäftsfeld
 1,North Sea coast,Nordseeküste
 2,Baltic Sea coast,Ostseeküste
@@ -60,37 +60,45 @@ chp_strategy_options,Heat & Electricity,Wärme & Elektrizität
 hp_type,Heat pump type:,Wärmepumpen-Typ:
 hp_type_options,Air / Water,Luft / Wasser
 hp_type_options,Brine / Water,Sole / Wasser
-bat_size,Battery size in kWh:,Batterie-Größe in kWh:
+bat_size,Useable storage capacity in kWh:,Nutzbare Speicherkapazität in kWh:
 bat_power,Battery power in kW:,Batterie-Leistung in kW:
 bat_feed_lim,Feed in Limit in kW/kWp:,Einspeisegrenze in kW/kWp:
-upload_save,Upload previously saved file,Zuvor abgespeicherte Datei hochladen
-developed,Developed and hosted by the,Entwickelt und gehostet vom
-start,"This is a supplementary web tool to VDI 4657-3 ""Planning and integration of energy storage systems in building energy systems - Electrical power storage (EPS)"".","Dies ist ein ergänzendes Webtool zur VDI 4657-3 ""Planung und Integration von Energiespeichern in Gebäudeenergiesystemen - Elektrische Stromspeicher (ESS)"""
-choose_use_case,Selection of the use case: ,Auswahl des Anwendungsfalls: 
+upload_save,Upload saved project,gespeichertes Projekt laden
+developed,"Developed within the project "PIEG-Strom", which was supported by "WIPANO - knowledge and technology transfer through patents and standards" with funding from the Federal Ministry for Economic Affairs and Energy (BMWi) (FKZ: 03TN0004). The authors would like to thank Projektträger Jülich (PTJ) and BMWi for their support.,"Entwickelt innerhalb des Projekts "PIEG-Strom", welches durch das Programm "WIPANO - Wissens- und Technologietransfer durch Patente und Normen" mit Mitteln des Bundesministeriums für Wirtschaft und Klimaschutz (BMWK) (FKZ: 03TN0004) gefördert wurde. Die Autoren danken dem Projektträger Jülich (PTJ) und dem BMWK für die Unterstützung.
+
+<a href="https://www.bmwk.de/Navigation/DE/Home/home.html"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Gefoerdert_LOGO_BMWI.jpg" alt="BMWi Logo" width="200px"></a>", welches durch das Programm "WIPANO - Wissens- und Technologietransfer durch Patente und Normen" mit Mitteln des nding from the Federal Ministry for Economic Affairs and Energy (BMWi) (FKZ: 03TN0004). The authors would like to thank Projektträger Jülich (PTJ) and BMWi for their support.
+
+<a href="https://www.bmwk.de/Navigation/DE/Home/home.html"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Gefoerdert_LOGO_BMWI.jpg" alt="BMWi Logo" width="200px"></a>"
+
+<a href="https://www.bmwk.de/Navigation/DE/Home/home.html"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Gefoerdert_LOGO_BMWI.jpg" alt="BMWi Logo" width="200px"></a>"
+
+<a href="https://www.bmwk.de/Navigation/DE/Home/home.html"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Gefoerdert_LOGO_BMWI.jpg" alt="BMWi Logo" width="200px"></a>",Entwickelt und gehostet vom
+start,"This is a supplementary web tool to VDI 4657-3 ""Planning and integration of energy storage systems in building energy systems - Electrical power storage (EPS)"".",Dies ist eine ergänzende Web-App zur VDI 4657-3 "Planung und Integration von Energiespeichern in Gebäudeenergiesystemen - Elektrische Stromspeicher (ESS)"
+choose_use_case,Selection of the use case for the storage system: ,Im ersten Schritt erfolgt die Auswahl des gewünschten Anwendungsfalls für den Stromspeicher: 
 use_case,Use case,Anwendung
 choose_building_type,Choose a building type,Einen Gebäudetyp wählen
 heating, incl. heating and hot water, inkl. Heizung und Warmwasser
-max_heatload,Standard heating load: ,Normheizlast: : 
+max_heatload,Design heat load:,Norm Heizlast:
 invest_cost,Investment costs,Investitionskosten
 small_battery,smallest battery,kleinste Batterie
 large_battery,largest battery,größte Batterie
 tariff,Electricity tariff,Stromtarif
 price_sell,Feed-in tariff,Einspeisevergütung
-price_buy,Electricity purchase price,Strombezugspreis
-default,Default settings,Standardeinstellungen
-self_sufficiency,Degree of self-sufficiency,Autarkiegrad
-self_consumption,Self-consumption,Eigenverbrauch
+price_buy,Only one storage system with ,Nur ein Stromspeicher mit 
+default, kWh has a paypack period during its lifetime.,Standardeinstellungen
+self_sufficiency,The storage system with ,Der Stromspeicher mit 
+self_consumption, kWh has the fastest payback time.,Eigenverbrauchsanteil
 energy_balance,Energy balance,Energiebilanz
 payback,Payback period,Amortisationszeit
 NPV,Net present value,Nettokapitalwert
 IROR,Internal rate of return,Interne Verzinsung
-eco_text_1,Only a battery with ,Nur eine Batterie mit 
-eco_text_2, kWh pays for itself during its lifetime., kWh amortisiert sich während der Lebensdauer.
-eco_text_3,The battery with ,Die Batterie mit 
+eco_text_1,Only a battery with , kWh hat den größten Nettokapitalwert und ist somit finanziell im Vorteil.
+eco_text_2,There is no financial advantage with an investment in a electrical storage system.,Die Investition in einen Stromspeicher hat keinen finanziellen Vorteil.
+eco_text_3,The return on investment of the storage system with ,Die Verzinsung des Stromspeichers mit 
 eco_text_4, kWh has the fastest payback., kWh amortisiert sich am schnellsten.
-eco_text_5,Multiple batteries appear to amortize at a similar rate over the lifetime.,Mehrere Batterien scheinen sich während der Lebensdauer ähnlich schnell zu amortisieren.
-eco_text_6,No battery amortizes during its 15-year lifetime.,Keine Batterie amortisiert sich während der Lebensdauer von 15 Jahren.
-usable_battery_size,Usable storage capacity in kWh,nutzbare Speicherkapazität in kWh
+eco_text_5,The investment in a storage system has no financial advantage.,Die Investition in einen Stromspeicher hat keinen finanziellen Vorteil.
+eco_text_6,No storage system amortizes during its 15-year lifetime.,Keine Stromspeicher amortisiert sich während der Lebensdauer von 15 Jahren.
+usable_battery_size,Upload loadprofile with 15min timesteps,Lastprofil hochladen mit 15min zeitlicher Auflösung
 payback_years,Payback time in years,Amortisationszeit in Jahren
 eco_text_7, kWh has the largest net present value and is therefore the most financially advantageous., kWh hat den größten Nettokapitalwert und ist somit die finanziell vorteilhafteste.
 eco_text_8,There is no financial advantage to investing in a battery.,Die Investition in eine Batterie hat keinen finanziellen Vorteil.
@@ -101,7 +109,7 @@ loadprofile,Loadprofile:,Lastprofil:
 upload_info,Upload loadprofile in 15min steps,15 min. Lastprofil hochladen
 upload_info1,"Of type .xls, .xlsx or .csv","Vom Typ .xls, .xlsx oder .csv"
 upload_info2,The column with the highest average value is used,Genutzt wird die Spalte mit dem höchsten Durschnittswert
-upload_info3,Assumed is the unit kilowatt [kW],Angenommen wird die Einheit Kilowatt [kW]
+upload_info3,"For the economic consideration, a storage lifetime of 15 years is assumed.",Für die wirtschaftliche Betrachtung wird eine Lebensdauer des Stromspeichers von 15 Jahren angenommen.
 choosen_column,Choosen column: ,Ausgewählte Spalte: 
 grid_supply,Grid supply: ,Netzbezug: 
 max_grid_supply,Maximum grid supply: ,Maximaler Netzbezug: 
