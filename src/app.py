@@ -21,11 +21,6 @@ from utils.getregion import getregion
 import utils.simulate as sim
 import utils.economy as eco
 
-##################################################
-# TO DOs ##########################################
-##################################################
-# TODO Space between header and container
-
 # App configuration
 # Icons from iconify, see https://icon-sets.iconify.design
 
@@ -42,8 +37,8 @@ PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath('data').resolve()
 ASSETS_PATH = PATH.joinpath('assets').resolve()
 
-app.title = 'VDI 4657-3 Webtool'
-# Table for translation (work in progress)
+app.title = 'VDI 4657-3 | App'
+# Table for translation (TODO work in progress)
 language=pd.read_csv(DATA_PATH.joinpath('translate.csv'))
 
 # Weather information for all regions
@@ -89,7 +84,7 @@ button_info = dbc.Button(
     style={'text-transform': 'none'}
 )
 
-encoded_image=base64.b64encode(open(ASSETS_PATH.joinpath('logos/Logo_FZJ_200px.png'), 'rb').read())
+encoded_image=base64.b64encode(open(ASSETS_PATH.joinpath('logos/Logo_BMWK_500px.png'), 'rb').read())
 
 options_building_type_ger=[
     {"label": html.Div([html.Span('Bestand, unsaniert',id='tooltip_building1'), dbc.Tooltip('Vorlauf: 55°C',target='tooltip_building1')]), "value": "Bestand, unsaniert"},
@@ -141,12 +136,22 @@ header=dbc.Navbar(
         dbc.Row([
             dbc.Col([
                 html.Div([
-                    html.H4('Auslegung von Batteriespeichern'),
+                     html.Img(src="assets/favicon.ico", style={'height':'20'}),
+                    ],
+                    )
+                ],
+                align='center',
+                ),
+            ]),
+        dbc.Row([
+            dbc.Col([
+                html.Div([
+                    html.H4('Auslegung von Stromspeichern'),
                     ],
                     id='app-title'
                     )
                 ],
-                align='center',
+                align='left',
                 ),
             ]),
         dbc.Row([
@@ -173,7 +178,7 @@ header=dbc.Navbar(
         fluid=True,
         ),
     dark=True,
-    color='#023D6B',
+    color='#003da7',
     sticky='top',
     )
 
@@ -193,7 +198,7 @@ content = dbc.Container([
                 html.Div(id='cost_result'),
                 ]
             )),
-        ]),
+        ],style={'padding': '15px'}),
     dcc.Store(id='last_triggered_building'),
     dcc.Store(id='n_clicks_pv'),
     dcc.Store(id='n_clicks_chp'),
@@ -312,7 +317,7 @@ def change_language(n_language,upload_data):
                 html.Br(),
                 html.Div(language.loc[language['name']=='developed',lang]),
                 html.Br(),
-                html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()),style={'height':'67px'})
+                html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()),style={'height':'200px'})
             ])]),
             dcc.Tab(label='System',value='tab_parameter',),
             dcc.Tab(label=language.loc[language['name']=='economics',lang].iloc[0], value='tab_econmics',)],
@@ -1517,7 +1522,6 @@ def bat_results(batteries,tab,include_heating,n_hp,n_chp, building, parameter_us
             return html.Div()
     return html.Div(children=[html.Br(),
     dbc.Container([
-        dbc.Row(dbc.Col(html.H3(language.loc[language['name']=='results',lang].iloc[0]))),
         dbc.Row([
             dbc.Col(dbc.Button(language.loc[language['name']=='self_sufficiency',lang].iloc[0],id='Autarkiegrad',color="primary", active=True)),
             dbc.Col(dbc.Button(language.loc[language['name']=='self_consumption',lang].iloc[0],id='Eigenverbrauch',color="primary", active=True)),
@@ -1872,4 +1876,4 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
         
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, port=8050)
