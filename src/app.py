@@ -38,7 +38,8 @@ DATA_PATH = PATH.joinpath('data').resolve()
 ASSETS_PATH = PATH.joinpath('assets').resolve()
 
 app.title = 'VDI 4657-3 | App'
-# Table for translation (TODO work in progress)
+
+# Translation
 language=pd.read_csv(DATA_PATH.joinpath('translate.csv'))
 
 # Weather information for all regions
@@ -161,7 +162,7 @@ header=dbc.Navbar(
                     dbc.Nav([
                         dbc.NavItem(button_language,style={'width':'150'}),
                         dbc.NavItem(button_info,style={'width':'150'}),
-                        dcc.ConfirmDialog(id='info_dialog', message='Dummy text'),
+                        dcc.ConfirmDialog(id='info_dialog', message='dummy text'),
                         ],
                         navbar=True,
                         ),
