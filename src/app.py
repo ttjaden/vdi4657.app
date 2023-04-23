@@ -60,29 +60,37 @@ button_expert = dbc.Button(
 )
 
 button_download = dbc.Button(
-    html.Div(id='button_download_content',children=[DashIconify(icon='ic:baseline-download',width=50,height=30,),html.Div('Parameter Download')]),
+    html.Div(id='button_download_content',children=[DashIconify(icon='ic:baseline-download'),html.Div('Parameter Download')]),
     id='button_download',
     outline=True,
     color="primary",
     active=True,
-    style={'textTransform': 'none','color': '#023D6B','background-color': 'white',},
+    style={'textTransform': 'none','color': '#003da7','background-color': 'white',},
 )
 
 button_language = dbc.Button(
-    html.Div(id='button_language_content',children=[DashIconify(icon='emojione:flag-for-germany',width=50,height=30,),'Sprache']),
-    outline=True,
-    color='light',
+    html.Div(id='button_language_content',children=[DashIconify(icon='emojione:flag-for-germany'),html.Div('Sprache')]),
     id='button_language',
-    style={'text-transform': 'none'},
+    style={'text-transform': 'none',
+        'border': 'none',
+        'background': 'none',
+        'cursor': 'pointer',
+        'color': 'white',
+        },
     value='ger'
 )
 
 button_info = dbc.Button(
-    html.Div(id='button_info_content',children=[DashIconify(icon='ph:info',width=50,height=30,),'Info']),
-    outline=True,
-    color='light',
+    html.Div(id='button_info_content',children=[DashIconify(icon='ph:info',width=50,height=30,),html.Div('Info')]),
     id='button_info',
-    style={'text-transform': 'none'}
+    outline=False,
+    color='light',
+    style={'text-transform': 'none',
+        'border': 'none',
+        'background': 'none',
+        'color': 'white',
+        'cursor': 'pointer'
+    },
 )
 
 encoded_image=base64.b64encode(open(ASSETS_PATH.joinpath('logos/Logo_BMWK_500px.png'), 'rb').read())
@@ -137,7 +145,7 @@ header=dbc.Navbar(
         dbc.Row([
             dbc.Col([
                 html.Div([
-                     html.Img(src="assets/favicon.ico", style={'height':'20'}),
+                     html.Img(src="assets/favicon.ico"),
                     ],
                     )
                 ],
@@ -160,9 +168,9 @@ header=dbc.Navbar(
                 dbc.NavbarToggler(id='navbar-toggler'),
                 dbc.Collapse(
                     dbc.Nav([
-                        dbc.NavItem(button_language,style={'width':'150'}),
-                        dbc.NavItem(button_info,style={'width':'150'}),
-                        dcc.ConfirmDialog(id='info_dialog', message='dummy text'),
+                        dbc.NavItem(button_language),
+                        dbc.NavItem(button_info),
+                        dcc.ConfirmDialog(id='info_dialog'),
                         ],
                         navbar=True,
                         ),
@@ -170,17 +178,17 @@ header=dbc.Navbar(
                     navbar=True,
                     ),
                 ],
-                width=3,
+                
                 ),
             ],
-            align='center',
+            align='right',
             ),
         ],
         fluid=True,
         ),
     dark=True,
     color='#003da7',
-    sticky='top',
+    sticky='top'
     )
 
 ################################################
@@ -200,36 +208,36 @@ content = dbc.Container([
                 ]
             )),
         ],style={'padding': '15px'}),
-    dcc.Store(id='last_triggered_building'),
-    dcc.Store(id='n_clicks_pv'),
-    dcc.Store(id='n_clicks_chp'),
-    dcc.Store(id='n_clicks_hp'),
-    dcc.Store(id='parameter_include_heating'),
-    dcc.Store(id='parameter_wohnfläche'),
+    dcc.Store(id='last_triggered_building', storage_type='memory'),
+    dcc.Store(id='n_clicks_pv', storage_type='memory'),
+    dcc.Store(id='n_clicks_chp', storage_type='memory'),
+    dcc.Store(id='n_clicks_hp', storage_type='memory'),
+    dcc.Store(id='parameter_include_heating', storage_type='memory'),
+    dcc.Store(id='parameter_wohnfläche', storage_type='memory'),
     dcc.Store(id='parameter_building_type'),
-    dcc.Store(id='p_el_hh'),
-    dcc.Store(id='p_th_load'),
-    dcc.Store(id='building'),
-    dcc.Store(id='c_pv1'),
-    dcc.Store(id='p_pv1'),
-    dcc.Store(id='power_heat_pump_W'),
-    dcc.Store(id='power_chp_W'),
-    dcc.Store(id='batteries'),
-    dcc.Store(id='price_electricity'),
-    dcc.Store(id='price_electricity_peak'),
-    dcc.Store(id='parameter_lang'),
-    dcc.Store(id='parameter_use'),
-    dcc.Loading(type='default',children=dcc.Store(id='parameter_location_int')),
-    dcc.Store(id='parameter_location_string'),
-    dcc.Store(id='parameter_pv'),
-    dcc.Store(id='parameter_chp'),
-    dcc.Store(id='parameter_hp'),
+    dcc.Store(id='p_el_hh', storage_type='memory'),
+    dcc.Store(id='p_th_load', storage_type='memory'),
+    dcc.Store(id='building', storage_type='memory'),
+    dcc.Store(id='c_pv1', storage_type='memory'),
+    dcc.Store(id='p_pv1', storage_type='memory'),
+    dcc.Store(id='power_heat_pump_W', storage_type='memory'),
+    dcc.Store(id='power_chp_W', storage_type='memory'),
+    dcc.Store(id='batteries', storage_type='memory'),
+    dcc.Store(id='price_electricity', storage_type='memory'),
+    dcc.Store(id='price_electricity_peak', storage_type='memory'),
+    dcc.Store(id='parameter_lang', storage_type='memory'),
+    dcc.Store(id='parameter_use', storage_type='memory'),
+    dcc.Loading(type='default',children=dcc.Store(id='parameter_location_int', storage_type='memory')),
+    dcc.Store(id='parameter_location_string', storage_type='memory'),
+    dcc.Store(id='parameter_pv', storage_type='memory'),
+    dcc.Store(id='parameter_chp', storage_type='memory'),
+    dcc.Store(id='parameter_hp', storage_type='memory'),
     dcc.Store(id='parameters_all'),
-    dcc.Store(id='parameter_loadprofile'),
-    dcc.Store('show_economic_results'),
-    dcc.Store('show_bat_results'),
-    dcc.Loading(type='default',children=dcc.Store(id='parameter_peak_shaving')),
-    dcc.Store(id='parameter_economoy'),
+    dcc.Store(id='parameter_loadprofile', storage_type='memory'),
+    dcc.Store('show_economic_results', storage_type='memory'),
+    dcc.Store('show_bat_results', storage_type='memory'),
+    dcc.Loading(type='default',children=dcc.Store(id='parameter_peak_shaving', storage_type='memory')),
+    dcc.Store(id='parameter_economoy', storage_type='memory'),
     ],fluid=True)
 
 # Create layout
@@ -264,7 +272,7 @@ def change_language(n_language,upload_data):
         else:
             lang='eng'
             flag='emojione:flag-for-united-kingdom'        
-    return ([DashIconify(icon=flag, width=50,height=30,),language.loc[language['name']=='lang',lang].iloc[0]],
+    return ([DashIconify(icon=flag, width=50,height=30,),html.Div(language.loc[language['name']=='lang',lang].iloc[0])],
             lang,
             [html.H4(language.loc[language['name']=='header_p',lang])],
             [dcc.Tab(label=language.loc[language['name']=='use_case',lang].iloc[0],value='tab_info',children=[html.Div(children=[
@@ -375,46 +383,38 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                 n_clicks_hp=0
             return html.Div(className='para',id='para',children=[
                 html.Br(),
-                dbc.Container([
-                    dbc.Row(dbc.Col(html.H3(language.loc[language['name']=='location',lang].iloc[0])),),
-                    dbc.Row([
-                        dbc.Col(dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],value=location,persistence='session',style=dict(width = '100%'))),
-                        dbc.Col(dcc.Loading(type="default",children=html.Div(id='region')),align='start',width=12, lg=7),
-                        ]),
-                    html.Br(),
-                    html.Br(),
-                    dbc.Row([
-                        dbc.Col(html.H3(language.loc[language['name']=='choose_building',lang].iloc[0]), width=12),
-                        ],
-                        align='center',
-                        ), 
-                    dbc.Row([
-                        dbc.Col(html.Button(html.Div([DashIconify(icon='clarity:home-solid',width=50,height=50,),html.Br(),language.loc[language['name']=='efh_name',lang].iloc[0]],style={'width':'120px'}),id='efh_click',n_clicks_timestamp=n_clicks_timestamp_efh), width=4),
-                        dbc.Col(html.Button(html.Div([DashIconify(icon='bxs:building-house',width=50,height=50,),html.Br(),language.loc[language['name']=='mfh_name',lang].iloc[0]],style={'width':'120px'}),id='mfh_click',n_clicks_timestamp=n_clicks_timestamp_mfh), width=4),
-                        dbc.Col(html.Button(html.Div([DashIconify(icon='la:industry',width=50,height=50,),html.Br(),language.loc[language['name']=='industry_name',lang].iloc[0]],style={'width':'120px'}),id='industry_click',n_clicks_timestamp=n_clicks_timestamp_indu), width=4),
-                    ]),
-                    html.Br(),
-                    dbc.Row([
-                        dbc.Col(id='include_heating_row'),
-                    ]),
-                    html.Br(),
+                dbc.Accordion([
+                    dbc.AccordionItem([
+                        dbc.Row([
+                            dbc.Col(dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],value=location,persistence='memory',style=dict(width = '100%'))),
+                            dbc.Col(dcc.Loading(type="default",children=html.Div(id='region')),align='start',width=12, lg=7),
+                            ])
                     ],
-                    fluid=True,
+                    title=language.loc[language['name']=='location',lang].iloc[0],
                     ),
-                    
-                dbc.Container(id='bulding_container',fluid=True),
-                dbc.Container([
-                    html.Br(),
-                    dbc.Row(dbc.Col(html.H3(language.loc[language['name']=='choose_technology',lang].iloc[0]))),
-                    dbc.Row([
-                        dbc.Col(html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'120px'}),id='n_solar',n_clicks=n_clicks_solar),width=4),
-                        dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'120px'}),id='n_chp',n_clicks=n_clicks_chp),width=4),
-                        dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'120px'}),id='n_hp',n_clicks=n_clicks_hp),width=4),
-                    ])],
-                    fluid=True
+                    dbc.AccordionItem([
+                        dbc.Row([
+                           dbc.Col(html.Button(html.Div([DashIconify(icon='clarity:home-solid',width=50,height=50,),html.Br(),language.loc[language['name']=='efh_name',lang].iloc[0]],style={'width':'120px'}),id='efh_click',n_clicks_timestamp=n_clicks_timestamp_efh), width=4),
+                            dbc.Col(html.Button(html.Div([DashIconify(icon='bxs:building-house',width=50,height=50,),html.Br(),language.loc[language['name']=='mfh_name',lang].iloc[0]],style={'width':'120px'}),id='mfh_click',n_clicks_timestamp=n_clicks_timestamp_mfh), width=4),
+                            dbc.Col(html.Button(html.Div([DashIconify(icon='la:industry',width=50,height=50,),html.Br(),language.loc[language['name']=='industry_name',lang].iloc[0]],style={'width':'120px'}),id='industry_click',n_clicks_timestamp=n_clicks_timestamp_indu), width=4),
+                        ]),
+                        dbc.Row(dbc.Col(id='include_heating_row')),
+                        dbc.Container(id='bulding_container',fluid=True),
+                    ],
+                    title=language.loc[language['name']=='choose_building',lang].iloc[0],
                     ),
-                dbc.Container(html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology'),fluid=True)
-                
+                    dbc.AccordionItem([
+                        dbc.Row([
+                            dbc.Col(html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv',lang].iloc[0]],style={'width':'120px'}),id='n_solar',n_clicks=n_clicks_solar),width=4),
+                            dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'120px'}),id='n_chp',n_clicks=n_clicks_chp),width=4),
+                            dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'120px'}),id='n_hp',n_clicks=n_clicks_hp),width=4),
+                        ]),
+                        dbc.Container(html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology'),fluid=True)
+                    ],
+                    title=language.loc[language['name']=='choose_technology',lang].iloc[0],
+                    )
+                ],
+                always_open=True,active_item=['item-0', 'item-1', 'item-2']),                
             ])
         else:
             return html.Div(children=[html.Br(),
@@ -454,12 +454,14 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
 # Info button content
 @app.callback(
     Output('info_dialog', 'displayed'),
+    Output('info_dialog','message'),
     Input('button_info','n_clicks'),
+    State('button_language', 'value'),
 )
-def display_info(n_clicks_info):
+def display_info(n_clicks_info, lang):
     if n_clicks_info is None:
         raise PreventUpdate
-    return True
+    return True, language.loc[language['name']=='info_text',lang].iloc[0]
 
 # Build parameter container
 # Building selection
@@ -511,29 +513,29 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
         options_building_type=options_building_type_ger
     if (efh_click>mfh_click) and (efh_click>industry_click):
         if (heating is None) or (len(heating)==0): # for simulating without heating
-            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=[], id='include_heating',persistence='session'),
+            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=[], id='include_heating',persistence='memory'),
                         [   
                         dbc.Row([
                             dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], width=6),
                             dbc.Col(html.Div(id='stromverbrauch_value'), width=4),
-                            dbc.Col(dcc.Slider(min=2000,max=10000,step=500,value=electricity_consumption_efh,marks=None,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                            dbc.Col(dcc.Slider(min=2000,max=10000,step=500,value=electricity_consumption_efh,marks=None,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                             html.Div(id='industry_type'),
                             dcc.Store(id='building_type_value'),
                             ],
                             align='center',
                             ),
                         ],
-                    {'background-color': '#023D6B','color': 'white',},
+                    {'background-color': '#003da7','color': 'white',},
                     {'background-color': 'white','color': 'black'},
                     {'background-color': 'white','color': 'black'},'efh')
         else: # with heating system
-            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=['True'], id='include_heating',persistence='session'),
+            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=['True'], id='include_heating',persistence='memory'),
                         [
                             dbc.Row(
                                 [
                                     dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], width=6),
                                     dbc.Col(html.Div(id='stromverbrauch_value'), width=4),
-                                    dbc.Col(dcc.Slider(min=2000,max=8000,step=500,value=electricity_consumption_efh,marks=None,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                                    dbc.Col(dcc.Slider(min=2000,max=8000,step=500,value=electricity_consumption_efh,marks=None,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                                     html.Div(id='industry_type'),
                                 ],
                                 align='center',
@@ -542,7 +544,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                                 [
                                     dbc.Col(language.loc[language['name']=='building_size',lang].iloc[0], width=6),
                                     dbc.Col(html.Div(id='wohnfläche_value'), width=4),
-                                    dbc.Col(dcc.Slider(min=50,max=250,step=10,value=150,marks=None,id='wohnfläche',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                                    dbc.Col(dcc.Slider(min=50,max=250,step=10,value=150,marks=None,id='wohnfläche',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                                 ],
                                 align='center',
                                 ),
@@ -550,46 +552,46 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                                 [
                                     dbc.Col(language.loc[language['name']=='building_type',lang].iloc[0], width=6),
                                     dbc.Col(html.Div(id='building_type_value'), width=6),
-                                    dbc.Col(dcc.Dropdown(options_building_type, id='building_type',persistence='session'), width=11),
+                                    dbc.Col(dcc.Dropdown(options_building_type, id='building_type',persistence='memory'), width=11),
                                 ],
                                 align='center',
                                 )
                         ],
-                    {'background-color': '#023D6B','color': 'white',},
+                    {'background-color': '#003da7','color': 'white',},
                     {'background-color': 'white','color': 'black'},
                     {'background-color': 'white','color': 'black'},'efh')
     if (mfh_click>efh_click) and (mfh_click>industry_click):
         if (heating is None) or (len(heating)==0): # for simulating without heating
-            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=[], id='include_heating',persistence='session'),
+            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=[], id='include_heating',persistence='memory'),
                         [
                             dbc.Row(
                                 [
                                     dbc.Col(language.loc[language['name']=='housing_units',lang].iloc[0], width=6),
                                     dbc.Col(html.Div(id='wohnfläche_value'), width=4),
-                                    dbc.Col(dcc.Slider(min=2,max=50,step=1,value=12,marks=None,id='wohnfläche',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                                    dbc.Col(dcc.Slider(min=2,max=50,step=1,value=12,marks=None,id='wohnfläche',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                                 ],
                                 align='center'),
                             dbc.Row(
                                 [
                                 dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], width=6),
                                 dbc.Col(html.Div(id='stromverbrauch_value'), width=4),
-                                dbc.Col(dcc.Slider(min=5000,max=100000,step=1000,value=electricity_consumption_mfh,marks=None,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                                dbc.Col(dcc.Slider(min=5000,max=100000,step=1000,value=electricity_consumption_mfh,marks=None,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                                 dcc.Store(id='building_type_value'),
                                 html.Div(id='industry_type'),
                                 ],
                             align='center'),
                         ],
                     {'background-color': 'white','color': 'black'},
-                    {'background-color': '#023D6B','color': 'white',},
+                    {'background-color': '#003da7','color': 'white',},
                     {'background-color': 'white','color': 'black'},'mfh')
         else:
-            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=['True'], id='include_heating',persistence='session'),
+            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=['True'], id='include_heating',persistence='memory'),
                         [
                             dbc.Row(
                                 [
                                     dbc.Col(language.loc[language['name']=='housing_units',lang].iloc[0], width=6),
                                     dbc.Col(html.Div(id='wohnfläche_value'), width=4),
-                                    dbc.Col(dcc.Slider(min=2,max=50,step=1,value=12,marks=None,id='wohnfläche',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                                    dbc.Col(dcc.Slider(min=2,max=50,step=1,value=12,marks=None,id='wohnfläche',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                                 ],
                                 align='center',
                                 ),
@@ -597,7 +599,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                                 [
                                     dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], width=6),
                                     dbc.Col(html.Div(id='stromverbrauch_value'), width=4),
-                                    dbc.Col(dcc.Slider(min=5000,max=100000,step=1000,value=electricity_consumption_mfh,marks=None,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                                    dbc.Col(dcc.Slider(min=5000,max=100000,step=1000,value=electricity_consumption_mfh,marks=None,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                                     html.Div(id='industry_type'),
                                 ],
                                 align='center',
@@ -606,13 +608,13 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                                 [
                                     dbc.Col(language.loc[language['name']=='building_type',lang].iloc[0], width=6),
                                     dbc.Col(html.Div(id='building_type_value'), width=6),
-                                    dbc.Col(dcc.Dropdown(options_building_type,id='building_type',persistence='session'), width=11),
+                                    dbc.Col(dcc.Dropdown(options_building_type,id='building_type',persistence='memory'), width=11),
                                 ],
                                 align='center',
                                 )
                         ],
                 {'background-color': 'white','color': 'black'},
-                {'background-color': '#023D6B','color': 'white',},
+                {'background-color': '#003da7','color': 'white',},
                 {'background-color': 'white','color': 'black'},'mfh')
     if (industry_click>efh_click) and (industry_click>mfh_click):
         if lang=='eng':
@@ -624,7 +626,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
             dbc.Row(
                 [
                 dbc.Col(language.loc[language['name']=='building_type_industry',lang].iloc[0], width=12),
-                dbc.Col(dcc.Dropdown(options_slp,id='industry_type',persistence='session', optionHeight=100,maxHeight=400), width=11),
+                dbc.Col(dcc.Dropdown(options_slp,id='industry_type',persistence='memory', optionHeight=100,maxHeight=400), width=11),
                 ],
             align='center',
             ),
@@ -632,14 +634,14 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                 [
                 dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], width=6),
                 dbc.Col(html.Div(id='stromverbrauch_value'), width=4),
-                dbc.Col(dcc.Slider(min=5_000,max=200_000,step=1000,marks=None,value=electricity_consumption_indu,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                dbc.Col(dcc.Slider(min=5_000,max=200_000,step=1000,marks=None,value=electricity_consumption_indu,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                 ],
             align='center',
             ),
             ],
             {'background-color': 'white','color': 'black'},
             {'background-color': 'white','color': 'black'},
-            {'background-color': '#023D6B','color': 'white',},'indu')
+            {'background-color': '#003da7','color': 'white',},'indu')
 
 # Add technology to the tab 'tab_parameter'
 @app.callback(
@@ -654,8 +656,8 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
     )
 def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data):
     pv_value=10
-    chp_max_power=0.3
-    chp_electric_heat_ratio=1
+    chp_max_power=30
+    chp_electric_heat_ratio=100
     hp_technology=''
     if last_upload is not None:
         if (ctx.timing_information['__dash_server']['dur']-last_upload/1000)<5:
@@ -670,7 +672,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
                                 [
                                 dbc.Col(html.H6(language.loc[language['name']=='photovoltaik',lang].iloc[0]), width=6),
                                 dbc.Col(html.Div(id='pv_slider_value'), width=4),
-                                dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='session'), width=12),
+                                dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
                                 ],
                             align='center',
                             ))
@@ -680,7 +682,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
                                 [
                                 dbc.Col(html.H6(language.loc[language['name']=='photovoltaik',lang].iloc[0]), width=6),
                                 dbc.Col(html.Div(id='pv_slider_value'), width=4),
-                                dbc.Col(dcc.Slider(min=0,max=200,step=5,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='session'), width=12),
+                                dbc.Col(dcc.Slider(min=0,max=200,step=5,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
                                 ],
                             align='center',
                             ))
@@ -704,10 +706,10 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
                                 [
                                 dbc.Col(language.loc[language['name']=='chp_peak_ratio',lang].iloc[0], width=6),
                                 dbc.Col(id='chp_technology_value'),
-                                dbc.Col(dcc.Slider(min=0.1,max=1,step=0.1,value=chp_max_power,marks=None,id='chp_max_power',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                                dbc.Col(dcc.Slider(min=10 ,max=100,step=10,value=chp_max_power,marks=None,id='chp_max_power',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                                 dbc.Col(language.loc[language['name']=='chp_electric_number',lang].iloc[0], width=6),
                                 dbc.Col(id='chp_technology_value2'),
-                                dbc.Col(dcc.Slider(min=0.1,max=3,step=0.1,value=chp_electric_heat_ratio,marks=None,id='chp_technology',tooltip={'placement': 'top', 'always_visible': False},persistence='session'), width=12),
+                                dbc.Col(dcc.Slider(min=10,max=300,step=10,value=chp_electric_heat_ratio,marks=None,id='chp_technology',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                                 ],
                             align='center',
                             ),
@@ -722,7 +724,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
                                 [
                                 dbc.Col(html.H6(language.loc[language['name']=='heatpump',lang].iloc[0]), width=6),
                                 dbc.Col(dcc.Loading(type="circle",children=html.Div(id="hp_technology_value")), width=6),
-                                dbc.Col(dcc.Dropdown(['Luft/Wasser (mittl. Effizienz)','Sole/Wasser (mittl. Effizienz)'],value=hp_technology, id='hp_technology',persistence='session', optionHeight=50), width=11),
+                                dbc.Col(dcc.Dropdown(['Luft/Wasser (mittl. Effizienz)','Sole/Wasser (mittl. Effizienz)'],value=hp_technology, id='hp_technology',persistence='memory', optionHeight=50), width=11),
                                 ],
                             align='center',
                             )
@@ -799,86 +801,94 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
         
     if tab=='tab_econmics':
         if (last_upload!=parameter_economy):
-            specific_bat_cost_small = upload_data['specific_bat_cost_small']['0']
-            specific_bat_cost_big = upload_data['specific_bat_cost_big']['0']
+            absolut_bat_cost_small = upload_data['specific_bat_cost_small']['0']
+            absolut_bat_cost_big = upload_data['specific_bat_cost_big']['0'] #TODO
             price_sell = int(upload_data['Electricity_price']['0'].split(',')[1][:-1])
             price_buy = int(upload_data['Electricity_price']['0'].split(',')[0][1:])
         else:
-            specific_bat_cost_small=int(round(float(specific_bat_cost_small)/50)*50)
-            specific_bat_cost_big=int(round(float(specific_bat_cost_big)/50)*50)
+            absolut_bat_cost_small=int(round(float(specific_bat_cost_small*capacity_bat_small)/50)*50)
+            absolut_bat_cost_big=int(round(float(specific_bat_cost_big*capacity_bat_big)/50)*50)
             price_sell=6
             price_buy=35
         if LSK==0:
-            cost_use_case=dbc.Row(
-                [
-                dbc.Col(language.loc[language['name']=='price_buy',lang].iloc[0], width=12),
-                dbc.Col([dcc.Input(id='price_buy',min=0,value=price_buy,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh'], width=6),
-                dbc.Col(language.loc[language['name']=='price_sell',lang].iloc[0], width=12),
-                dbc.Col([dcc.Input(id='price_sell',min=0,value=price_sell,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh',html.Div(id='energy_price_below2500'),html.Div(id='energy_price_above2500'),html.Div(id='power_price_below2500'),html.Div(id='power_price_above2500')], width=6),
-                ],
-                align='center',
-                )
+            cost_use_case=[
+                dbc.Row(
+                    [
+                    dbc.Col(html.Div(language.loc[language['name']=='price_buy',lang].iloc[0]), width=6),
+                    dbc.Col(html.Div(id='price_buy_text'), width=6),
+                    ]),
+                dbc.Row(
+                    [
+                    dbc.Col(dcc.Slider(min=0, max=50,step=1,value=price_buy,marks=None,id='price_buy',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+                    ]),
+                dbc.Row(
+                    [
+                    dbc.Col(html.Div(language.loc[language['name']=='price_sell',lang].iloc[0]), width=6),
+                    dbc.Col(html.Div(id='price_sell_text'), width=6),
+                    ]),
+                dbc.Row(
+                    [
+                    dbc.Col(dcc.Slider(min=0, max=30,step=1,value=price_sell,marks=None,id='price_sell',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+                    ]),
+                ]
             download_parameter_button=dbc.Col([dbc.NavItem(button_download,style={'width':'100%'}),dcc.Download(id="download-parameters-xlsx")], width={'offset':1, 'size':6})
         else:
             energy_tariff_below2500, energy_tariff_above2500, power_tariff_below2500, power_tariff_above2500=eco.grid_costs_default()
             cost_use_case=dbc.Row(
                 [
-                dbc.Col('Arbeitspreis bei unter 2500 Volllaststunden: ', width=12),
-                dbc.Col([dcc.Input(id='energy_price_below2500',min=0,value=energy_tariff_below2500*100,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh'], width=6),
-                dbc.Col('Arbeitspreis bei über 2500 Volllaststunden: ', width=12),
-                dbc.Col([dcc.Input(id='energy_price_above2500',min=0,value=energy_tariff_above2500*100,placeholder='ct/kWh',type='number',style=dict(width = '50%'),persistence='session'),'ct/kWh'], width=6),
-                dbc.Col('Leistungspreis bei unter 2500 Volllaststunden: ', width=12),
-                dbc.Col([dcc.Input(id='power_price_below2500',min=0,value=power_tariff_below2500,placeholder='€/kW',type='number',style=dict(width = '50%'),persistence='session'),'€/kW'], width=6),
-                dbc.Col('Leistungspreis bei über 2500 Volllaststunden: ', width=12),
-                dbc.Col([dcc.Input(id='power_price_above2500',min=0,value=power_tariff_above2500,placeholder='€/kW',type='number',style=dict(width = '50%'),persistence='session'),'€/kW', html.Div(id='price_buy'),html.Div(id='price_sell')], width=6),
+                dbc.Col(html.Div('Arbeitspreis bei unter 2500 Volllaststunden:'), width=8),
+                dbc.Col(html.Div(id='energy_price_below2500_text'), width=4),
+                dbc.Col(dcc.Slider(min=0, max=50,step=1,value=energy_tariff_below2500*100,marks=None,id='energy_price_below2500',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+
+                dbc.Col(html.Div('Arbeitspreis bei über 2500 Volllaststunden:'), width=8),
+                dbc.Col(html.Div(id='energy_price_above2500_text'), width=4),
+                dbc.Col(dcc.Slider(min=0, max=50,step=1,value=energy_tariff_above2500*100,marks=None,id='energy_price_above2500',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+
+                dbc.Col(html.Div('Leistungspreis bei unter 2500 Volllaststunden:'), width=8),
+                dbc.Col(html.Div(id='power_price_below2500_text'), width=4),
+                dbc.Col(dcc.Slider(min=0, max=100,step=5,value=power_tariff_below2500,marks=None,id='power_price_below2500',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+
+                dbc.Col(html.Div('Leistungspreis bei über 2500 Volllaststunden:'), width=8),
+                dbc.Col(html.Div(id='power_price_above2500_text'), width=4),
+                dbc.Col(dcc.Slider(min=0, max=200,step=10,value=power_tariff_above2500,marks=None,id='power_price_above2500',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                 ],
                 align='center',
                 )
             download_parameter_button=html.Div()
         
         return html.Div(
-            [html.Br(),
-            html.H4(language.loc[language['name']=='invest_cost',lang].iloc[0]),
-            dbc.Container(
+            [html.Br(),dbc.Accordion([
+                dbc.AccordionItem([
+                    dbc.Row([
+                        dbc.Col(html.Div([str(capacity_bat_small) + language.loc[language['name']=='battery_cost_func',lang].iloc[0]]), width=6),
+                        dbc.Col(html.Div(id='absolut_bat_cost_small_text'), width=6),]),
+                    dbc.Row(
                         [
-                            dbc.Row(
-                                [
-                                dbc.Col(html.Div([language.loc[language['name']=='small_battery',lang].iloc[0]]), width=6),
-                                dbc.Col(html.Div([str(capacity_bat_small)+' kWh']), width=6),
-                                ],
-                            align='center',
-                            ),
-                            dbc.Row(
-                                [
-                                dbc.Col([dcc.Input(id='specific_bat_cost_small',value=specific_bat_cost_small,type='number',style=dict(width = '50%'), persistence='session'),'€/kWh'], width=6),
-                                dbc.Col(html.Div(id='absolut_bat_cost_small'), width=6),
-                                ],
-                            align='center',
-                            ),
-                            dbc.Row(
-                                [
-                                dbc.Col(html.Div([language.loc[language['name']=='large_battery',lang].iloc[0]]), width=6),
-                                dbc.Col(html.Div([str(capacity_bat_big)+' kWh']), width=6),
-                                ],
-                            align='center',
-                            ),
-                            dbc.Row(
-                                [
-                                dbc.Col([dcc.Input(id='specific_bat_cost_big', value=specific_bat_cost_big,type='number', style=dict(width = '50%'),persistence='session'),'€/kWh'], width=6),
-                                dbc.Col(html.Div(id='absolut_bat_cost_big'), width=6),
-                                ],
-                            align='center',
-                            ),
+                        dbc.Col(dcc.Slider(min=0, max=absolut_bat_cost_small*2,step=50,value=absolut_bat_cost_small,marks=None,id='absolut_bat_cost_small',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+                        ],),
+                    dbc.Row(
+                        [
+                        dbc.Col(html.Div([str(capacity_bat_big) + language.loc[language['name']=='battery_cost_func',lang].iloc[0]]), width=6),
+                        dbc.Col(html.Div(id='absolut_bat_cost_big_text'), width=6),]),
+                    dbc.Row(
+                        [
+                        dbc.Col(dcc.Slider(min=0, max=absolut_bat_cost_big*2,step=50,value=absolut_bat_cost_big,marks=None,id='absolut_bat_cost_big',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                         ]),
+                ],
+                title=language.loc[language['name']=='invest_cost',lang].iloc[0],
+                ),
+                dbc.AccordionItem(
+                    cost_use_case
+                ,
+                title=language.loc[language['name']=='tariff',lang].iloc[0],
+                ),
+                dbc.AccordionItem([
+                    dbc.Row(dbc.Col(language.loc[language['name']=='eco_help_info',lang].iloc[0])),
+                ],
+                title=language.loc[language['name']=='eco_help',lang].iloc[0],
+                ),
+            ],always_open=True,active_item=['item-0', 'item-1', 'item-2']),
             html.Br(),
-            html.H4(language.loc[language['name']=='tariff',lang].iloc[0]),
-            dbc.Container(cost_use_case),
-            html.Br(),
-            html.H4(language.loc[language['name']=='eco_help',lang].iloc[0]),
-            dbc.Container([
-                dbc.Row(dbc.Col(language.loc[language['name']=='eco_help_info',lang].iloc[0])),
-                html.Br(),
-                html.Br(),
                 dbc.Row(
                     [
                     dbc.Col(dbc.Button(
@@ -887,14 +897,12 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                         outline=True,
                         color="primary",
                         active=True,
-                        style={'textTransform': 'none','color': '#023D6B','background-color': 'white',},
+                        style={'textTransform': 'none','color': '#003da7','background-color': 'white',},
                         ), width={'offset':1,'size':4}),
                     download_parameter_button
                     ]
                 )
-            ]),
-            ]
-        ), last_upload
+            ]), last_upload
 
 # Specific functions for a certain purpose ################
 # Weather information
@@ -966,7 +974,7 @@ def get_p_el_hh(e_hh,building,building_type):
     )
 def change_solar_style(n_clicks):
     if (n_clicks%2)==1:
-        return {'background-color': '#023D6B','color': 'white',},1
+        return {'background-color': '#003da7','color': 'white',},1
     else:
         return {'background-color': 'white','color': 'black'},0
 @app.callback(
@@ -975,7 +983,7 @@ def change_solar_style(n_clicks):
     )
 def change_solar2_style(n_clicks):
     if (n_clicks%2)==1:
-        return {'background-color': '#023D6B','color': 'white',}
+        return {'background-color': '#003da7','color': 'white',}
     else:
         return {'background-color': 'white','color': 'black'}
 @app.callback(
@@ -996,9 +1004,9 @@ def change_hp_chp_style(n_chp,n_hp,heating, building):
     if ((n_hp%2==0) and (n_chp%2==0)) or (n_chp>=3) or (n_hp>=3):
         return {'background-color': 'white','color': 'black'},0,{'background-color': 'white','color': 'black'},0,0,0
     elif (n_chp%2)==1:
-        return {'background-color': '#023D6B','color': 'white'},2,{'background-color': 'white','color': 'black'},0,1,0
+        return {'background-color': '#003da7','color': 'white'},2,{'background-color': 'white','color': 'black'},0,1,0
     elif n_hp%2==1:
-        return {'background-color': 'white','color': 'black'},0,{'background-color': '#023D6B','color': 'white'},2,0,1
+        return {'background-color': 'white','color': 'black'},0,{'background-color': '#003da7','color': 'white'},2,0,1
 
 # Calculation of photovoltaic output time series
 @app.callback(
@@ -1115,10 +1123,10 @@ def sizing_of_heatpump(building, p_th_load, choosen_hp, hp_active):
 def sizing_of_chp(building, p_th_load,chp_max_ratio, choosen_chp, chp_active, lang):
     if (choosen_chp is None) or chp_active['color']!='white':
         raise PreventUpdate
-    results_timeseries, P_th_max, P_th_chp, P_el_chp, runtime = sim.calc_chp(building,p_th_load,choosen_chp,chp_to_peak_ratio=chp_max_ratio)
+    results_timeseries, P_th_max, P_th_chp, P_el_chp, runtime = sim.calc_chp(building,p_th_load,choosen_chp/100,chp_to_peak_ratio=chp_max_ratio/100)
     return (html.Div(str(int(round(runtime)))+' '+ language.loc[language['name']=='load_hours',lang].iloc[0]),
-            html.Div(str((round(P_th_chp/1000,1)))+' kWth'),
-            html.Div(str((round(P_el_chp/1000,1))) + ' kWel'),
+            html.Div([str(chp_max_ratio)+ '% (' + str((round(P_th_chp/1000,1)))+' kW', html.Sub('th'), ')']),
+            html.Div([str(choosen_chp)+ '% (' + str((round(P_el_chp/1000,1))) + ' kW', html.Sub('el'), ')']),
             results_timeseries['P_chp_h_el'].values.tolist(), \
             choosen_chp)
 
@@ -1178,55 +1186,17 @@ def save_parameter_building_type(building_type):
 def print_pv_slider_value(pv_slider):
     return html.Div(str(pv_slider)+ ' kWp')
 
-# Save electricity price autarky
-@app.callback(
-    Output('price_electricity', 'data'),
-    Input('price_buy', 'value'),
-    Input('price_sell', 'value'),
-    Input('button_reset_price', 'n_clicks'),
-    )
-def save_price_buy(price_buy,price_sell, tabs):
-    return [price_buy, price_sell]
-
-# Save electricity price peak shaving
-@app.callback(
-    Output('price_electricity_peak', 'data'),
-    Input('energy_price_below2500', 'value'),
-    Input('energy_price_above2500', 'value'),
-    Input('power_price_below2500', 'value'),
-    Input('power_price_above2500', 'value'),
-    Input('button_reset_price', 'n_clicks'),
-    )
-def save_price_buy_peak(energy_tariff_below2500, energy_tariff_above2500, power_tariff_below2500, power_tariff_above2500, tabs):
-    return [energy_tariff_below2500/100, energy_tariff_above2500/100, power_tariff_below2500, power_tariff_above2500]
-
 # Show investment cost batteries
 @app.callback(
-    Output('absolut_bat_cost_small', 'children'),
-    Output('absolut_bat_cost_big', 'children'),
-    Input('specific_bat_cost_small', 'value'),
-    Input('specific_bat_cost_big', 'value'),
-    State('parameter_use', 'data'),
-    State('batteries', 'data'),
-    State('parameter_peak_shaving', 'data'),
-    Input('button_reset_price', 'n_clicks'),
+    Output('absolut_bat_cost_small_text', 'children'),
+    Output('absolut_bat_cost_big_text', 'children'),
+    Input('absolut_bat_cost_small', 'value'),
+    Input('absolut_bat_cost_big', 'value'),
+    Input('tabs','value')
     )
-def show_investmentcost_small(specific_bat_cost_small, specific_bat_cost_big, LSK, batteries, df_peak_shaving_results, tabs):
-    if LSK==0:
-        capacity_bat_small = batteries['e_bat']['1']
-        capacity_bat_big = batteries['e_bat']['5']
-    else:
-        df=(pd.DataFrame().from_dict(df_peak_shaving_results))
-        try:
-            df=(df.loc[(df['Entladerate']>0.5) &  (df['Entladerate']<2.5)])
-            capacity_bat_small=round(df['nutzbare Speicherkapazität in kWh'].values[0],1)
-            capacity_bat_big=round(df['nutzbare Speicherkapazität in kWh'].values[-1],1)
-        except:
-            df=(df.loc[(df['Discharge rate']>0.5) &  (df['Discharge rate']<2.5)])
-            capacity_bat_small=round(df['Usable storage capacity in kWh'].values[0],1)
-            capacity_bat_big=round(df['Usable storage capacity in kWh'].values[-1],1)
-    return html.Div([str(round(specific_bat_cost_small * capacity_bat_small))+ ' €']),\
-            html.Div([str(round(specific_bat_cost_big * capacity_bat_big))+ ' €'])
+def show_investmentcost_small(absolut_bat_cost_small, absolut_bat_cost_big, tabs):
+    return html.Div([str(round(absolut_bat_cost_small))+ ' €']),\
+            html.Div([str(round(absolut_bat_cost_big))+ ' €'])
 
 # Change button expert style
 @app.callback(
@@ -1252,8 +1222,8 @@ def expertmode(n1):
     State('n_clicks_hp', 'data'),
     State('building', 'data'),
     State('price_electricity', 'data'),
-    State('specific_bat_cost_small', 'value'),
-    State('specific_bat_cost_big', 'value'),
+    State('absolut_bat_cost_small', 'value'),
+    State('absolut_bat_cost_big', 'value'),
     State('parameter_lang', 'data'),
     State('parameter_use', 'data'),
     State('parameter_location_string', 'data'),
@@ -1262,7 +1232,7 @@ def expertmode(n1):
     State('parameter_hp', 'data'),
     prevent_initial_call=True,
 )
-def download(n1, last_triggered_building, p_el_hh, n_clicks_pv, n_clicks_chp, n_clicks_hp, building, price_electricity,specific_bat_cost_small, specific_bat_cost_big, parameter_lang, parameter_use, parameter_location_string, parameter_pv, parameter_chp, parameter_hp):
+def download(n1, last_triggered_building, p_el_hh, n_clicks_pv, n_clicks_chp, n_clicks_hp, building, price_electricity,absolut_bat_cost_small, absolut_bat_cost_big, parameter_lang, parameter_use, parameter_location_string, parameter_pv, parameter_chp, parameter_hp):
     df=pd.DataFrame()
     df['Language']=[parameter_lang]
     df['use_case']=[parameter_use]
@@ -1292,8 +1262,8 @@ def download(n1, last_triggered_building, p_el_hh, n_clicks_pv, n_clicks_chp, n_
     df['Building_type']=[building]
     df['Building_size']=[Area]
     df['Electricity_price']=[price_electricity]
-    df['specific_bat_cost_small']=[specific_bat_cost_small]
-    df['specific_bat_cost_big']=[specific_bat_cost_big]
+    df['absolut_bat_cost_small']=[absolut_bat_cost_small] #TODO
+    df['absolut_bat_cost_big']=[absolut_bat_cost_big]
     df['Building_size']=[Area]
     
     return dcc.send_data_frame(df.to_excel, "VDI_4657_parameter.xlsx", sheet_name="Sheet_name_1")
@@ -1325,9 +1295,11 @@ def upload_loadprofile(file, name, lang):
         raise PreventUpdate
     content_type, content_string = file.split(',')
     decoded = base64.b64decode(content_string)
+    with open("myfile.txt", "w") as f:
+        f.write(content_string)
     if 'csv' in name:
         # Assume that the user uploaded a CSV file
-        decoded_split=decoded.decode('utf-8').split('\n')
+        decoded_split=decoded.decode('utf-8', errors='ignore').split('\n')
         if decoded_split[-1:]=='':
             decoded_split=(decoded_split[:-1])
         try:
@@ -1385,46 +1357,28 @@ def upload_loadprofile(df, tab, use_case, lang):
     colorbar=dict(tickmode='array',tickvals=[0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0],len=1.05,ticklabeloverflow='allow',outlinewidth=0)
     fig.update_layout(coloraxis = {'cmin':0,'cmax':3.0,'colorscale':colorscale,'colorbar':colorbar,'autocolorscale':False},)
     fig.update_layout(margin=dict(l=20, r=20, b=20),)
-    return [html.Br(),
-            html.H3(language.loc[language['name']=='results',lang].iloc[0]),
+    return [
             html.Br(),
             html.Br(),dcc.Graph(figure=fig, config={'displayModeBar': False})]
 
 
-# reset price
+# reset bat_cost
 @app.callback(
-    Output('price_sell', 'value'),
-    Output('price_buy', 'value'),
-    Output('energy_price_below2500', 'value'),
-    Output('energy_price_above2500', 'value'),
-    Output('power_price_below2500', 'value'),
-    Output('power_price_above2500', 'value'),
-    Output('specific_bat_cost_small', 'value'),
-    Output('specific_bat_cost_big', 'value'),
+    Output('absolut_bat_cost_small', 'value'),
+    Output('absolut_bat_cost_big', 'value'),
     Input('button_reset_price', 'n_clicks'),
     State('parameter_use', 'data'),
     State('batteries','data'),
     State('parameter_peak_shaving', 'data'),
 )
-def reset_economy(n,LSK,batteries,df_peak_shaving_results):
-    if n is None:
+def reset_bat_price(n_reset, LSK, batteries, df_peak_shaving_results):
+    if n_reset is None:
         raise PreventUpdate
     I_0,exp=eco.invest_params_default()
     if LSK==0:
         capacity_bat_small = batteries['e_bat']['1']
         capacity_bat_big = batteries['e_bat']['5']
-        price_sell=6
-        price_buy=35
-        energy_price_below2500 = ''
-        energy_price_above2500 = ''
-        power_price_below2500 = ''
-        power_price_above2500 = ''
     else:
-        price_sell=''
-        price_buy=''
-        energy_price_below2500, energy_price_above2500, power_price_below2500, power_price_above2500=eco.grid_costs_default()
-        energy_price_below2500=energy_price_below2500*100
-        energy_price_above2500=energy_price_above2500*100
         df=(pd.DataFrame().from_dict(df_peak_shaving_results))
         try:
             df=(df.loc[(df['Entladerate']>0.5) &  (df['Entladerate']<2.5)])
@@ -1436,7 +1390,57 @@ def reset_economy(n,LSK,batteries,df_peak_shaving_results):
             capacity_bat_big=round(df['Usable storage capacity in kWh'].values[-1],1)
     specific_bat_cost_small,_ = eco.invest_costs(capacity_bat_small, I_0, exp)
     specific_bat_cost_big, _ = eco.invest_costs(capacity_bat_big, I_0, exp)
-    return price_sell,price_buy,energy_price_below2500, energy_price_above2500, power_price_below2500, power_price_above2500,int(round(float(specific_bat_cost_small)/50)*50),int(round(float(specific_bat_cost_big)/50)*50)
+    return int(round(float(specific_bat_cost_small*capacity_bat_small)/50)*50),int(round(float(specific_bat_cost_big*capacity_bat_big)/50)*50)
+
+# reset electricity_tariff (Use Case increase self-sufficiency)
+@app.callback(
+    Output('energy_price_below2500', 'value'),
+    Output('energy_price_above2500', 'value'),
+    Output('power_price_below2500', 'value'),
+    Output('power_price_above2500', 'value'),
+    Input('button_reset_price', 'n_clicks'),
+)
+def reset_economy(n):
+    if n is None:
+        raise PreventUpdate
+    energy_price_below2500, energy_price_above2500, power_price_below2500, power_price_above2500=eco.grid_costs_default()
+    energy_price_below2500=energy_price_below2500*100
+    energy_price_above2500=energy_price_above2500*100
+    return energy_price_below2500, energy_price_above2500, power_price_below2500, power_price_above2500
+
+# Save electricity price autarky
+@app.callback(
+    Output('price_electricity', 'data'),
+    Output('price_buy_text', 'children'),
+    Output('price_sell_text', 'children'),
+    Output('price_sell', 'value'),
+    Output('price_buy', 'value'),
+    Input('price_buy', 'value'),
+    Input('price_sell', 'value'),
+    Input('button_reset_price', 'n_clicks'),
+    )
+def save_price_buy(price_buy,price_sell, tabs):
+    if ctx.triggered_id=='button_reset_price':
+        price_buy=35
+        price_sell=6
+    return [price_buy, price_sell], str(price_buy)+ ' ct/kWh', str(price_sell)+ ' ct/kWh', price_sell, price_buy
+
+# Save electricity price peak shaving
+@app.callback(
+    Output('price_electricity_peak', 'data'),
+    Output('energy_price_below2500_text', 'children'),
+    Output('energy_price_above2500_text', 'children'),
+    Output('power_price_below2500_text', 'children'),
+    Output('power_price_above2500_text', 'children'),
+    Input('energy_price_below2500', 'value'),
+    Input('energy_price_above2500', 'value'),
+    Input('power_price_below2500', 'value'),
+    Input('power_price_above2500', 'value'),
+    Input('button_reset_price', 'n_clicks'),
+    )
+def save_price_buy_peak(energy_tariff_below2500, energy_tariff_above2500, power_tariff_below2500, power_tariff_above2500, tabs):
+    return [energy_tariff_below2500/100, energy_tariff_above2500/100, power_tariff_below2500, power_tariff_above2500], str(energy_tariff_below2500)+ ' ct/kWh', str(energy_tariff_above2500)+' ct/kWh', str(power_tariff_below2500)+' €/kW', str(power_tariff_above2500)+' €/kW'
+
 
 # Open Navbar (Burger-Button on small screens)
 @app.callback(
@@ -1548,11 +1552,11 @@ def bat_choosen_results(aut, eig, energy, data):
     if data is None: 
         show_graph='Autarkiegrad'
     if show_graph=='Autarkiegrad':
-        return show_graph, {'background-color': '#023D6B','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
+        return show_graph, {'background-color': '#003da7','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
     elif show_graph=='Eigenverbrauch':
-        return show_graph,{'background-color': 'white','color': 'black'},{'background-color': '#023D6B','color': 'white',},{'background-color': 'white','color': 'black'}
+        return show_graph,{'background-color': 'white','color': 'black'},{'background-color': '#003da7','color': 'white',},{'background-color': 'white','color': 'black'}
     elif show_graph=='Energiebilanz':
-        return show_graph, {'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#023D6B','color': 'white',}
+        return show_graph, {'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#003da7','color': 'white',}
 
 # show choosen graph    
 @app.callback(
@@ -1650,7 +1654,7 @@ def economic_results(batteries, tab, parameter_use, lang):
     if parameter_use==0:
         if batteries is None:
             return html.Div()
-    return html.Div(children=[html.Br(),html.H3(language.loc[language['name']=='results',lang].iloc[0]),
+    return html.Div(children=[html.Br(),
     dbc.Container([
         dbc.Row([
             dbc.Col(dbc.Button(language.loc[language['name']=='payback',lang].iloc[0],id='Amortisationszeit',color="primary", active=True)),
@@ -1678,11 +1682,11 @@ def eco_results(aut, eig, energy, data):
     if data is None: 
         show_graph='Amortisationszeit'
     if show_graph=='Amortisationszeit':
-        return show_graph, {'background-color': '#023D6B','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
+        return show_graph, {'background-color': '#003da7','color': 'white',},{'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'}
     elif show_graph=='NetPresentValue':
-        return show_graph,{'background-color': 'white','color': 'black'},{'background-color': '#023D6B','color': 'white',},{'background-color': 'white','color': 'black'}
+        return show_graph,{'background-color': 'white','color': 'black'},{'background-color': '#003da7','color': 'white',},{'background-color': 'white','color': 'black'}
     elif show_graph=='InternalRateOfReturn':
-        return show_graph, {'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#023D6B','color': 'white',}
+        return show_graph, {'background-color': 'white','color': 'black'},{'background-color': 'white','color': 'black'},{'background-color': '#003da7','color': 'white',}
 
 # Show choosen graph (economy tab)
 @app.callback(
@@ -1691,14 +1695,14 @@ def eco_results(aut, eig, energy, data):
     State('parameter_peak_shaving', 'data'),
     Input('price_electricity','data'),
     Input('price_electricity_peak','data'),
-    Input('specific_bat_cost_small','value'),
-    Input('specific_bat_cost_big','value'),
+    Input('absolut_bat_cost_small','value'),
+    Input('absolut_bat_cost_big','value'),
     Input('tabs', 'value'),
     Input('show_economic_results', 'data'),
     State('parameter_use', 'data'),
     Input('button_language', 'value'),
     )
-def economic_results_graph(batteries,batteries_peak,electricity_price,electricity_price_peak,specific_bat_cost_small,specific_bat_cost_big,tab,results_id, LSK, lang):
+def economic_results_graph(batteries,batteries_peak,electricity_price,electricity_price_peak,absolut_bat_cost_small,absolut_bat_cost_big,tab,results_id, LSK, lang):
     if ((electricity_price is None) and (LSK==0)) or ((electricity_price_peak is None) and (LSK==1)): 
         raise PreventUpdate
     if (LSK==0):
@@ -1712,7 +1716,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
         NetPresentValue=[]
         Amortisation=[]
         InternalRateOfReturn=[]
-        I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]],[specific_bat_cost_small,specific_bat_cost_big])
+        I_0, exp = eco.invest_params([batteries['e_bat'].values[1],batteries['e_bat'].values[-1]],[absolut_bat_cost_small/batteries['e_bat'].values[1],absolut_bat_cost_big/batteries['e_bat'].values[-1]])
         for battery in batteries.index[1:]:
             i, I = eco.invest_costs(batteries.loc[battery]['e_bat'], I_0,exp)
             Invest_cost.append(str(round(I))+ ' €')
@@ -1725,9 +1729,9 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                             electricity_price[0]/100,
                             years,
                             lifetime)
-            NetPresentValue.append(eco.net_present_value(cashflow, interest_rate))
+            NetPresentValue.append(round(eco.net_present_value(cashflow, interest_rate),0))
             Amortisation.append(eco.amortisation(cashflow))
-            InternalRateOfReturn.append(eco.internal_rate_of_return(cashflow))
+            InternalRateOfReturn.append(round(eco.internal_rate_of_return(cashflow),4))
         batteries=batteries.iloc[1:,:]
         batteries['e_bat']=batteries['e_bat'].astype('str')
         batteries['Investitionskosten']=Invest_cost
@@ -1749,7 +1753,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             else:
                 title = language.loc[language['name']=='eco_text_6',lang].iloc[0]
             fig=px.bar(data_frame=batteries, x='e_bat', y='Amortisation', hover_data=['Investitionskosten'],
-                    color_discrete_sequence=['#023D6B'], 
+                    color_discrete_sequence=['#003da7'], 
                     labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                         "Amortisation": language.loc[language['name']=='payback_years',lang].iloc[0],
                         })
@@ -1763,7 +1767,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             else:
                 title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
             fig=px.bar(data_frame=batteries, x='e_bat', y='NetPresentValue', hover_data=['Investitionskosten'],
-                    color_discrete_sequence=['#023D6B'], 
+                    color_discrete_sequence=['#003da7'], 
                     labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                         "NetPresentValue": language.loc[language['name']=='NPV',lang].iloc[0],
                         })
@@ -1778,7 +1782,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             else:
                 title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
             fig=px.bar(data_frame=batteries, x='e_bat', y='InternalRateOfReturn', hover_data=['Investitionskosten'],
-                    color_discrete_sequence=['#023D6B'], 
+                    color_discrete_sequence=['#003da7'], 
                     labels={"e_bat": language.loc[language['name']=='usable_battery_size',lang].iloc[0],
                         "InternalRateOfReturn": language.loc[language['name']=='IROR',lang].iloc[0],
                         })
@@ -1802,7 +1806,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
         NetPresentValue=[]
         Amortisation=[]
         InternalRateOfReturn=[]
-        I_0, exp = eco.invest_params([capacity_bat_small,capacity_bat_big],[specific_bat_cost_small,specific_bat_cost_big])
+        I_0, exp = eco.invest_params([capacity_bat_small,capacity_bat_big],[absolut_bat_cost_small/capacity_bat_small,absolut_bat_cost_big/capacity_bat_big])
         for battery in df.index:
             i, I = eco.invest_costs(df.loc[battery][language.loc[language['name']=='usable_battery_size',lang].iloc[0]], I_0,exp)
             Invest_cost.append(str(round(I))+ ' €')
@@ -1820,9 +1824,9 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                 years,
                 lifetime,
                 )
-            NetPresentValue.append(eco.net_present_value(cashflow, interest_rate))
+            NetPresentValue.append(round(eco.net_present_value(cashflow, interest_rate),0))
             Amortisation.append(eco.amortisation(cashflow))
-            InternalRateOfReturn.append(eco.internal_rate_of_return(cashflow))
+            InternalRateOfReturn.append(round(eco.internal_rate_of_return(cashflow),4))
         df[language.loc[language['name']=='invest_cost',lang].iloc[0]]=Invest_cost
         df['NetPresentValue']=NetPresentValue
         df['Amortisation']=np.where(np.array(Amortisation)==0,15,np.array(Amortisation))
@@ -1836,7 +1840,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                 Amortisation_min=np.where(np.array(Amortisation)==(min(Amortisation0)))[0]
                 if len(Amortisation_min)==1:
                     fastest_amort_battery = df[language.loc[language['name']=='usable_battery_size',lang].iloc[0]].values[Amortisation_min[0]]
-                    title = language.loc[language['name']=='eco_text_3',lang].iloc[0]+ str(round(fastest_amort_battery),1) + language.loc[language['name']=='eco_text_4',lang].iloc[0]
+                    title = language.loc[language['name']=='eco_text_3',lang].iloc[0]+ str(round(fastest_amort_battery,1)) + language.loc[language['name']=='eco_text_4',lang].iloc[0]
                 else:
                     title= language.loc[language['name']=='eco_text_5',lang].iloc[0]
             else:
