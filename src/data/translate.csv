@@ -2,7 +2,7 @@ name,eng,ger
 lang,Language,Sprache
 header_p,Sizing of electrical storage systems,Auslegung von Stromspeichern
 efh_name,SFH,EFH
-location,Location,Standort
+location,Location: ,Standort: 
 placeholder_location,ZIP-Code (Germany),Postleitzahl oder Adresse
 building_type,Building type,Gebäudetyp
 building_size,Living area,Wohnfläche
@@ -21,7 +21,7 @@ pv,PV,PV
 photovoltaik,Photovoltaic: ,Photovoltaik: 
 chp,CHP,KWK
 combined_heat_power,Combined heat and power: ,Kraft-Wärme-Kopplung: 
-chp_peak_ratio,Share on design heat load,Anteil an Norm Heizlast: 
+chp_peak_ratio,Share on design heat load: ,Anteil an Norm Heizlast: 
 chp_electric_number,power-to-heat ratio: ,Stromkennzahl: 
 hp,HP,WP
 heatpump, Heat pump: , Wärmepumpe: 
@@ -60,7 +60,7 @@ chp_strategy_options,Heat & Electricity,Wärme & Elektrizität
 hp_type,Heat pump type:,Wärmepumpen-Typ:
 hp_type_options,Air / Water,Luft / Wasser
 hp_type_options,Brine / Water,Sole / Wasser
-bat_size,Useable storage capacity in kWh:,Nutzbare Speicherkapazität in kWh:
+bat_size,Useable storage capacity in kWh: ,Nutzbare Speicherkapazität in kWh:
 bat_power,Battery power in kW:,Batterie-Leistung in kW:
 bat_feed_lim,Feed in Limit in kW/kWp:,Einspeisegrenze in kW/kWp:
 upload_save,Upload saved project,gespeichertes Projekt laden
@@ -70,38 +70,37 @@ choose_use_case,Selection of the use case for the storage system: ,Im ersten Sch
 use_case,Use case,Anwendung
 choose_building_type,Choose a building type,Einen Gebäudetyp wählen
 heating, incl. heating and hot water, inkl. Heizung und Warmwasser
-max_heatload,Design heat load:,Norm Heizlast:
+max_heatload,Design heat load: ,Norm Heizlast:
 invest_cost,Investment costs,Investitionskosten
-small_battery,smallest battery,kleinste Batterie
-large_battery,largest battery,größte Batterie
+battery_cost_func, kWh electrical storage, kWh Stromspeicher
 tariff,Electricity tariff,Stromtarif
 price_sell,Feed-in tariff,Einspeisevergütung
-price_buy,Only one storage system with ,Nur ein Stromspeicher mit 
-default, Default values,Standardeinstellungen
-self_sufficiency,Degree of self-sufficiency,Autarkiegrad 
-self_consumption, Self-consumption rate,Eigenverbrauchsanteil
+price_buy,Electricity purchase price,Strombezugspreis
+default,Default values,Standardeinstellungen
+self_sufficiency,Degree of self-sufficiency,Autarkiegrad
+self_consumption,Self-consumption rate,Eigenverbrauchsanteil
 energy_balance,Energy balance,Energiebilanz
 payback,Payback period,Amortisationszeit
 NPV,Net present value,Nettokapitalwert
 IROR,Internal rate of return,Interne Verzinsung
-eco_text_1,Only a battery with , kWh hat den größten Nettokapitalwert und ist somit finanziell im Vorteil.
-eco_text_2,There is no financial advantage with an investment in a electrical storage system.,Die Investition in einen Stromspeicher hat keinen finanziellen Vorteil.
-eco_text_3,The return on investment of the storage system with ,Die Verzinsung des Stromspeichers mit 
+eco_text_1,Only a electrical storage system with ,Nur ein Stromspeicher mit 
+eco_text_2, kWh pays for itself during its lifetime., kWh amortisiert sich während der Lebensdauer.
+eco_text_3,The electrical storage system with ,Der Stromspeicher mit 
 eco_text_4, kWh has the fastest payback., kWh amortisiert sich am schnellsten.
-eco_text_5,The investment in a storage system has no financial advantage.,Die Investition in einen Stromspeicher hat keinen finanziellen Vorteil.
+eco_text_5,Multiple storage systems appear to amortize at a similar rate over the lifetime.,Mehrere Stromspeicher scheinen sich während der Lebensdauer ähnlich schnell zu amortisieren.
 eco_text_6,No storage system amortizes during its 15-year lifetime.,Keine Stromspeicher amortisiert sich während der Lebensdauer von 15 Jahren.
 usable_battery_size,usable storage system capacity in kWh,nutzbare Speicherkapazität in kWh
 payback_years,Payback time in years,Amortisationszeit in Jahren
-eco_text_7, kWh has the largest net present value and is therefore the most financially advantageous., kWh hat den größten Nettokapitalwert und ist somit die finanziell vorteilhafteste.
-eco_text_8,There is no financial advantage to investing in a battery.,Die Investition in eine Batterie hat keinen finanziellen Vorteil.
-eco_text_9,The return on investment of the battery with ,Die Verzinsung der Batterie mit 
+eco_text_7, kWh has the largest net present value and is therefore the most financially advantageous.,  kWh hat den größten Nettokapitalwert und ist somit finanziell im Vorteil.
+eco_text_8,There is no financial advantage to investing in a electrical storage system.,Die Investition in einen Stromspeicher hat keinen finanziellen Vorteil.
+eco_text_9,The return on investment of the electrical storage system with ,Die Verzinsung des Stromspeichers mit 
 eco_text_10, kWh is , kWh beträgt 
-eco_text_11,The investment in a battery has no financial advantage.,Die Investition in eine Batterie hat keinen finanziellen Vorteil.
+eco_text_11,The investment in a storage system has no financial advantage.,Die Investition in einen Stromspeicher hat keinen finanziellen Vorteil.
 loadprofile,Loadprofile:,Lastprofil:
 upload_info,Upload loadprofile in 15min steps,15 min. Lastprofil hochladen
 upload_info1,"Of type .xls, .xlsx or .csv","Vom Typ .xls, .xlsx oder .csv"
 upload_info2,The column with the highest average value is used,Genutzt wird die Spalte mit dem höchsten Durschnittswert
-upload_info3,Assumed is the unit kilowatt [kW],Für die wirtschaftliche Betrachtung wird eine Lebensdauer des Stromspeichers von 15 Jahren angenommen.
+upload_info3,Assumed is the unit kilowatt [kW],Angenommen wird die Einheit Kilowatt [kW]
 choosen_column,Choosen column: ,Ausgewählte Spalte: 
 grid_supply,Grid supply: ,Netzbezug: 
 max_grid_supply,Maximum grid supply: ,Maximaler Netzbezug: 
@@ -109,6 +108,5 @@ load_hours,Full load hours,Volllaststunden
 cut_peak,Cut off peak load [kW],abgeschnittene Lastspitze [kW]
 e_rate,Discharge rate,Entladerate
 eco_help,Other notes,Sonstige Anmerkungen
-eco_help_info,"For the economic consideration, a battery life of 15 years is assumed.",Für die wirtschaftliche Betrachtung wird eine Batterielebensdauer von 15 Jahren angenommen.
-results,Results:,Ergebnisse:
+eco_help_info,"For the economic consideration, a electrical storage system life of 15 years is assumed.",Für die wirtschaftliche Betrachtung wird eine Lebensdauer des Stromspeichers von 15 Jahren angenommen.
 info_text,"dummy english","dummy german" 
