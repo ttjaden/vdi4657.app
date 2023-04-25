@@ -37,7 +37,7 @@ PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath('data').resolve()
 ASSETS_PATH = PATH.joinpath('assets').resolve()
 
-app.title = 'VDI 4657-3 | App'
+app.title = 'VDI 4657-3 | Webtool'
 
 # Translation
 language=pd.read_csv(DATA_PATH.joinpath('translate.csv'))
@@ -414,7 +414,8 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                     title=language.loc[language['name']=='choose_technology',lang].iloc[0],
                     )
                 ],
-                always_open=True,active_item=['item-0', 'item-1', 'item-2']),                
+                always_open=False,
+                active_item=['item-0']),                
             ])
         else:
             return html.Div(children=[html.Br(),
@@ -861,7 +862,8 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                 dbc.AccordionItem([
                     dbc.Row([
                         dbc.Col(html.Div([str(capacity_bat_small) + language.loc[language['name']=='battery_cost_func',lang].iloc[0]]), width=6),
-                        dbc.Col(html.Div(id='absolut_bat_cost_small_text'), width=6),]),
+                        dbc.Col(html.Div(id='absolut_bat_cost_small_text'), width=3),
+                        dbc.Col(html.Div('(xxx €/kWh)'), width=3),]),
                     dbc.Row(
                         [
                         dbc.Col(dcc.Slider(min=0, max=absolut_bat_cost_small*2,step=50,value=absolut_bat_cost_small,marks=None,id='absolut_bat_cost_small',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
@@ -869,7 +871,8 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                     dbc.Row(
                         [
                         dbc.Col(html.Div([str(capacity_bat_big) + language.loc[language['name']=='battery_cost_func',lang].iloc[0]]), width=6),
-                        dbc.Col(html.Div(id='absolut_bat_cost_big_text'), width=6),]),
+                        dbc.Col(html.Div(id='absolut_bat_cost_big_text'), width=3),
+                        dbc.Col(html.Div('(xxx €/kWh)'), width=3),]),
                     dbc.Row(
                         [
                         dbc.Col(dcc.Slider(min=0, max=absolut_bat_cost_big*2,step=50,value=absolut_bat_cost_big,marks=None,id='absolut_bat_cost_big',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
@@ -887,7 +890,8 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                 ],
                 title=language.loc[language['name']=='eco_help',lang].iloc[0],
                 ),
-            ],always_open=True,active_item=['item-0', 'item-1', 'item-2']),
+            ],always_open=False,
+            active_item=['item-0']),
             html.Br(),
                 dbc.Row(
                     [
