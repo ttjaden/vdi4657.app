@@ -11,7 +11,6 @@ inhabitants,Number of persons,Bewohneranzahl
 energy_cons,Electrical energy consumption,Stromverbrauch
 mfh_name,MFH,MFH
 industry_name,Others,Sonstige
-tab_info_1,"The PIEG-Strom Webtool serves as an aid for the design of battery storage systems. After entering various parameters, statements are made about the economic efficiency and the most effective storage size.",Das PIEG-Strom Webtool dient zur Hilfe bei der Auslegung von Batteriespeichern. Nach Eingabe verschiedener Parametern werden Aussagen über die Wirtschaftlichkeit und die effektivste Speichergröße getroffen.
 choose_building,Building:,Gebäude:
 choose_technology,Technology:,Technologie:
 increase_autarky,Self-sufficieny,Eigenversorgung
@@ -65,7 +64,7 @@ bat_power,Battery power in kW:,Batterie-Leistung in kW:
 bat_feed_lim,Feed in Limit in kW/kWp:,Einspeisegrenze in kW/kWp:
 upload_save,Upload saved project,gespeichertes Projekt laden
 developed,"Developed within the project PIEG-Strom, which was supported by WIPANO - knowledge and technology transfer through patents and standards with funding from the Federal Ministry for Economic Affairs and Energy (BMWi) (FKZ: 03TN0004). The authors would like to thank Projektträger Jülich (PTJ) and BMWi for their support.","Entwickelt innerhalb des Projekts PIEG-Strom, welches durch das Programm WIPANO - Wissens- und Technologietransfer durch Patente und Normen mit Mitteln des Bundesministeriums für Wirtschaft und Klimaschutz (BMWK) (FKZ: 03TN0004) gefördert wurde. Die Autoren danken dem Projektträger Jülich (PTJ) und dem BMWK für die Unterstützung."
-start,"This is a supplementary web tool to VDI 4657-3 "Planning and integration of energy storage systems in building energy systems - Electrical power storage (EPS).","Dies ist eine ergänzende Web-App zur VDI 4657-3 "Planung und Integration von Energiespeichern in Gebäudeenergiesystemen - Elektrische Stromspeicher (ESS)"
+start,"This is a supplementary web tool to VDI 4657-3 "Planning and integration of energy storage systems in building energy systems - Electrical power storage (EPS).","Dies ist ein ergänzendes Webtool zur VDI 4657-3 "Planung und Integration von Energiespeichern in Gebäudeenergiesystemen - Elektrische Stromspeicher (ESS)"
 choose_use_case,Selection of the use case for the storage system: ,Im ersten Schritt erfolgt die Auswahl des gewünschten Anwendungsfalls für den Stromspeicher: 
 use_case,Use case,Anwendung
 choose_building_type,Choose a building type,Einen Gebäudetyp wählen
@@ -107,6 +106,6 @@ max_grid_supply,Maximum grid supply: ,Maximaler Netzbezug:
 load_hours,Full load hours,Volllaststunden
 cut_peak,Cut off peak load [kW],abgeschnittene Lastspitze [kW]
 e_rate,Discharge rate,Entladerate
-eco_help,Other notes,Sonstige Anmerkungen
+eco_help,other parameters,Weitere Parameter
 eco_help_info,"For the economic consideration, a electrical storage system life of 15 years is assumed.",Für die wirtschaftliche Betrachtung wird eine Lebensdauer des Stromspeichers von 15 Jahren angenommen.
 info_text,"dummy english","dummy german" 
