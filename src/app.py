@@ -837,19 +837,19 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
             energy_tariff_below2500, energy_tariff_above2500, power_tariff_below2500, power_tariff_above2500=eco.grid_costs_default()
             cost_use_case=dbc.Row(
                 [
-                dbc.Col(html.Div('Arbeitspreis bei unter 2500 Volllaststunden:'), width=8),
+                dbc.Col(html.Div(language.loc[language['name']=='energy_price_2499',lang].iloc[0]), width=8),
                 dbc.Col(html.Div(id='energy_price_below2500_text'), width=4),
                 dbc.Col(dcc.Slider(min=0, max=50,step=1,value=energy_tariff_below2500*100,marks=None,id='energy_price_below2500',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
 
-                dbc.Col(html.Div('Arbeitspreis bei über 2500 Volllaststunden:'), width=8),
+                dbc.Col(html.Div(language.loc[language['name']=='energy_price_2500',lang].iloc[0]), width=8),
                 dbc.Col(html.Div(id='energy_price_above2500_text'), width=4),
                 dbc.Col(dcc.Slider(min=0, max=50,step=1,value=energy_tariff_above2500*100,marks=None,id='energy_price_above2500',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
 
-                dbc.Col(html.Div('Leistungspreis bei unter 2500 Volllaststunden:'), width=8),
+                dbc.Col(html.Div(language.loc[language['name']=='power_price_2499',lang].iloc[0]), width=8),
                 dbc.Col(html.Div(id='power_price_below2500_text'), width=4),
                 dbc.Col(dcc.Slider(min=0, max=100,step=5,value=power_tariff_below2500,marks=None,id='power_price_below2500',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
 
-                dbc.Col(html.Div('Leistungspreis bei über 2500 Volllaststunden:'), width=8),
+                dbc.Col(html.Div(language.loc[language['name']=='power_price_2500',lang].iloc[0]), width=8),
                 dbc.Col(html.Div(id='power_price_above2500_text'), width=4),
                 dbc.Col(dcc.Slider(min=0, max=200,step=10,value=power_tariff_above2500,marks=None,id='power_price_above2500',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                 ],
@@ -1356,10 +1356,9 @@ def upload_loadprofile(df, tab, use_case, lang):
     if (use_case==0) or (tab!='tab_parameter'):
         return html.Div()
     df= pd.DataFrame().from_dict(df)
-    fig=px.scatter(data_frame=df,x=language.loc[language['name']=='cut_peak',lang].iloc[0],y=language.loc[language['name']=='usable_battery_size',lang].iloc[0],color=language.loc[language['name']=='e_rate',lang].iloc[0],size=language.loc[language['name']=='load_hours',lang].iloc[0])
-    colorscale=[[0, "#ff0000"],[0.05, "#ff3300"],[0.1, "#ff6600"],[0.15, "#ff9900"],[0.2, "#ffcc00"],[0.25, "#ffff00"],[0.3, "#cdee0a"],[0.35, "#9add14"],[0.4, "#67cc1e"],[0.45, "#34bb28"],[0.5, "#00a933"],[0.55, "#34bb28"],[0.6, "#67cc1e"],[0.65, "#9add14"],[0.7, "#cdee0a"],[0.75, "#ffff00"],[0.8, "#ffcc00"],[0.85, "#ff9900"],[0.9, "#ff6600"],[0.95, "#ff3300"],[1, "#ff0000"]]
+    fig=px.scatter(data_frame=df,x=language.loc[language['name']=='cut_peak',lang].iloc[0],y=language.loc[language['name']=='usable_battery_size',lang].iloc[0],color=language.loc[language['name']=='e_rate',lang].iloc[0],size=language.loc[language['name']=='load_hours',lang].iloc[0], color_continuous_scale='turbo')
     colorbar=dict(tickmode='array',tickvals=[0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0],len=1.05,ticklabeloverflow='allow',outlinewidth=0)
-    fig.update_layout(coloraxis = {'cmin':0,'cmax':3.0,'colorscale':colorscale,'colorbar':colorbar,'autocolorscale':False},)
+    fig.update_layout(coloraxis = {'cmin':0,'cmax':3.0,'colorbar':colorbar,'autocolorscale':False},)
     fig.update_layout(margin=dict(l=20, r=20, b=20),)
     return [
             html.Br(),

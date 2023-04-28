@@ -108,4 +108,8 @@ cut_peak,Cut off peak load [kW],abgeschnittene Lastspitze [kW]
 e_rate,Discharge rate,Entladerate
 eco_help,other parameters,Weitere Parameter
 eco_help_info,"For the economic consideration, a electrical storage system life of 15 years is assumed.",Für die wirtschaftliche Betrachtung wird eine Lebensdauer des Stromspeichers von 15 Jahren angenommen.
+energy_price_2499,Energy price for under 2500 full load hours:, Arbeitspreis bei unter 2500 Volllaststunden:
+energy_price_2500,Energy price for over 2500 full load hours:, Arbeitspreis bei über 2500 Volllaststunden:
+power_price_2499,Power price for under 2500 full load hours:, Leistungspreis bei unter 2500 Volllaststunden:
+power_price_2500,Power price for over 2500 full load hours:, Leistungspreis bei über 2500 Volllaststunden:
 info_text,"dummy english","dummy german" 
