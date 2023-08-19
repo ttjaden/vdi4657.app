@@ -113,3 +113,8 @@ energy_price_2500,Energy price for over 2500 full load hours:, Arbeitspreis bei 
 power_price_2499,Power price for under 2500 full load hours:, Leistungspreis bei unter 2500 Volllaststunden:
 power_price_2500,Power price for over 2500 full load hours:, Leistungspreis bei über 2500 Volllaststunden:
 info_text,"dummy english","dummy german" 
+weather_year_text1,current weather,aktuelles Wetter
+weather_year_text2,future weather,zukünftiges Wetter
+weather_typ_text1,average year,normales Jahr
+weather_typ_text2,cold year,kaltes Jahr
+weather_typ_text3,warm year,warmes Jahr
