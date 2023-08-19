@@ -1259,8 +1259,6 @@ def upload_loadprofile(file, name, lang):
         raise PreventUpdate
     content_type, content_string = file.split(',')
     decoded = base64.b64decode(content_string)
-    with open("myfile.txt", "w") as f:
-        f.write(content_string)
     if 'csv' in name:
         # Assume that the user uploaded a CSV file
         decoded_split=decoded.decode('utf-8', errors='ignore').split('\n')
