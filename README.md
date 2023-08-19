@@ -1,14 +1,17 @@
 # VDI 4657 - Webtool
-Complementary Webtool to guideline VDI 4657 - Planning and integration of energy storage systems in energy building systems - Eletrical storage, see: https://www.vdi.de/richtlinien/details/vdi-4657-blatt-3-planung-und-integration-von-energiespeichern-in-gebaeudeenergiesystemen-elektrische-stromspeicher-ess
+Complementary Webtool to guideline VDI 4657 - Planning and integration of energy storage systems in energy building systems - Eletrical storage, see: [https://www.vdi.de/richtlinien/details/vdi-4657-blatt-3-planung-und-integration-von-energiespeichern-in-gebaeudeenergiesystemen-elektrische-stromspeicher-ess](https://www.vdi.de/richtlinien/details/vdi-4657-blatt-3-planung-und-integration-von-energiespeichern-in-gebaeudeenergiesystemen-elektrische-stromspeicher-ess)
 
-**First release planned for Q1/2023**
+# Production use
+Use as a docker container with preferred webserver as proxy
+
+- `docker run -dp 8050:8050 ttjaden/vdi4657.app`
 
 # Development
 
 ## Prepare environment
 Download or clone repository:
 
-- `git clone https://github.com/RE-Lab-Projects/PIEG-Strom-Webtool.git`
+- `git clone https://github.com/ttjaden/vdi4657.app.git`
 
 Create the environment:
 
