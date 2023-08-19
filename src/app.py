@@ -14,8 +14,6 @@ import numpy as np
 import pathlib
 # Plots
 import plotly_express as px
-# Additional informations
-from datetime import datetime
 # Own functions
 from utils.getregion import getregion
 import utils.simulate as sim
@@ -96,14 +94,14 @@ button_info = dbc.Button(
 encoded_image=base64.b64encode(open(ASSETS_PATH.joinpath('logos/Logo_BMWK_500px.png'), 'rb').read())
 
 options_building_type_ger=[
-    {"label": html.Div([html.Span('Bestand, unsaniert',id='tooltip_building1'), dbc.Tooltip('Vorlauf: 55°C',target='tooltip_building1')]), "value": "Bestand, unsaniert"},
-    {"label": html.Div([html.Span('Bestand, saniert',id='tooltip_building2'), dbc.Tooltip('Vorlauf: 45°C',target='tooltip_building2')]), "value": "Bestand, saniert"},
-    {"label": html.Div([html.Span('Neubau, nach 2016',id='tooltip_building3'), dbc.Tooltip('Vorlauf: 35°C',target='tooltip_building3')]), "value": "Neubau, nach 2016"},
+    {"label":'Bestand, unsaniert', "value": '[2.6,15]'},
+    {"label":'Bestand, saniert', "value": '[1.6,14]'},
+    {"label":'Neubau, nach 2016', "value": '[0.8,12]'},
     ]
 options_building_type_eng=[
-    {"label": html.Div([html.Span('Existing building, unrenovated',id='tooltip_building1'), dbc.Tooltip('Heater temperature: 55°C',target='tooltip_building1')]), "value": "Bestand, unsaniert"},
-    {"label": html.Div([html.Span('Existing building, renovated',id='tooltip_building2'), dbc.Tooltip('Heater temperature: 45°C',target='tooltip_building2')]), "value": "Bestand, saniert"},
-    {"label": html.Div([html.Span('New building, after 2016',id='tooltip_building3'), dbc.Tooltip('Heater temperature: 35°C',target='tooltip_building3')]), "value": "Neubau, nach 2016"},
+    {"label": 'Existing building, unrenovated', "value": '[2.6,15]'},
+    {"label": 'Existing building, renovated', "value": '[1.6,14]'},
+    {"label": 'New building, after 2016', "value": '[0.8,12]'},
     ]
 options_slp_ger = [
     {"label": 'G0: Gewerbe allgemein', "value": "LP_G0.csv"},
@@ -208,41 +206,39 @@ content = dbc.Container([
                 ]
             )),
         ],style={'padding': '15px'}),
-    dcc.Store(id='last_triggered_building', storage_type='memory'),
-    dcc.Store(id='n_clicks_pv', storage_type='memory'),
-    dcc.Store(id='n_clicks_chp', storage_type='memory'),
-    dcc.Store(id='n_clicks_hp', storage_type='memory'),
-    dcc.Store(id='parameter_include_heating', storage_type='memory'),
-    dcc.Store(id='parameter_wohnfläche', storage_type='memory'),
-    dcc.Store(id='parameter_building_type'),
-    dcc.Store(id='p_el_hh', storage_type='memory'),
-    dcc.Store(id='p_th_load', storage_type='memory'),
-    dcc.Store(id='building', storage_type='memory'),
-    dcc.Store(id='c_pv1', storage_type='memory'),
-    dcc.Store(id='p_pv1', storage_type='memory'),
-    dcc.Store(id='power_heat_pump_W', storage_type='memory'),
-    dcc.Store(id='power_chp_W', storage_type='memory'),
-    dcc.Store(id='batteries', storage_type='memory'),
-    dcc.Store(id='price_electricity', storage_type='memory'),
-    dcc.Store(id='price_electricity_peak', storage_type='memory'),
-    dcc.Store(id='parameter_lang', storage_type='memory'),
-    dcc.Store(id='parameter_use', storage_type='memory'),
-    dcc.Loading(type='default',children=dcc.Store(id='parameter_location_int', storage_type='memory')),
-    dcc.Store(id='parameter_location_string', storage_type='memory'),
-    dcc.Store(id='parameter_pv', storage_type='memory'),
-    dcc.Store(id='parameter_chp', storage_type='memory'),
-    dcc.Store(id='parameter_hp', storage_type='memory'),
-    dcc.Store(id='parameters_all'),
-    dcc.Store(id='parameter_loadprofile', storage_type='memory'),
-    dcc.Store('show_economic_results', storage_type='memory'),
-    dcc.Store('show_bat_results', storage_type='memory'),
-    dcc.Loading(type='default',children=dcc.Store(id='parameter_peak_shaving', storage_type='memory')),
-    dcc.Store(id='parameter_economoy', storage_type='memory'),
+    dcc.Store(id='last_triggered_building', storage_type='memory'),                                     # welches Gebäude ausgewählt war-> df                                     
+    dcc.Store(id='n_clicks_pv', storage_type='memory'),                                                 # ob PV ausgewählt war -> df                         
+    dcc.Store(id='n_clicks_chp', storage_type='memory'),                                                # ob KWK ausgewählt war -> df                             
+    dcc.Store(id='n_clicks_hp', storage_type='memory'),                                                 # ob Wärmepumpe ausgewählt war -> df                         
+    dcc.Store(id='parameter_include_heating', storage_type='memory'),                                   # ob Heating ausgewählt war -> df                                         
+    dcc.Store(id='parameter_wohnfläche', storage_type='memory'),                                        # Wohnfläche -> df                                     
+    dcc.Store(id='parameter_building'),                                                            # Gebäudetyp -> df                               
+    dcc.Store(id='building', storage_type='memory'),                                                    # Gebäudewerte                                       
+    dcc.Store(id='batteries', storage_type='memory'),                                                   # ERGEBNIS                         
+    dcc.Store(id='chp_max_power_data', storage_type='memory'),                                          # chp sachen                                 
+    dcc.Store(id='chp_technology_data', storage_type='memory'),                                         # chp sachen                             
+    dcc.Store(id='price_electricity', storage_type='memory'),                                           # Preis                                 
+    dcc.Store(id='price_electricity_peak', storage_type='memory'),                                      # Preis                                     
+    dcc.Store(id='parameter_lang', storage_type='memory'),                                              # Sprache                             
+    dcc.Store(id='parameter_use', storage_type='memory'),                                               # Anwendung                             
+    dcc.Loading(type='default',children=dcc.Store(id='parameter_location_int', storage_type='memory')), # Standort -> df                                                                         
+    dcc.Store(id='parameter_location_string', storage_type='memory'),                                   # Standort
+    dcc.Store(id='weather_typ', storage_type='memory'),                                   # Standort                                          
+    dcc.Store(id='parameter_pv', storage_type='memory'),                                                # PV-Größe -> df                             
+    dcc.Store(id='parameter_chp', storage_type='memory'),                                               # KWK-Größe -> df                             
+    dcc.Store(id='parameter_hp', storage_type='memory'),                                                # Wärmepumpe auswahl -> df                             
+    dcc.Store(id='parameters_all'),                                                                     # alle Parameter beim Upload     
+    dcc.Store(id='parameter_loadprofile', storage_type='memory'),                                       # Lastprofil beim Upload                                     
+    dcc.Store('show_economic_results', storage_type='memory'),                                          # ausgeählten Graphen                                 
+    dcc.Store('show_bat_results', storage_type='memory'),                                               # ausgeählten Graphen                             
+    dcc.Loading(type='default',children=dcc.Store(id='parameter_peak_shaving', storage_type='memory')), #                                                                         
+    dcc.Store(id='parameter_economoy', storage_type='memory'),                                          #                                 
     ],fluid=True)
 
 # Create layout
 layout = html.Div(id='app-page-content',children=[header,content])
 app.layout=layout
+
 
 ###################################################
 # Callbacks #######################################
@@ -387,7 +383,14 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                     dbc.AccordionItem([
                         dbc.Row([
                             dbc.Col(dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],value=location,persistence='memory',style=dict(width = '100%'))),
-                            dbc.Col(dcc.Loading(type="default",children=html.Div(id='region')),align='start',width=12, lg=7),
+                            dbc.Col(dcc.Loading(type="default",children=html.Div(id='region')),align='start',width=12, lg=7), #xxx
+                            dbc.Col(dcc.RadioItems([{'label': language.loc[language['name']=='weather_year_text1',lang].iloc[0], 'value': '2015'},
+                                                    {'label': language.loc[language['name']=='weather_year_text2',lang].iloc[0], 'value': '2045'}], 
+                                                    '2015', inline=True, id='weather_year'), width=12),
+                            dbc.Col(dcc.RadioItems([{'label': language.loc[language['name']=='weather_typ_text1',lang].iloc[0], 'value': 'a'},
+                                                    {'label': language.loc[language['name']=='weather_typ_text2',lang].iloc[0], 'value': 'w'},
+                                                    {'label': language.loc[language['name']=='weather_typ_text3',lang].iloc[0], 'value': 's'}], 
+                                                    'a', inline=True, id='weather_typ'), width=12),
                             ])
                     ],
                     title=language.loc[language['name']=='location',lang].iloc[0],
@@ -409,13 +412,13 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp, u
                             dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'120px'}),id='n_chp',n_clicks=n_clicks_chp),width=4),
                             dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'120px'}),id='n_hp',n_clicks=n_clicks_hp),width=4),
                         ]),
-                        dbc.Container(html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value')],id='technology'),fluid=True)
+                        dbc.Container(html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value'), html.Div(id='chp_max_power'), html.Div(id='chp_load_hours')],id='technology'),fluid=True)
                     ],
                     title=language.loc[language['name']=='choose_technology',lang].iloc[0],
                     )
                 ],
-                always_open=False,
-                active_item=['item-0']),                
+                always_open=True,
+                active_item=['item-0', 'item-1', 'item-2']),                
             ])
         else:
             return html.Div(children=[html.Br(),
@@ -521,7 +524,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                             dbc.Col(html.Div(id='stromverbrauch_value'), width=4),
                             dbc.Col(dcc.Slider(min=2000,max=10000,step=500,value=electricity_consumption_efh,marks=None,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                             html.Div(id='industry_type'),
-                            dcc.Store(id='building_type_value'),
+                            dcc.Store(id='building_type_value', storage_type='memory'),
                             ],
                             align='center',
                             ),
@@ -554,6 +557,14 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                                     dbc.Col(language.loc[language['name']=='building_type',lang].iloc[0], width=6),
                                     dbc.Col(html.Div(id='building_type_value'), width=6),
                                     dbc.Col(dcc.Dropdown(options_building_type, id='building_type',persistence='memory'), width=11),
+                                    dbc.Col(dcc.RadioItems(options=[
+                                                            {"label": '35/28', "value": '[35, 28, 1.1]'},
+                                                            {"label": '45/35', "value": '[45, 35, 1.2]'},
+                                                            {"label": '55/45', "value": '[55, 45, 1.3]'}
+                                                        ],
+                                                        id='heating_distribution_temperatures',
+                                                        persistence='memory'
+                                                    ), width=12),
                                 ],
                                 align='center',
                                 )
@@ -577,7 +588,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                                 dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], width=6),
                                 dbc.Col(html.Div(id='stromverbrauch_value'), width=4),
                                 dbc.Col(dcc.Slider(min=5000,max=100000,step=1000,value=electricity_consumption_mfh,marks=None,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
-                                dcc.Store(id='building_type_value'),
+                                dcc.Store(id='building_type_value', storage_type='memory'),
                                 html.Div(id='industry_type'),
                                 ],
                             align='center'),
@@ -636,7 +647,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang,
                 dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], width=6),
                 dbc.Col(html.Div(id='stromverbrauch_value'), width=4),
                 dbc.Col(dcc.Slider(min=5_000,max=200_000,step=1000,marks=None,value=electricity_consumption_indu,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
-                ],
+                dcc.Store(id='building_type_value', storage_type='memory'),],
             align='center',
             ),
             ],
@@ -674,6 +685,37 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
                                 dbc.Col(html.H6(language.loc[language['name']=='photovoltaik',lang].iloc[0]), width=6),
                                 dbc.Col(html.Div(id='pv_slider_value'), width=4),
                                 dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
+                                dbc.Col(('PV-Neigung'), width=6),
+                                dbc.Col(html.Div(), width=4),
+                                dbc.Col(dcc.Slider(min=0,max=90,step=5, value=35,
+                                    marks={0: '0°', 90: '90°'},
+                                    tooltip={'placement': 'top', 'always_visible': False}, persistence='memory', id='pv1_inclination'), width=12),
+                                dbc.Col('Azimut', width=6),
+                                dbc.Col(dcc.Slider(
+                                    id='pv1_azimut',
+                                    min=90,
+                                    max=270,
+                                    marks={90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West'},
+                                    step=None,  # Setze step auf None für diskrete Werte
+                                    value=180,  # Standardwert
+                                    persistence='memory'), width=12),
+                                dbc.Col(html.H6(language.loc[language['name']=='photovoltaik',lang].iloc[0]), width=6),
+                                dbc.Col(html.Div(id='pv2_slider_value'), width=4),
+                                dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv2_slider',value=0, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
+                                dbc.Col(('PV-Neigung'), width=6),
+                                dbc.Col(html.Div(), width=4),
+                                dbc.Col(dcc.Slider(min=0,max=90,step=5, value=35,
+                                    marks={0: '0°', 90: '90°'},
+                                    tooltip={'placement': 'top', 'always_visible': False}, persistence='memory', id='pv2_inclination'), width=12),
+                                dbc.Col('Azimut', width=6),
+                                dbc.Col(dcc.Slider(
+                                    id='pv2_azimut',
+                                    min=90,
+                                    max=270,
+                                    marks={90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West'},
+                                    step=None,  # Setze step auf None für diskrete Werte
+                                    value=180,  # Standardwert
+                                    persistence='memory'), width=12)
                                 ],
                             align='center',
                             ))
@@ -684,7 +726,20 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
                                 dbc.Col(html.H6(language.loc[language['name']=='photovoltaik',lang].iloc[0]), width=6),
                                 dbc.Col(html.Div(id='pv_slider_value'), width=4),
                                 dbc.Col(dcc.Slider(min=0,max=200,step=5,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
-                                ],
+                                dbc.Col(('PV-Neigung'), width=6),
+                                dbc.Col(html.Div(), width=4),
+                                dbc.Col(dcc.Slider(min=0,max=90,step=5, value=35,
+                                    marks={0: '0°', 90: '90°'},
+                                    tooltip={'placement': 'top', 'always_visible': False}, persistence='memory', id='pv1_inclination'), width=12),
+                                dbc.Col('Azimut', width=6),
+                                dbc.Col(dcc.Slider(
+                                    id='pv1_azimut',
+                                    min=90,
+                                    max=270,
+                                    marks={90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West'},
+                                    step=None,  # Setze step auf None für diskrete Werte
+                                    value=180,  # Standardwert
+                                    persistence='memory'), width=12)],
                             align='center',
                             ))
         else:
@@ -717,7 +772,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building, last_upload, upload_data)
                             )
     else:
         technology_list.append(
-            html.Div([html.Div(id='chp_technology'),html.Div(id='chp_technology_value')])
+            html.Div([html.Div(id='chp_technology'),html.Div(id='chp_technology_value'),html.Div(id='chp_technology_value2'), html.Div(id='chp_load_hours')])
         )
     if n_hp['color']=='white':
         technology_list.append(
@@ -863,7 +918,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                     dbc.Row([
                         dbc.Col(html.Div([str(capacity_bat_small) + language.loc[language['name']=='battery_cost_func',lang].iloc[0]]), width=6),
                         dbc.Col(html.Div(id='absolut_bat_cost_small_text'), width=3),
-                        dbc.Col(html.Div('(xxx €/kWh)'), width=3),]),
+                        dbc.Col(html.Div('(xxx €/kWh)',id='specific_bat_cost_small_text'), width=3),]),
                     dbc.Row(
                         [
                         dbc.Col(dcc.Slider(min=0, max=absolut_bat_cost_small*2,step=50,value=absolut_bat_cost_small,marks=None,id='absolut_bat_cost_small',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
@@ -872,7 +927,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                         [
                         dbc.Col(html.Div([str(capacity_bat_big) + language.loc[language['name']=='battery_cost_func',lang].iloc[0]]), width=6),
                         dbc.Col(html.Div(id='absolut_bat_cost_big_text'), width=3),
-                        dbc.Col(html.Div('(xxx €/kWh)'), width=3),]),
+                        dbc.Col(html.Div('(xxx €/kWh)', id='specific_bat_cost_big_text'), width=3),]),
                     dbc.Row(
                         [
                         dbc.Col(dcc.Slider(min=0, max=absolut_bat_cost_big*2,step=50,value=absolut_bat_cost_big,marks=None,id='absolut_bat_cost_big',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
@@ -890,8 +945,8 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                 ],
                 title=language.loc[language['name']=='eco_help',lang].iloc[0],
                 ),
-            ],always_open=False,
-            active_item=['item-0']),
+            ],always_open=True,
+            active_item=['item-0', 'item-1']),
             html.Br(),
                 dbc.Row(
                     [
@@ -923,52 +978,27 @@ def standorttoregion(standort):
     return region, standort
 
 @app.callback(
-    Output('region', 'children'), 
+    Output('region', 'children'),
+    Output('weather_typ', 'data'), 
     Input('parameter_location_int', 'data'),
+    Input('weather_year', 'value'),
+    Input('weather_typ', 'value'),
     Input('button_language','value'))
-def standorttoregion(region,lang):
+def standorttoregion(region, weather_year, weather_typ,lang):
     if region is None:
         raise PreventUpdate
-    weather=pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+str(region)+'_a_2015_15min.csv'))
+    weather=pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+str(region)+'_'+weather_typ+'_'+weather_year+'_15min.csv'))
     average_temperature_C=weather['temperature [degC]'].mean()
     global_irradiance_kWh_m2a=weather['synthetic global irradiance [W/m^2]'].mean()*8.76
-    return ['DWD Region: ',language.loc[language['name']==str(region),lang].iloc[0]]
+    return ['DWD Region: ',language.loc[language['name']==str(region),lang].iloc[0]], [weather_typ,weather_year]
 
-# Electric load profile information
+# Electric load profile information # suchen
 @app.callback(
-    Output('p_el_hh', 'data'),
     Output('stromverbrauch_value', 'children'),
     Input('stromverbrauch', 'value'),
-    State('last_triggered_building','data'),
-    Input('industry_type','value'))
-def get_p_el_hh(e_hh,building,building_type):
-    if building=='efh':
-        p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_EFH.csv'))
-    elif building=='mfh':
-        if e_hh<15000:
-            p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_MFH_k.csv'))
-
-        elif e_hh<45000:
-            p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_MFH_m.csv'))
-        elif e_hh>45000:
-            p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_MFH_g.csv'))
-    else:
-        if building_type==None:
-            raise PreventUpdate
-        if building_type=='LP_Ö_Schule':
-            if e_hh<100_000:
-                building_type='LP_Ö_Schule_k.csv'
-            elif e_hh<300_000:
-                building_type='LP_Ö_Schule_m.csv'
-            else:
-                building_type='LP_Ö_Schule_g.csv'
-        elif building_type=='LP_Ö_Büro':
-            if e_hh<100_000:
-                building_type='LP_Ö_Büro_k.csv'
-            else:
-                building_type='LP_Ö_Büro_m.csv'
-        p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/'+building_type))
-    return (p_el.iloc[:,1].values*e_hh/1000).tolist(), str(e_hh) + ' kWh'
+    Input('tabs','value'))
+def get_p_el_hh(e_hh, tab):
+    return str(e_hh) + ' kWh'
 
 # Change button style
 @app.callback(
@@ -1012,127 +1042,15 @@ def change_hp_chp_style(n_chp,n_hp,heating, building):
     elif n_hp%2==1:
         return {'background-color': 'white','color': 'black'},0,{'background-color': '#003da7','color': 'white'},2,0,1
 
-# Calculation of photovoltaic output time series
 @app.callback(
-    Output('c_pv1', 'data'),
-    Input('parameter_location_int','data'), 
-    )
-def calc_pv_power1(location):
-    if location is None:
-        raise PreventUpdate
-    orientation=180
-    tilt=35
-    type='a'
-    year=2015
-    pv1=sim.calc_pv(trj=location-1,year=year,type=type,tilt=tilt,orientation=orientation)
-    return pv1
-@app.callback(
-    Output('p_pv1', 'data'),
     Output('parameter_pv','data'),
     Input('pv_slider','value'),
-    Input('c_pv1','data'),)
-def scale_pv1(pv_slider1, pv1):
+    )
+def scale_pv1(pv_slider1):
     if pv_slider1 is None:
         raise PreventUpdate
-    pv1=np.array(pv1) * pv_slider1
-    return list(pv1),pv_slider1
+    return pv_slider1
 
-# Calculation of thermal building and hot water demand time series
-@app.callback(
-    Output('p_th_load', 'data'), 
-    Output('building', 'data'),
-    Output('building_type_value','children'), 
-    Input('parameter_include_heating', 'data'),
-    Input('parameter_location_int','data'),
-    Input('parameter_wohnfläche','data'),
-    Input('parameter_building_type','data'),
-    Input('button_language','value'))
-def calc_heating_timeseries(heating,region,Area,building_type, lang):
-    if (heating is None) or (region is None) or (Area is None) or(building_type is None):
-        return None, None, None
-    # 1 person for every 50m² in a SFH
-    inhabitants = Area[0]
-    Area=Area[1]
-    # Definintion and selection of building types
-    buildings = pd.DataFrame([[0.8, 12, 35, 28, 1.1],
-                            [1.6, 14, 45, 35, 1.2],
-                            [2.6, 15, 55, 45, 1.3]],
-                            columns=['Q_sp', 'T_limit', 'T_vl_max', 'T_rl_max', 'f_hs_exp'],
-                            index=['new','renovated','old'])  
-    if building_type.endswith('unsaniert'):
-        building=buildings.loc['old',:]
-    elif building_type.startswith('Bestand'):
-        building=buildings.loc['renovated',:]
-    elif building_type.startswith('Neubau'):
-        building=buildings.loc['new',:]
-    building=building.to_dict()
-    t_room = 20
-    # Get min temp. for location
-    TRJ=pd.read_csv(DATA_PATH.joinpath('weather/TRJ-Tabelle.csv'))
-    building['T_min_ref'] = TRJ['T_min_ref'][region-1]
-    building['Area']=Area
-    building['Inhabitants']=inhabitants
-    building['location']=str(region)
-    t_room=20
-    P_tww = 1000+200*building['Inhabitants']    # additional heating load for DHW in W 1000 W + 200 W/person
-    P_th_max=(t_room - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
-    # Calc heating load time series with 24h average outside temperature
-    weather = pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+str(region)+'_a_2015_15min.csv'), header=0, index_col=0)
-    weather.loc[weather['temperature 24h [degC]']<building['T_limit'],'p_th_heating']=(t_room-weather.loc[weather['temperature 24h [degC]']<building['T_limit'],'temperature 24h [degC]'])* building['Q_sp'] * Area
-    weather.loc[weather['temperature 24h [degC]']>=building['T_limit'],'p_th_heating']=0
-    # Load domestic hot water load profile
-    load = pd.read_csv(DATA_PATH.joinpath('thermal_loadprofiles/dhw_'+str(int(inhabitants)) +'_15min.csv'), header=0, index_col=0)
-    load['p_th_heating [W]']=weather['p_th_heating'].values
-    load_dict=load[['load [W]','p_th_heating [W]']].to_dict()
-    return load_dict, building, language.loc[language['name']=='max_heatload',lang].iloc[0]+str(int(round(P_th_max)))+' W'
-
-# Calculation of heat pump power and efficiency time series
-@app.callback(
-    Output('hp_technology_value', 'children'), 
-    Output('power_heat_pump_W', 'data'),
-    Output('parameter_hp','data'),
-    Input('building','data'),
-    Input('p_th_load','data'),
-    Input('hp_technology','value'),
-    State('n_hp', 'style'),
-    )
-def sizing_of_heatpump(building, p_th_load, choosen_hp, hp_active):
-    if (choosen_hp is None) or hp_active['color']!='white':
-        raise PreventUpdate
-    if choosen_hp.startswith('Sole'):
-        group_id=5
-    elif choosen_hp.startswith('Luft'):
-        group_id=1
-    else:
-        raise PreventUpdate
-    P_hp_el , results_summary, t_in, t_out = sim.calc_hp(building,p_th_load,group_id)
-    return (html.Div('SJAZ: '+str((round(results_summary['SJAZ'],2)))+ ', ' +str(int(round(results_summary['Energy_consumption_kWh'],0)))+' kWh')), \
-            P_hp_el.values.tolist(),\
-            choosen_hp
-
-# Calculation of heat pump power and efficiency time series
-@app.callback(
-    Output('chp_load_hours', 'children'), 
-    Output('chp_technology_value', 'children'), 
-    Output('chp_technology_value2', 'children'), 
-    Output('power_chp_W', 'data'),
-    Output('parameter_chp','data'),
-    Input('building','data'),
-    Input('p_th_load','data'),
-    Input('chp_max_power','value'),
-    Input('chp_technology','value'),
-    State('n_chp', 'style'),
-    Input('button_language', 'value')
-    )
-def sizing_of_chp(building, p_th_load,chp_max_ratio, choosen_chp, chp_active, lang):
-    if (choosen_chp is None) or chp_active['color']!='white':
-        raise PreventUpdate
-    results_timeseries, P_th_max, P_th_chp, P_el_chp, runtime = sim.calc_chp(building,p_th_load,choosen_chp/100,chp_to_peak_ratio=chp_max_ratio/100)
-    return (html.Div(str(int(round(runtime)))+' '+ language.loc[language['name']=='load_hours',lang].iloc[0]),
-            html.Div([str(chp_max_ratio)+ '% (' + str((round(P_th_chp/1000,1)))+' kW', html.Sub('th'), ')']),
-            html.Div([str(choosen_chp)+ '% (' + str((round(P_el_chp/1000,1))) + ' kW', html.Sub('el'), ')']),
-            results_timeseries['P_chp_h_el'].values.tolist(), \
-            choosen_chp)
 
 # Save parameter 'include heating'
 @app.callback(
@@ -1174,33 +1092,76 @@ def print_wohnfläche_value(wohnfläche, building):
 
 # Save parameter 'building_type'
 @app.callback(
-    Output('parameter_building_type', 'data'),
+    Output('parameter_building', 'data'),
     Input('building_type', 'value'),
+    Input('heating_distribution_temperatures', 'value')
     )
-def save_parameter_building_type(building_type):
+def save_parameter_building(building_type, heating_distribution_temperatures):
     if building_type is None:
         raise PreventUpdate
-    return building_type
+    building_type_data=eval(building_type)
+    heating_distribution_temperatures=eval(heating_distribution_temperatures)
+    building={'Q_sp':building_type_data[0], 'T_limit':building_type_data[1], 'T_vl_max':heating_distribution_temperatures[0],'T_rl_max':heating_distribution_temperatures[1],'f_hs_exp':heating_distribution_temperatures[2]}
+    return building
+
+@app.callback(
+    Output('chp_max_power_data', 'data'),
+    Input('chp_max_power', 'value'),
+)
+def save_parameter_chp_max_power(chp_max_power):
+    if chp_max_power is None:
+        raise PreventUpdate
+    return chp_max_power
+
+@app.callback(
+    Output('chp_technology_data', 'data'),
+    Input('chp_technology', 'value'),
+)
+def save_parameter_chp_technology_value(chp_technology):
+    if chp_technology is None:
+        raise PreventUpdate
+    return chp_technology
 
 # Show photovoltaic power
 @app.callback(
     Output('pv_slider_value', 'children'),
+    Output('pv2_slider_value', 'children'),
     Input('pv_slider', 'value'),
+    Input('pv2_slider', 'value'),
     )
-def print_pv_slider_value(pv_slider):
-    return html.Div(str(pv_slider)+ ' kWp')
+def print_pv_slider_value(pv_slider, pv2_slider):
+    return html.Div(str(pv_slider)+ ' kWp'), html.Div(str(pv2_slider)+ ' kWp')
 
 # Show investment cost batteries
 @app.callback(
     Output('absolut_bat_cost_small_text', 'children'),
     Output('absolut_bat_cost_big_text', 'children'),
+    Output('specific_bat_cost_small_text','children'),
+    Output('specific_bat_cost_big_text','children'),
     Input('absolut_bat_cost_small', 'value'),
     Input('absolut_bat_cost_big', 'value'),
+    State('parameter_use', 'data'),
+    State('batteries','data'),
+    State('parameter_peak_shaving', 'data'),
     Input('tabs','value')
     )
-def show_investmentcost_small(absolut_bat_cost_small, absolut_bat_cost_big, tabs):
-    return html.Div([str(round(absolut_bat_cost_small))+ ' €']),\
-            html.Div([str(round(absolut_bat_cost_big))+ ' €'])
+def show_investmentcost_small(absolut_bat_cost_small, absolut_bat_cost_big, LSK, batteries, df_peak_shaving_results, tabs):
+    if LSK==0:
+        capacity_bat_small = batteries['e_bat']['1']
+        capacity_bat_big = batteries['e_bat']['5']
+    else:
+        df=(pd.DataFrame().from_dict(df_peak_shaving_results))
+        try:
+            df=(df.loc[(df['Entladerate']>0.5) &  (df['Entladerate']<2.5)])
+            capacity_bat_small=round(df['nutzbare Speicherkapazität in kWh'].values[0],1)
+            capacity_bat_big=round(df['nutzbare Speicherkapazität in kWh'].values[-1],1)
+        except:
+            df=(df.loc[(df['Discharge rate']>0.5) &  (df['Discharge rate']<2.5)])
+            capacity_bat_small=round(df['Usable storage capacity in kWh'].values[0],1)
+            capacity_bat_big=round(df['Usable storage capacity in kWh'].values[-1],1)
+    return (html.Div([str(round(absolut_bat_cost_small))+ ' €']),
+            html.Div([str(round(absolut_bat_cost_big))+ ' €']),
+            str(round((absolut_bat_cost_small / capacity_bat_small))) + ' €/kWh',  str(round((absolut_bat_cost_big / capacity_bat_big))) + ' €/kWh')
 
 # Change button expert style
 @app.callback(
@@ -1220,7 +1181,6 @@ def expertmode(n1):
     Output('download-parameters-xlsx', 'data'),
     Input('button_download', 'n_clicks'),
     State('last_triggered_building', 'data'),
-    State('p_el_hh','data'),
     State('n_clicks_pv', 'data'),
     State('n_clicks_chp', 'data'),
     State('n_clicks_hp', 'data'),
@@ -1236,13 +1196,13 @@ def expertmode(n1):
     State('parameter_hp', 'data'),
     prevent_initial_call=True,
 )
-def download(n1, last_triggered_building, p_el_hh, n_clicks_pv, n_clicks_chp, n_clicks_hp, building, price_electricity,absolut_bat_cost_small, absolut_bat_cost_big, parameter_lang, parameter_use, parameter_location_string, parameter_pv, parameter_chp, parameter_hp):
+def download(n1, last_triggered_building, n_clicks_pv, n_clicks_chp, n_clicks_hp, building, price_electricity,absolut_bat_cost_small, absolut_bat_cost_big, parameter_lang, parameter_use, parameter_location_string, parameter_pv, parameter_chp, parameter_hp):
     df=pd.DataFrame()
     df['Language']=[parameter_lang]
     df['use_case']=[parameter_use]
     df['location']=[parameter_location_string]
     df['Building']=[last_triggered_building]
-    df['electricicty_consumption']=[int(round(np.array(p_el_hh).mean()*8.76,0))]
+    df['electricicty_consumption']=[-1] #TODO
     df['n_clicks_pv']=[n_clicks_pv]
     df['pv_kwp']=[parameter_pv]
     df['n_clicks_chp']=[n_clicks_chp]
@@ -1458,40 +1418,158 @@ def toggle_navbar_collapse(n, is_open):
 
 #create results
 
-# Calculate self sufficiency with different battery sizes
+# Calculate self sufficiency with different battery sizes # suchen
+
 @app.callback(
     Output('batteries', 'data'),
-    Input('p_el_hh','data'), 
-    Input('power_heat_pump_W','data'), 
-    Input('power_chp_W','data'), 
-    Input('p_pv1', 'data'),
-    State('n_solar', 'n_clicks'),
-    State('n_hp','style'),
-    State('n_chp','style'),
-    State('last_triggered_building', 'data'),
-    )
-def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,n_chp_style, building):
-    if p_el_hh is None:
-        raise PreventUpdate
+    Output('hp_technology_value', 'children'), 
+    Output('parameter_hp','data'),
+    Output('building_type_value','children'), 
+    Output('chp_load_hours', 'children'), 
+    Output('chp_technology_value', 'children'), 
+    Output('chp_technology_value2', 'children'),
+    Input('stromverbrauch', 'value'), #done
+    State('last_triggered_building','data'), #done
+    Input('industry_type','value'), #done
+    Input('parameter_include_heating', 'data'),
+    Input('parameter_location_int','data'),
+    Input('parameter_wohnfläche','data'),
+    Input('parameter_building','data'),
+    Input('hp_technology','value'),
+    Input('chp_max_power_data','data'),
+    Input('chp_technology_data','data'),
+    Input('pv_slider','value'),
+    State('n_chp', 'style'),
+    State('n_hp', 'style'),
+    State('n_solar', 'style'),
+    Input('weather_typ','data'),
+    Input('pv1_inclination', 'value'),
+    Input('pv1_azimut', 'value'),
+    Input('pv2_slider','value'),
+    Input('pv2_inclination', 'value'),
+    Input('pv2_azimut', 'value'),
+)
+def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,building, choosen_hp, chp_max_ratio, choosen_chp, pv_size, chp_active, hp_active, pv_active, weather_typ, pv1_inclination, pv1_azimut, pv2_slider, pv2_inclination, pv2_azimut):
+    ## Electrica loadprofile
+    if building_name=='efh':
+        p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_EFH.csv'))
+        
+    elif building_name=='mfh':
+        if e_hh<15000:
+            p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_MFH_k.csv'))
+
+        elif e_hh<45000:
+            p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_MFH_m.csv'))
+        elif e_hh>45000:
+            p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/LP_W_MFH_g.csv'))
+    else:
+        if building_type==None:
+            raise PreventUpdate
+        if building_type=='LP_Ö_Schule':
+            if e_hh<100_000:
+                building_type='LP_Ö_Schule_k.csv'
+            elif e_hh<300_000:
+                building_type='LP_Ö_Schule_m.csv'
+            else:
+                building_type='LP_Ö_Schule_g.csv'
+        elif building_type=='LP_Ö_Büro':
+            if e_hh<100_000:
+                building_type='LP_Ö_Büro_k.csv'
+            else:
+                building_type='LP_Ö_Büro_m.csv'
+        p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/'+building_type))
+    p_el=(p_el.iloc[:,1].values*e_hh/1000)
+
+    ## Photovoltaic
+    if pv_active['color']!='white':
+        p_pv = 0
+    else:
+        c_pv=sim.calc_pv(trj=region-1,year=str(weather_typ[1]),type=weather_typ[0],tilt=pv1_inclination,orientation=pv1_azimut)
+        p_pv1=np.array(c_pv)*pv_size
+        if pv2_slider>0:
+            c_pv=sim.calc_pv(trj=region-1,year=str(weather_typ[1]),type=weather_typ[0],tilt=pv2_inclination,orientation=pv2_azimut)
+            p_pv2=np.array(c_pv)*pv2_slider
+            p_pv=p_pv1+p_pv2
+        else:
+            p_pv=p_pv1
+
+    ## heating system
+    if (heating is None) or (region is None) or (Area is None) or(building is None):
+        p_hp = 0
+        p_chp = 0
+        hp_summary=None
+        p_chp = 0
+        building_type_value = None
+        chp_th = None
+        chp_el = None
+        chp_runtime = None
+    else:
+        inhabitants = Area[0]
+        Area=Area[1]
+        # Definintion and selection of building type
+        t_room = 20
+        # Get min temp. for location
+        TRJ=pd.read_csv(DATA_PATH.joinpath('weather/TRJ-Tabelle.csv'))
+        building['T_min_ref'] = TRJ['T_min_ref'][region-1]
+        building['Area']=Area
+        building['Inhabitants']=inhabitants
+        building['location']=str(region)
+        t_room=20
+        P_tww = 1000+200*building['Inhabitants']    # additional heating load for DHW in W 1000 W + 200 W/person
+        P_th_max=(t_room - building['T_min_ref']) * building['Q_sp'] * building['Area'] + P_tww
+        building_type_value = language.loc[language['name']=='max_heatload','eng'].iloc[0]+str(int(round(P_th_max)))+' W'
+        # Calc heating load time series with 24h average outside temperature
+        weather = pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+str(region)+'_'+weather_typ[0]+'_'+weather_typ[1]+'_15min.csv'), header=0, index_col=0)
+        weather.loc[weather['temperature 24h [degC]']<building['T_limit'],'p_th_heating']=(t_room-weather.loc[weather['temperature 24h [degC]']<building['T_limit'],'temperature 24h [degC]'])* building['Q_sp'] * Area
+        weather.loc[weather['temperature 24h [degC]']>=building['T_limit'],'p_th_heating']=0
+        # Load domestic hot water load profile
+        load = pd.read_csv(DATA_PATH.joinpath('thermal_loadprofiles/dhw_'+str(int(inhabitants)) +'_15min.csv'), header=0, index_col=0)
+        load['p_th_heating [W]']=weather['p_th_heating'].values
+        load_dict=load[['load [W]','p_th_heating [W]']].to_dict()
+
+        ## Heat pump
+        if (choosen_hp is None) or hp_active['color']!='white':
+            p_hp=0
+            hp_summary=None
+        else:
+            if choosen_hp.startswith('Sole'):
+                group_id=5
+            elif choosen_hp.startswith('Luft'):
+                group_id=1
+            else:
+                raise PreventUpdate
+            P_hp_el , results_summary, t_in, t_out = sim.calc_hp(weather, building,load_dict,group_id)
+            p_hp= P_hp_el.values
+            hp_summary=(html.Div('SJAZ: '+str((round(results_summary['SJAZ'],2)))+ ', ' +str(int(round(results_summary['Energy_consumption_kWh'],0)))+' kWh'))
+
+        ## CHP
+        if (choosen_chp is None) or chp_active['color']!='white':
+            p_chp = 0
+            chp_th = None
+            chp_el = None
+            chp_runtime = None
+        else:
+            results_timeseries, _, P_th_chp, P_el_chp, runtime = sim.calc_chp(weather, building,load_dict,choosen_chp/100,chp_to_peak_ratio=chp_max_ratio/100)
+            p_chp = results_timeseries['P_chp_h_el'].values
+            chp_runtime=html.Div(str(int(round(runtime)))+' '+ language.loc[language['name']=='load_hours','ger'].iloc[0])
+            chp_th = html.Div([str(chp_max_ratio)+ '% (' + str((round(P_th_chp/1000,1)))+' kW', html.Sub('th'), ')'])
+            chp_el = html.Div([str(choosen_chp)+ '% (' + str((round(P_el_chp/1000,1))) + ' kW', html.Sub('el'), ')'])
+
+
+    ## Calculation
     df=pd.DataFrame()
     df.index=pd.date_range(start='2022-01-01', end='2023-01-01', periods=35041)[0:35040]
-    if (pv1 is None) or ((n_pv1%2)!=1):
-        pv1=np.zeros(35040).tolist()
-    if (power_heat_pump_W is None) or n_hp_style['color']!='white':
-        power_heat_pump_W=np.zeros(35040).tolist()
-    if (power_chp_W is None) or n_chp_style['color']!='white':
-        power_chp_W=np.zeros(35040).tolist()
-    df['p_el_hh']=p_el_hh
-    df['p_el_hp']=power_heat_pump_W
-    df['p_chp']=power_chp_W
+    df['p_el_hh']=p_el
+    df['p_el_hp']=p_hp
+    df['p_chp']=p_chp
     df['p_el_hh']=df['p_el_hh']+df['p_el_hp']
-    df['p_PV']=np.array(pv1)
+    df['p_PV'] = p_pv
     if (df['p_PV'].mean()==0) and df['p_chp'].mean()==0:
-        return None, None , None
+        return (None, hp_summary,None,  building_type_value, chp_runtime, chp_th, chp_el)
     E_el_MWH = df['p_el_hh'].mean()*8.76/1000
     E_pv_kwp = df['p_PV'].mean()*8.76/1000
     E_chp = df['p_chp'].mean()*8.76/1000
-    if building!='efh':
+    if building_name!='efh':
         if (E_chp>0):
             max_battery_size = np.ceil(round(E_el_MWH,0)/5)*5
         else:
@@ -1502,7 +1580,16 @@ def calc_bat_results(p_el_hh,power_heat_pump_W,power_chp_W,pv1,n_pv1,n_hp_style,
         else:
             max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*2.5,E_pv_kwp*2.5)/5)*5 #TODO: CHP battery sizing?
     batteries=sim.calc_bs(df, np.maximum(10,max_battery_size))
-    return batteries.to_dict()
+    return (batteries.to_dict(), 
+        hp_summary,
+        choosen_hp,
+        building_type_value,
+        chp_runtime,
+        chp_th,
+        chp_el,
+        )
+
+# back
 
 # Show selection for different graphs (self sufficiency, self consumption or energy balance)
 @app.callback(

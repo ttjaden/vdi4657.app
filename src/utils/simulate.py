@@ -252,9 +252,8 @@ def calc_bs(df, e_bat):
     return batteries
 
 # Calculation of heat pump
-def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
+def calc_hp(weather, building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     # read load and weather
-    weather = pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+building['location']+'_a_2015_15min.csv'), header=0, index_col=0)
     p_th_load=pd.DataFrame(p_th_load)
     P_th_tww = p_th_load['load [W]']
     P_th_h = p_th_load['p_th_heating [W]']
@@ -484,9 +483,8 @@ def calc_hp(building, p_th_load, group_id, t_room=20, T_sp_tww_set=50):
     return P_hp_el , results_summary, t_in, t_out
 
 # Calculation of combined heat and power
-def calc_chp(building, p_th_load, power_to_heat_ratio, chp_to_peak_ratio=0.3, t_room=20, T_sp_tww_set=50):
+def calc_chp(weather, building, p_th_load, power_to_heat_ratio, chp_to_peak_ratio=0.3, t_room=20, T_sp_tww_set=50):
     # read load and weather
-    weather = pd.read_csv(DATA_PATH.joinpath('weather/TRY_'+building['location']+'_a_2015_15min.csv'), header=0, index_col=0)
     p_th_load=pd.DataFrame(p_th_load)
     P_th_tww = p_th_load['load [W]']
     P_th_h = p_th_load['p_th_heating [W]']
