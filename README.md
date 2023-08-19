@@ -12,11 +12,11 @@ Download or clone repository:
 
 Create the environment:
 
-- `conda env create --name PIEG-Strom-Webtool python=3.9`
+- `conda env create --name vdi4657.app`
 
 Activate enviroment
 
-- `conda activate PIEG-Strom-Webtool`
+- `conda activate vdi4657.app`
 
 Install dependencies with pip
 
