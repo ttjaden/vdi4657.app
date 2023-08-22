@@ -190,14 +190,15 @@ def calc_pv(trj, year, type, tilt, orientation):
 
 # Calculation of battery storage
 # inverter = 0.5 kW per kWh useable capacity
-def calc_bs(df, e_bat):
+def calc_bs(df, e_bat, p_bat):
+    pd.DataFrame(df).to_csv('test_battery.csv')
     # define 5 steps for battery sizes
     batteries = pd.DataFrame([['SG1', 0.0, 0.0],
-                            ['SG1', e_bat*1/5,e_bat*1/10],
-                            ['SG1', e_bat*2/5, e_bat*2/10],
-                            ['SG1', e_bat*3/5, e_bat*3/10],
-                            ['SG1', e_bat*4/5, e_bat*4/10],
-                            ['SG1', e_bat, e_bat*5/10]],
+                            ['SG1', e_bat*1/5,e_bat*1/5*p_bat],
+                            ['SG1', e_bat*2/5, e_bat*2/5*p_bat],
+                            ['SG1', e_bat*3/5, e_bat*3/5*p_bat],
+                            ['SG1', e_bat*4/5, e_bat*4/5*p_bat],
+                            ['SG1', e_bat, e_bat*p_bat]],
                             columns=['system_id', 'e_bat', 'p_inv']
                             )
     P_diff=df['p_PV']+df['p_chp']-df['p_el_hh']
