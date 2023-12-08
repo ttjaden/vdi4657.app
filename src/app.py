@@ -692,7 +692,7 @@ def built_technology(n_solar,n_chp,n_hp,lang,building):
                                     persistence='memory'), width=12),
                                 dbc.Col(html.H6(language.loc[language['name']=='photovoltaik',lang].iloc[0]), width=6),
                                 dbc.Col(html.Div(id='pv2_slider_value'), width=4),
-                                dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv2_slider',value=0, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
+                                dbc.Col(dcc.Slider(min=0,max=200,step=1,marks=None, id='pv2_slider',value=0, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
                                 dbc.Col(('PV-Neigung'), width=6),
                                 dbc.Col(html.Div(), width=4),
                                 dbc.Col(dcc.Slider(min=0,max=90,step=5, value=35,
