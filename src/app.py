@@ -58,11 +58,10 @@ button_expert = dbc.Button(
 )
 
 button_simulation = dbc.Button(
-    html.Div(children=[DashIconify(icon='ic:baseline-download'),html.Div('Start Simulation')]),
+    html.Div(children=[DashIconify(icon='vaadin:start-cog'),html.Div('Start Simulation')]),
     id='button_simulation',
     outline=True,
-    color="primary",
-    active=True,
+    color="primary",#disabled=True,
     style={'textTransform': 'none','color': '#003da7','background-color': 'white',},
 )
 
@@ -214,7 +213,7 @@ content = dbc.Container([
     dcc.Store(id='n_clicks_hp', storage_type='memory'),                                                 # ob Wärmepumpe ausgewählt war -> df                         
     dcc.Store(id='parameter_include_heating', storage_type='memory'),                                   # ob Heating ausgewählt war -> df                                         
     dcc.Store(id='parameter_wohnfläche', storage_type='memory'),                                        # Wohnfläche -> df                                     
-    dcc.Store(id='parameter_building'),                                                            # Gebäudetyp -> df                               
+    dcc.Store(id='parameter_building'),                                                                 # Gebäudetyp -> df                               
     dcc.Store(id='building', storage_type='memory'),                                                    # Gebäudewerte                                       
     dcc.Store(id='batteries', storage_type='memory'),                                                   # ERGEBNIS                         
     dcc.Store(id='chp_max_power_data', storage_type='memory'),                                          # chp sachen                                 
@@ -351,6 +350,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
                             ])
                     ],
                     title=language.loc[language['name']=='location',lang].iloc[0],
+                    id='accordion_simulate_1',
                     ),
                     dbc.AccordionItem([
                         dbc.Row([
@@ -362,6 +362,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
                         dbc.Container(id='bulding_container',fluid=True),
                     ],
                     title=language.loc[language['name']=='choose_building',lang].iloc[0],
+                    id='accordion_simulate_2',
                     ),
                     dbc.AccordionItem([
                         dbc.Row([
@@ -372,12 +373,14 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_chp, n_clicks_hp):
                         dbc.Container(html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value'), html.Div(id='chp_max_power'), html.Div(id='chp_load_hours')],id='technology'),fluid=True)
                     ],
                     title=language.loc[language['name']=='choose_technology',lang].iloc[0],
+                    id='accordion_simulate_3',
                     )
                 ],
-                always_open=True,
-                active_item=['item-0', 'item-1', 'item-2']),
+                always_open=False,
+                id='accordion_simulate',
+                ),
             html.Br(),
-            #dbc.Col([dbc.NavItem(button_simulation)], width={'offset':4})
+            button_simulation
             ])
         else:
             return html.Div(children=[html.Br(),
@@ -1353,6 +1356,46 @@ def toggle_navbar_collapse(n, is_open):
         return not is_open
     return is_open
 
+
+@app.callback(
+    Output('accordion_simulate', 'active_item'),
+    Output('accordion_simulate_1','title'),
+    Output('accordion_simulate_2','title'),
+    Output('accordion_simulate_3','title'),
+    Input('button_simulation', 'n_clicks'),
+    State('parameter_location_string','data'),
+    State('last_triggered_building','data'),
+    State('n_clicks_pv','data'),
+    State('n_clicks_chp','data'),
+    State('n_clicks_hp','data'),
+    State('button_language', 'value')
+)
+def collapse_accordion(n,location, building, pv, chp, hp, lang):
+    if n == None:
+        raise PreventUpdate
+    if location==None:
+        location=''
+    if building==None:
+        building=''
+    elif building=='efh':
+        building=language.loc[language['name']=='efh_name',lang].iloc[0]
+    elif building=='mfh':
+        building=language.loc[language['name']=='mfh_name',lang].iloc[0]
+    elif building=='indu':
+        building=language.loc[language['name']=='industry_name',lang].iloc[0]
+    technologie=''
+    if pv==1:
+        technologie+='PV'
+        if chp==1 or hp==1:
+            technologie+=', '
+    if chp==1:
+        technologie+=language.loc[language['name']=='chp',lang].iloc[0]
+        if hp==1:
+            technologie+=', '
+    if hp==1:
+        technologie+=language.loc[language['name']=='hp',lang].iloc[0]
+    return [], language.loc[language['name']=='location',lang].iloc[0]+' ' + location, language.loc[language['name']=='choose_building',lang].iloc[0] +' '+building, language.loc[language['name']=='choose_technology',lang].iloc[0]+ ' '+technologie
+
 #create results
 
 # Calculate self sufficiency with different battery sizes # suchen
@@ -1365,31 +1408,34 @@ def toggle_navbar_collapse(n, is_open):
     Output('chp_load_hours', 'children'), 
     Output('chp_technology_value', 'children'), 
     Output('chp_technology_value2', 'children'),
-    Input('stromverbrauch', 'value'), #done
-    State('last_triggered_building','data'), #done
-    Input('industry_type','value'), #done
-    Input('parameter_include_heating', 'data'),
-    Input('parameter_location_int','data'),
-    Input('parameter_wohnfläche','data'),
-    Input('parameter_building','data'),
-    Input('hp_technology','value'),
-    Input('chp_max_power_data','data'),
-    Input('chp_technology_data','data'),
-    Input('pv_slider','value'),
+    State('stromverbrauch', 'value'),
+    State('last_triggered_building','data'),
+    State('industry_type','value'),
+    State('parameter_include_heating', 'data'),
+    State('parameter_location_int','data'),
+    State('parameter_wohnfläche','data'),
+    State('parameter_building','data'),
+    State('hp_technology','value'),
+    State('chp_max_power_data','data'),
+    State('chp_technology_data','data'),
+    State('pv_slider','value'),
     State('n_chp', 'style'),
     State('n_hp', 'style'),
     State('n_solar', 'style'),
-    Input('weather_typ','data'),
-    Input('pv1_inclination', 'value'),
-    Input('pv1_azimut', 'value'),
-    Input('pv2_slider','value'),
-    Input('pv2_inclination', 'value'),
-    Input('pv2_azimut', 'value'),
-    Input('p_bat', 'value'),
+    State('weather_typ','data'),
+    State('pv1_inclination', 'value'),
+    State('pv1_azimut', 'value'),
+    State('pv2_slider','value'),
+    State('pv2_inclination', 'value'),
+    State('pv2_azimut', 'value'),
+    State('p_bat', 'value'),
+    Input('button_simulation', 'n_clicks'),
     Input('parameter_loadprofile', 'data'),
     State('button_language', 'value')
 )
-def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,building, choosen_hp, chp_max_ratio, choosen_chp, pv_size, chp_active, hp_active, pv_active, weather_typ, pv1_inclination, pv1_azimut, pv2_slider, pv2_inclination, pv2_azimut, p_bat, load_profile ,lang):
+def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,building, choosen_hp, chp_max_ratio, choosen_chp, pv_size, chp_active, hp_active, pv_active, weather_typ, pv1_inclination, pv1_azimut, pv2_slider, pv2_inclination, pv2_azimut, p_bat, n, load_profile ,lang):
+    if n is None:
+        raise PreventUpdate
     ## Electrica loadprofile
     if (building_name=='indu')&(building_type=='own_loadprofile'):
         p_el=load_profile
