@@ -2,33 +2,60 @@ name,eng,ger
 lang,Language,Sprache
 header_p,Sizing of electrical storage systems,Auslegung von Stromspeichern
 efh_name,SFH,EFH
+efh_tooltip,Simulation of a single-family house based on a real measured load profile - own load profiles can be simulated in the “Other” building,Simulation eines Einfamilienhauses auf der Grundlage eines real gemessenen Lastprofils - eigene Lastprofile können im Gebäude „Sonstige“ simuliert werden 
+mfh_name,MFH,MFH
+mfh_tooltip,Simulation of an apartment building based on real measured load profiles - own load profiles can be simulated in the “Other” building,Simulation eines Mehrfamilienhauses auf der Grundlage real gemessener Lastprofile - eigene Lastprofile können im Gebäude „Sonstige“ simuliert werden
+industry_name,Others,Sonstige
+industry_tooltip,"Standard load profiles, real consumption profiles or your own load profiles can be used to simulate other buildings","Für die Simulation sonstiger Gebäude können Standardlastprofile, reale Verbrauchsprofile oder eigene Lastprofile verwendet werden"
 location,Location: ,Standort: 
 placeholder_location,ZIP-Code (Germany),Postleitzahl oder Adresse
 building_type,Building type,Gebäudetyp
+building_type_tooltip,"Transmission heat losses 
+Existing building, unrenovated: 2.6 W/(m²K)
+Existing building, renovated: 1.6 W/(m²K)
+New building, after 2016: 0.8 W/(m²K)","Transmissionswärmeverluste 
+Bestand, unsaniert: 2,6 W/(m²K)
+Bestand, saniert: 1,6 W/(m²K)
+Neubau, nach 2016: 0,8 W/(m²K)"
 building_size,Living area,Wohnfläche
+building_size_tooltip,Net floor area of the building,Nettogrundfläche des Gebäudes
+heating_temperature,Flow / return temperature,Vorlauf-/Rücklauftemperatur
 usage,Consumption usage,Verbrauchskennzahlen
 inhabitants,Number of persons,Bewohneranzahl
+inhabitants_tooltip,Approximately 550 kWh of heat per person per year is assumed,Pro Person werden ca. 550 kWh Wärme pro Jahr angenommen
 energy_cons,Electrical energy consumption,Stromverbrauch
-mfh_name,MFH,MFH
-industry_name,Others,Sonstige
+energy_cons_tooltip,Annual electricity demand of the household,Jährlicher Strombedarf des Haushaltes 
 choose_building,Building:,Gebäude:
 choose_technology,Technology:,Technologie:
 increase_autarky,Self-sufficieny,Eigenversorgung
+increase_autarky_tooltip,"By storing surplus electricity in a battery, self-consumption can be increased and the building’s energy autonomy improved.","Durch die Speicherung von Stromüberschüssen in einer Batterie kann der Eigenverbrauch erhöht und der Autarkiegrad des Gebäudes gesteigert werden."
 peak_shaving,Peak shaving,Peak Shaving
+peak_shaving_tooltip,"The battery is discharged in a targeted manner to reduce peak loads and limit grid connection capacity."," Die Batterie wird gezielt entladen, um hohe Lastspitzen zu reduzieren und die Anschlussleistung zu begrenzen."
 economics,Economics,Ökonomie
 pv,PV,PV
-photovoltaik,Photovoltaic: ,Photovoltaik: 
+photovoltaik,Photovoltaic: ,Photovoltaik:
+photovoltaik_tooltip,Installed module capacity in kWp,Installierte Modulleistung in kWp
+pv_tooltip,Photovoltaics - two PV areas can be defined,Photovoltaik - es können zwei PV-Flächen definiert werden
+pv_power,PV-Power in kWp:,PV-Leistung in kWp:
+pv_orientation,PV-Orientation:,PV-Orientierung:
+pv_orientation_tooltip,Alignment of the module surface to the compass direction,Ausrichtung der Modulfläche zur Himmelsrichtung
+pv_tilt,PV-Tilt,PV-Neigung
+pv_tilt_tooltip,"Inclination angle: 0° parallel to the floor, 90° parallel to the wall","Neigungswinkel: 0° parallel zum Boden, 90° parallel zur Wand"
 chp,CHP,KWK
 combined_heat_power,Combined heat and power: ,Kraft-Wärme-Kopplung: 
+chp_tooltip,Combined heat and power - only possible for simulation with heating system,Kraft-Wärme-Kopplung - nur bei Simulation mit Wärmesystem möglich
 chp_peak_ratio,Share on design heat load: ,Anteil an Norm Heizlast: 
+chp_peak_ratio_tooltip,Share of the CHP system in the total standard heating load (in %),Anteil der KWK-Anlage an der gesamten Norm-Heizlast (Angabe in %)
 chp_electric_number,power-to-heat ratio: ,Stromkennzahl: 
+chp_electric_number_tooltip,Ratio of electricity generated to heat generated in percent,Verhältnis von erzeugtem Strom zu erzeugter Wärme in Prozent
 hp,HP,WP
 heatpump, Heat pump: , Wärmepumpe: 
+hp_tooltip,Heat pump - only possible for simulation with heating system,Wärmepumpe - nur bei Simulation mit Wärmesystem möglich
 gas,Gas heater,Gasheizung
 bat,Battery,Batterie
 hyd,H2-Storage,H2-Speicher
-n_dwellings,Number of dwellings,Anzahl Wohneinheiten
 housing_units,Number of dwellings,Anzahl Wohneinheiten
+housing_units_tooltip,2 persons and an area of 70 m² are assumed per residential unit,Pro Wohneinheit werden 2 Personen und eine Fläche von 70 m² angenommen
 building_type_industry,Business sector,Geschäftsfeld
 1,North Sea coast,Nordseeküste
 2,Baltic Sea coast,Ostseeküste
@@ -45,9 +72,6 @@ building_type_industry,Business sector,Geschäftsfeld
 13,Swabian-Franconian Steppes and Alpine Foothills,Schwäbisch-fränkisches Stufenland und Alpenvorland
 14,Swabian Alb and Baar,Schwäbische Alb und Baar
 15,Alpine rim and valleys,Alpenrand und -täler
-pv_power,PV-Power in kWp:,PV-Leistung in kWp:
-pv_orientation,PV-Orientation:,PV-Orientierung:
-pv_tilt,PV-Tilt,PV-Neigung
 chp_type,Combined heat and power fuel type,Brennstoff für KWK-Brenner
 chp_type_options,Natural gas,Erdgas
 chp_type_options,Fuel cell (PEM),Brennstoffzelle (PEM)
@@ -70,6 +94,7 @@ use_case,Use case,Anwendung
 choose_building_type,Choose a building type,Einen Gebäudetyp wählen
 heating, incl. heating and hot water, inkl. Heizung und Warmwasser
 max_heatload,Design heat load: ,Norm Heizlast:
+max_heatload_tooltip,Design heat load in kW,Norm-Heizlast in kW
 invest_cost,Investment costs,Investitionskosten
 battery_cost_func, kWh electrical storage, kWh Stromspeicher
 tariff,Electricity tariff,Stromtarif
@@ -112,10 +137,31 @@ energy_price_2499,Energy price for under 2500 full load hours:, Arbeitspreis bei
 energy_price_2500,Energy price for over 2500 full load hours:, Arbeitspreis bei über 2500 Volllaststunden:
 power_price_2499,Power price for under 2500 full load hours:, Leistungspreis bei unter 2500 Volllaststunden:
 power_price_2500,Power price for over 2500 full load hours:, Leistungspreis bei über 2500 Volllaststunden:
-info_text,"dummy english","dummy german" 
+info_text,"This web tool supports the application of VDI 4657 Part 3: “Planning and Integration of Energy Storage Systems in Building Energy Systems – Electrical Energy Storage (ESS)”, published in August 2023.
+
+The guideline provides a structured basis for the planning and sizing of electrical energy storage systems in buildings connected to the public distribution grid. Our tool builds on this by making key calculations and decision-making processes accessible, interactive, and easy to use.
+
+Who is it for?
+This tool is designed for planners, energy consultants, architects, and professionals involved in integrating battery storage systems into building energy infrastructures. It offers fast, comprehensible, and guideline-compliant support.
+
+Open source – built to grow:
+The app is fully open source and available at
+https://github.com/ttjaden/vdi4657.app
+Contributions, feedback, and improvements from the community are warmly welcomed!","Dieses Webtool unterstützt die Anwendung der VDI 4657 Blatt 3: „Planung und Integration von Energiespeichern in Gebäudeenergiesystemen – Elektrische Stromspeicher (ESS)”, veröffentlicht im August 2023.
+
+Die Richtlinie bietet eine strukturierte Grundlage zur Planung und Dimensionierung von elektrischen Stromspeichern in Gebäuden mit Anschluss an das öffentliche Verteilnetz. Unser Tool setzt genau hier an: Es vereinfacht die Anwendung der Richtlinie, indem es die zentralen Rechenschritte und Entscheidungsprozesse digital abbildet – anschaulich, interaktiv und praxisorientiert.
+
+Für wen ist das Tool gedacht?
+Planer*innen, Energieberater*innen, Architekt*innen und alle Fachleute, die sich mit der Integration von Batteriespeichern in Gebäudeenergiesysteme beschäftigen, profitieren von einer schnellen, nachvollziehbaren und richtlinienkonformen Unterstützung.
+
+Open Source – gemeinsam besser:
+Der Quellcode der App ist offen zugänglich und kann unter
+https://github.com/ttjaden/vdi4657.app
+eingesehen, genutzt und weiterentwickelt werden. Beiträge und Feedback aus der Fachcommunity sind herzlich willkommen!" 
 weather_year_text1,current weather,aktuelles Wetter
 weather_year_text2,future weather,zukünftiges Wetter
 weather_typ_text1,average year,normales Jahr
 weather_typ_text2,cold year,kaltes Jahr
 weather_typ_text3,warm year,warmes Jahr
 p_bat,Battery C-rate,Batterie C-Rate
+error_heating_missing,"Please enter at least one heat generator to continue with the design.","Bitte tragen Sie mindestens einen Wärmeerzeuger ein, um mit der Auslegung fortzufahren."
