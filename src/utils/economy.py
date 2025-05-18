@@ -57,6 +57,7 @@ def cash_flow_self_consumption(invest_costs,
             supply,
             tariff_feedin,
             tariff_supply,
+            price_increase_rate,
             years,
             lifetime):
     # cash flow as list
@@ -78,7 +79,9 @@ def cash_flow_self_consumption(invest_costs,
             residual_value = 0
         # delta from grid supply and grid feedin
         delta_feedin = (feedin - feedin0) * tariff_feedin 
-        delta_supply = -1 * (supply - supply0) * tariff_supply
+
+        factor = (1 + price_increase_rate) ** (y - 1)
+        delta_supply = -1 * (supply - supply0) * tariff_supply * factor
 
         # cashflow array
         cashflow.append(invest+delta_feedin+delta_supply+residual_value)

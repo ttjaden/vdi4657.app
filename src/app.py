@@ -975,6 +975,15 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                     ]),
                 dbc.Row(
                     [
+                    dbc.Col(html.Div(language.loc[language['name']=='price_increase',lang].iloc[0]), width=6),
+                    dbc.Col(html.Div(id='price_increase_text'), width=6),
+                    ]),
+                dbc.Row(
+                    [
+                    dbc.Col(dcc.Slider(min=0, max=10,step=1,value=0,marks=None,id='price_increase',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+                    ]),
+                dbc.Row(
+                    [
                     dbc.Col(html.Div(language.loc[language['name']=='price_sell',lang].iloc[0]), width=6),
                     dbc.Col(html.Div(id='price_sell_text'), width=6),
                     ]),
@@ -1002,6 +1011,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                 dbc.Col(html.Div(language.loc[language['name']=='power_price_2500',lang].iloc[0]), width=8),
                 dbc.Col(html.Div(id='power_price_above2500_text'), width=4),
                 dbc.Col(dcc.Slider(min=0, max=200,step=10,value=power_tariff_above2500,marks=None,id='power_price_above2500',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+                dcc.Store(id='price_increase')
                 ],
                 align='center',
                 )
@@ -1483,18 +1493,20 @@ def reset_economy(n):
 @app.callback(
     Output('price_electricity', 'data'),
     Output('price_buy_text', 'children'),
+    Output('price_increase_text', 'children'),
     Output('price_sell_text', 'children'),
     Output('price_sell', 'value'),
     Output('price_buy', 'value'),
     Input('price_buy', 'value'),
+    Input('price_increase', 'value'),
     Input('price_sell', 'value'),
     Input('button_reset_price', 'n_clicks'),
     )
-def save_price_buy(price_buy,price_sell, tabs):
+def save_price_buy(price_buy,price_increase,price_sell, tabs):
     if ctx.triggered_id=='button_reset_price':
-        price_buy=35
+        price_buy=30
         price_sell=6
-    return [price_buy, price_sell], str(price_buy)+ ' ct/kWh', str(price_sell)+ ' ct/kWh', price_sell, price_buy
+    return [price_buy, price_sell], str(price_buy)+ ' ct/kWh',str(price_increase)+' %', str(price_sell)+ ' ct/kWh', price_sell, price_buy
 
 # Save electricity price peak shaving
 @app.callback(
@@ -1935,6 +1947,7 @@ def eco_results(aut, eig, energy, data):
     State('parameter_peak_shaving', 'data'),
     Input('price_electricity','data'),
     Input('price_electricity_peak','data'),
+    Input('price_increase', 'value'),
     Input('absolut_bat_cost_small','value'),
     Input('absolut_bat_cost_big','value'),
     Input('tabs', 'value'),
@@ -1944,7 +1957,7 @@ def eco_results(aut, eig, energy, data):
     State('parameter_use', 'data'),
     Input('button_language', 'value'),
     )
-def economic_results_graph(batteries,batteries_peak,electricity_price,electricity_price_peak,absolut_bat_cost_small,absolut_bat_cost_big,tab,lifetime,interest_rate,results_id, LSK, lang):
+def economic_results_graph(batteries,batteries_peak,electricity_price,electricity_price_peak,price_increase_rate,absolut_bat_cost_small,absolut_bat_cost_big,tab,lifetime,interest_rate,results_id, LSK, lang):
     if ((electricity_price is None) and (LSK==0)) or ((electricity_price_peak is None) and (LSK==1)): 
         raise PreventUpdate
     if (LSK==0):
@@ -1968,6 +1981,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                             -batteries.loc[battery]['Netzbezug'],
                             electricity_price[1]/100,
                             electricity_price[0]/100,
+                            price_increase_rate/100,
                             years,
                             lifetime)
             NetPresentValue.append(round(eco.net_present_value(cashflow, interest_rate),0))
@@ -2040,9 +2054,8 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             df=(df.loc[(df['Discharge rate']>0.5) &  (df['Discharge rate']<2.5)])
             capacity_bat_small=round(df['Usable storage capacity in kWh'].values[0],1)
             capacity_bat_big=round(df['Usable storage capacity in kWh'].values[-1],1)
-        years=15
-        lifetime=15
-        interest_rate=0.0
+        years=lifetime
+        interest_rate=interest_rate/100
         Invest_cost=[]
         NetPresentValue=[]
         Amortisation=[]
@@ -2066,11 +2079,11 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
                 lifetime,
                 )
             NetPresentValue.append(round(eco.net_present_value(cashflow, interest_rate),0))
-            Amortisation.append(eco.amortisation(cashflow))
+            Amortisation.append(eco.amortisation(cashflow,interest_rate))
             InternalRateOfReturn.append(round(eco.internal_rate_of_return(cashflow),4))
         df[language.loc[language['name']=='invest_cost',lang].iloc[0]]=Invest_cost
         df['NetPresentValue']=NetPresentValue
-        df['Amortisation']=np.where(np.array(Amortisation)==0,15,np.array(Amortisation))
+        df['Amortisation']=np.where(np.array(Amortisation)==0,lifetime,np.array(Amortisation))
         df['InternalRateOfReturn']=np.array(InternalRateOfReturn)*100
         if results_id.startswith('Amortisationszeit'):
             Amortisation0=np.array(Amortisation)[np.where(np.array(Amortisation)>0)]

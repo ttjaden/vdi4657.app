@@ -100,6 +100,7 @@ battery_cost_func, kWh electrical storage, kWh Stromspeicher
 tariff,Electricity tariff,Stromtarif
 price_sell,Feed-in tariff,Einspeisevergütung
 price_buy,Electricity purchase price,Strombezugspreis
+price_increase,Annual price increase:,Jährliche Preissteigerung:
 default,Default values,Standardeinstellungen
 self_sufficiency,Degree of self-sufficiency,Autarkiegrad
 self_consumption,Self-consumption rate,Eigenverbrauchsanteil
