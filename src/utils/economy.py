@@ -12,7 +12,7 @@ def invest_params_fit(x, a, b):
 # chp = combined heat and power
 def invest_params_default(technology='bs'):
     if technology == 'bs':
-        I_0 = 1000
+        I_0 = 620
         exp = -0.20
     if technology == 'pv':
         I_0 = 1500
