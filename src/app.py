@@ -406,6 +406,7 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_solar2, n_clicks_ch
                     ),
                     dbc.AccordionItem([
                         dbc.Row([
+                                dcc.Checklist(options={'True': language.loc[language['name']=='bat_prog',lang].iloc[0]},value=[], id='bat_prog',persistence='memory'),
                                 dbc.Col(html.H6(language.loc[language['name']=='p_bat',lang].iloc[0]), width=6),
                                 dbc.Col(dcc.Loading(type="circle",children=html.Div(id="p_bat_text")), width=6),
                                 dbc.Col(dcc.Slider(0.1,2,0.1,value=0.5,marks=None, tooltip={'placement': 'top', 'always_visible': False}, id='p_bat',persistence='memory'), width=11),
@@ -1646,11 +1647,12 @@ def collapse_accordion(n):
     State('pv2_inclination', 'value'),
     State('pv2_azimut', 'value'),
     State('p_bat', 'value'),
+    State('bat_prog', 'value'),
     Input('button_simulation', 'n_clicks'),
     State('parameter_loadprofile', 'data'),
     State('button_language', 'value')
 )
-def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,building, choosen_hp, chp_max_ratio, choosen_chp, pv_size, chp_active, hp_active, pv_active, pv_active2, weather_typ, pv1_inclination, pv1_azimut, pv2_slider, pv2_inclination, pv2_azimut, p_bat, n, load_profile ,lang):
+def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,building, choosen_hp, chp_max_ratio, choosen_chp, pv_size, chp_active, hp_active, pv_active, pv_active2, weather_typ, pv1_inclination, pv1_azimut, pv2_slider, pv2_inclination, pv2_azimut, p_bat, bat_prog, n, load_profile ,lang):
     if n is None:
         raise PreventUpdate
     ## Electrica loadprofile
@@ -1805,7 +1807,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             max_battery_size = np.ceil(round(E_el_MWH,0)*1.5/5)*5#TODO: CHP battery sizing?
         else:
             max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*2.5,E_pv_kwp*2.5)/5)*5 #TODO: CHP battery sizing?
-    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size), p_bat)
+    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size), p_bat, bat_prog[0])
     if building_name=='efh':
         building_name=language.loc[language['name']=='efh_name',lang].iloc[0]
     elif building_name=='mfh':

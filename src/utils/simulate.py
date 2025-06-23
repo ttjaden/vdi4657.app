@@ -7,6 +7,9 @@ from pvlib.location import Location
 from pvlib.pvsystem import PVSystem
 from pvlib.modelchain import ModelChain
 from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
+from pvprog import pvprog
+import math
+
 
 # Relative paths
 PATH = pathlib.Path(__file__).parent
@@ -190,7 +193,7 @@ def calc_pv(trj, year, type, tilt, orientation):
 
 # Calculation of battery storage
 # inverter = 0.5 kW per kWh useable capacity
-def calc_bs(df, e_bat, p_bat):
+def calc_bs(df, e_bat, p_bat, bat_prog='False'):
     # define 5 steps for battery sizes
     batteries = pd.DataFrame([['SG1', 0.0, 0.0],
                             ['SG1', e_bat*1/5,e_bat*1/5*p_bat],
@@ -220,11 +223,35 @@ def calc_bs(df, e_bat, p_bat):
             P_gf_chp = np.minimum(P_gf, df['p_chp'].values)
             P_gf_pv = np.maximum(0.0, (P_gf-P_gf_chp))
         else:
-            res = BAT.simulate(p_load=0, soc=0, dt=dt)
-            for p_diff in P_diff:
-                res = BAT.simulate(p_load=p_diff, soc=res[2], dt=dt)
-                BAT_soc.append(res[2])
-                BAT_P_bs.append(res[0])
+            if bat_prog=='True':
+                P_stc=5 # nominal power of the PV generator in kWp
+                C_bu=batteries['e_bat'][idx] # usable storage capacity of the battery storage in kWh 
+                P_inv=batteries['p_inv'][idx]# nominal power of the battery inverter in kW
+                p_gfl=0.6# specific feed-in limit in kW/kWp (e.g. 50% feed-in limit of the KfW program)
+                eta_batt=0.95# efficiency of the lithium battery storage (without AC/DC conversion)
+                eta_inv=0.94# efficiency of the battery inverter
+                tf_past=3# Look-back time window of the PV forecast in h 
+                tf_prog=15# Forecast horizon of PV and load forecast in h
+                bat=pvprog.BatProg(dt, P_stc, C_bu, P_inv, p_gfl, eta_batt, eta_inv, tf_past, tf_prog)
+                BAT_P_bs=np.zeros(len(P_diff))
+                BAT_soc=np.zeros(len(P_diff))
+                P_pvf=bat.prog4pv(df.index,df['p_PV']+df['p_chp'])
+                P_ldf,time_f = bat.prog4ld(df.index,df['p_el_hh'])
+                P_df=P_pvf-P_ldf
+                P_bf = 0
+                P_dfsel = 0
+                for t in range(1,len(P_diff)):
+                    t_fsel=math.floor(t*dt/900)
+                    if (sum(df.iloc['p_PV',t:np.minimum(t+int(900/dt)+1,len(P_diff))])>0)&(df.index[t]==time_f[t_fsel]):
+                        P_bf,P_dfsel=bat.batt_prog(t,P_df,BAT_soc)
+                    BAT_P_bs[t]=bat.err_ctrl(t,P_diff,P_dfsel,P_bf)
+                    BAT_P_bs[t],BAT_soc[t]=bat.batt_sim(BAT_P_bs[t],BAT_soc[t-1])
+            else:
+                res = BAT.simulate(p_load=0, soc=0, dt=dt)
+                for p_diff in P_diff:
+                    res = BAT.simulate(p_load=p_diff, soc=res[2], dt=dt)
+                    BAT_soc.append(res[2])
+                    BAT_P_bs.append(res[0])
             BAT_soc=np.asarray(BAT_soc)
             BAT_P_bs=np.asarray(BAT_P_bs)
             P_gs = np.minimum(0.0, (P_diff-BAT_P_bs))

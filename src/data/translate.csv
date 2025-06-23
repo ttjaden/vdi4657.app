@@ -175,4 +175,5 @@ weather_typ_text1,average year,normales Jahr
 weather_typ_text2,cold year,kaltes Jahr
 weather_typ_text3,warm year,warmes Jahr
 p_bat,Battery C-rate,Batterie C-Rate
+bat_prog,   xxx,   Prognosebasierte Ladung
 error_heating_missing,"Please enter at least one heat generator to continue with the design.","Bitte tragen Sie mindestens einen Wärmeerzeuger ein, um mit der Auslegung fortzufahren."
