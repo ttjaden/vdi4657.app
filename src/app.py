@@ -1688,10 +1688,12 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             p_el=pd.read_csv(DATA_PATH.joinpath('electrical_loadprofiles/'+building_type))
         p_el=(p_el.iloc[:,1].values*e_hh/1000)
     tech_title=''
+    P_stc=0
     ## Photovoltaic
     if pv_active['color']=='white':
         if pv_active2['color']=='white':
-            tech_title+='PV: ' + str(pv_size+pv2_slider)+ ' kWp'
+            P_stc=pv_size+pv2_slider
+            tech_title+='PV: ' + str(P_stc)+ ' kWp'
             c_pv=sim.calc_pv(trj=region-1,year=str(weather_typ[1]),type=weather_typ[0],tilt=pv1_inclination,orientation=pv1_azimut)
             p_pv1=np.array(c_pv)*pv_size
             if pv2_slider>0:
@@ -1701,10 +1703,12 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             else:
                 p_pv=p_pv1
         else:
+            P_stc=pv_size
             tech_title+='PV: ' + str(pv_size)+ ' kWp'
             c_pv=sim.calc_pv(trj=region-1,year=str(weather_typ[1]),type=weather_typ[0],tilt=pv1_inclination,orientation=pv1_azimut)
             p_pv=np.array(c_pv)*pv_size
     elif pv_active2['color']=='white':
+        P_stc=pv2_slider
         tech_title+='PV: ' + str(pv2_slider)+ ' kWp'
         c_pv=sim.calc_pv(trj=region-1,year=str(weather_typ[1]),type=weather_typ[0],tilt=pv2_inclination,orientation=pv2_azimut)
         p_pv=np.array(c_pv)*pv2_slider
@@ -1807,7 +1811,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             max_battery_size = np.ceil(round(E_el_MWH,0)*1.5/5)*5#TODO: CHP battery sizing?
         else:
             max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*2.5,E_pv_kwp*2.5)/5)*5 #TODO: CHP battery sizing?
-    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size), p_bat, bat_prog[0])
+    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size), p_bat, bat_prog[0], P_stc=P_stc)
     if building_name=='efh':
         building_name=language.loc[language['name']=='efh_name',lang].iloc[0]
     elif building_name=='mfh':
