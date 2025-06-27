@@ -405,8 +405,13 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_solar2, n_clicks_ch
                     id='accordion_simulate_3',
                     ),
                     dbc.AccordionItem([
-                        dbc.Row([
+                        dbc.Row([                                
+                                dbc.Col(html.H6(language.loc[language['name']=='feed_in_limit',lang].iloc[0]), width=6),
+                                dbc.Col(dcc.Loading(type="circle",children=html.Div(id="feed_in_limit_text")), width=6),
+                                dbc.Col(dcc.Slider(0,1,0.05,value=0.6,marks=None, tooltip={'placement': 'top', 'always_visible': False}, id='feed_in_limit',persistence='memory'), width=11),
+
                                 dcc.Checklist(options={'True': language.loc[language['name']=='bat_prog',lang].iloc[0]},value=[], id='bat_prog',persistence='memory'),
+                                html.Div(),
                                 dbc.Col(html.H6(language.loc[language['name']=='p_bat',lang].iloc[0]), width=6),
                                 dbc.Col(dcc.Loading(type="circle",children=html.Div(id="p_bat_text")), width=6),
                                 dbc.Col(dcc.Slider(0.1,2,0.1,value=0.5,marks=None, tooltip={'placement': 'top', 'always_visible': False}, id='p_bat',persistence='memory'), width=11),
@@ -1023,7 +1028,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
             absolut_bat_cost_small=int(round(float(specific_bat_cost_small*capacity_bat_small)/50)*50)
             absolut_bat_cost_big=int(round(float(specific_bat_cost_big*capacity_bat_big)/50)*50)
             price_sell=6
-            price_buy=35
+            price_buy=30
         if LSK==0:
             cost_use_case=[
                 dbc.Row(
@@ -1042,7 +1047,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                     ]),
                 dbc.Row(
                     [
-                    dbc.Col(dcc.Slider(min=0, max=10,step=1,value=0,marks=None,id='price_increase',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+                    dbc.Col(dcc.Slider(min=0, max=10,step=0.5,value=1.5,marks=None,id='price_increase',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
                     ]),
                 dbc.Row(
                     [
@@ -1382,6 +1387,14 @@ def print_pv_slider_value2(pv_slider):
 def print_pbat_text(p_bat):
     return html.Div(str(p_bat)+ ' kW/KWh')
 
+# Show Feed-in limitation power
+@app.callback(
+    Output('feed_in_limit_text', 'children'),
+    Input('feed_in_limit', 'value'),
+    )
+def print_pbat_text(p_bat):
+    return html.Div(str(int(p_bat*100))+ ' %')
+
 # Show investment cost batteries
 @app.callback(
     Output('absolut_bat_cost_small_text', 'children'),
@@ -1624,6 +1637,7 @@ def collapse_accordion(n):
     Output('accordion_simulate_1','title'),
     Output('accordion_simulate_2','title'),
     Output('accordion_simulate_3','title'),
+    Output('accordion_simulate_4','title'),
     Output('simulation_info','children'),
     State('stromverbrauch', 'value'),
     State('last_triggered_building','data'),
@@ -1647,12 +1661,13 @@ def collapse_accordion(n):
     State('pv2_inclination', 'value'),
     State('pv2_azimut', 'value'),
     State('p_bat', 'value'),
+    State('feed_in_limit', 'value'),
     State('bat_prog', 'value'),
     Input('button_simulation', 'n_clicks'),
     State('parameter_loadprofile', 'data'),
     State('button_language', 'value')
 )
-def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,building, choosen_hp, chp_max_ratio, choosen_chp, pv_size, chp_active, hp_active, pv_active, pv_active2, weather_typ, pv1_inclination, pv1_azimut, pv2_slider, pv2_inclination, pv2_azimut, p_bat, bat_prog, n, load_profile ,lang):
+def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,building, choosen_hp, chp_max_ratio, choosen_chp, pv_size, chp_active, hp_active, pv_active, pv_active2, weather_typ, pv1_inclination, pv1_azimut, pv2_slider, pv2_inclination, pv2_azimut, p_bat, feed_in_limit, bat_prog, n, load_profile ,lang):
     if n is None:
         raise PreventUpdate
     ## Electrica loadprofile
@@ -1811,7 +1826,12 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             max_battery_size = np.ceil(round(E_el_MWH,0)*1.5/5)*5#TODO: CHP battery sizing?
         else:
             max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*2.5,E_pv_kwp*2.5)/5)*5 #TODO: CHP battery sizing?
-    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size), p_bat, bat_prog[0], P_stc=P_stc)
+    if bat_prog == []:
+        bat_prog=['']
+        bat_title='Keine prognosebasierte Ladung'
+    else:
+        bat_title='Prognosebasierte Ladung'
+    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size), p_bat, feed_in_limit, bat_prog[0],P_stc=P_stc)
     if building_name=='efh':
         building_name=language.loc[language['name']=='efh_name',lang].iloc[0]
     elif building_name=='mfh':
@@ -1828,6 +1848,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
         language.loc[language['name']=='location',lang].iloc[0]+' ' + language.loc[language['name']==str(region),lang].iloc[0], 
         language.loc[language['name']=='choose_building',lang].iloc[0] +' '+building_name+ ' ' + building_type_value, 
         language.loc[language['name']=='choose_technology',lang].iloc[0]+ ' '+tech_title,
+        language.loc[language['name']=='battery_storage',lang].iloc[0] + ' ' + str(int(feed_in_limit*100)) + ' %, ' + bat_title,
         language.loc[language['name']=='simulation_info2',lang].iloc[0])
 
 # Show selection for different graphs (self sufficiency, self consumption or energy balance)

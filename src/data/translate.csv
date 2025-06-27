@@ -169,11 +169,13 @@ Open Source – gemeinsam besser:
 Der Quellcode der App ist offen zugänglich und kann unter
 https://github.com/ttjaden/vdi4657.app
 eingesehen, genutzt und weiterentwickelt werden. Beiträge und Feedback aus der Fachcommunity sind herzlich willkommen!" 
-weather_year_text1,current weather,aktuelles Wetter
-weather_year_text2,future weather,zukünftiges Wetter
-weather_typ_text1,average year,normales Jahr
-weather_typ_text2,cold year,kaltes Jahr
-weather_typ_text3,warm year,warmes Jahr
+weather_year_text1, current weather, aktuelles Wetter
+weather_year_text2, future weather, zukünftiges Wetter
+weather_typ_text1, average year, normales Jahr
+weather_typ_text2, cold year, kaltes Jahr
+weather_typ_text3, warm year, warmes Jahr
 p_bat,Battery C-rate,Batterie C-Rate
 bat_prog,   xxx,   Prognosebasierte Ladung
+feed_in_limit, Feed-in limitation, Einspeisebegrenzung
+feed_in_limit_info, specific feed-in limit in kW/kWp (e.g. 50% feed-in limit of the KfW program), 
 error_heating_missing,"Please enter at least one heat generator to continue with the design.","Bitte tragen Sie mindestens einen Wärmeerzeuger ein, um mit der Auslegung fortzufahren."

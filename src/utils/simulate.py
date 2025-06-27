@@ -193,7 +193,7 @@ def calc_pv(trj, year, type, tilt, orientation):
 
 # Calculation of battery storage
 # inverter = 0.5 kW per kWh useable capacity
-def calc_bs(df, e_bat, p_bat, bat_prog='False', P_stc=0):
+def calc_bs(df, e_bat, p_bat, feed_in_limit, bat_prog='False', P_stc=0):
     # define 5 steps for battery sizes
     batteries = pd.DataFrame([['SG1', 0.0, 0.0],
                             ['SG1', e_bat*1/5,e_bat*1/5*p_bat],
@@ -219,16 +219,15 @@ def calc_bs(df, e_bat, p_bat, bat_prog='False', P_stc=0):
                                     e_bat_custom=batteries['e_bat'][idx])
         if batteries['e_bat'][idx] == 0.0:
             P_gs = np.minimum(0.0, P_diff)
-            P_gf = np.maximum(0.0, P_diff)
+            P_gf = np.maximum(0.0, np.minimum(P_diff,P_stc*feed_in_limit*1000))
             P_gf_chp = np.minimum(P_gf, df['p_chp'].values)
             P_gf_pv = np.maximum(0.0, (P_gf-P_gf_chp))
             if bat_prog=='True':
-                p_gfl=0.6# specific feed-in limit in kW/kWp (e.g. 50% feed-in limit of the KfW program)
                 eta_batt=0.95# efficiency of the lithium battery storage (without AC/DC conversion)
                 eta_inv=0.94# efficiency of the battery inverter
                 tf_past=3# Look-back time window of the PV forecast in h 
                 tf_prog=15# Forecast horizon of PV and load forecast in h
-                bat=BatProg(dt, P_stc, 0, 0, p_gfl, eta_batt, eta_inv, tf_past, tf_prog)
+                bat=BatProg(dt, P_stc, 0, 0, feed_in_limit, eta_batt, eta_inv, tf_past, tf_prog)
                 P_pvf=bat.prog4pv(df.index,(df['p_PV']+df['p_chp']).to_numpy())
                 P_ldf,time_f = bat.prog4ld(df.index,df['p_el_hh'])
                 P_df=P_pvf-P_ldf
@@ -236,7 +235,7 @@ def calc_bs(df, e_bat, p_bat, bat_prog='False', P_stc=0):
             if bat_prog=='True':
                 C_bu=batteries['e_bat'][idx] # usable storage capacity of the battery storage in kWh 
                 P_inv=batteries['p_inv'][idx]# nominal power of the battery inverter in kW
-                bat=BatProg(dt, P_stc, C_bu, P_inv, p_gfl, eta_batt, eta_inv, tf_past, tf_prog)
+                bat=BatProg(dt, P_stc, C_bu, P_inv, feed_in_limit, eta_batt, eta_inv, tf_past, tf_prog)
                 BAT_P_bs=np.zeros(len(P_diff))
                 BAT_soc=np.zeros(len(P_diff))          
                 P_bf = 0
@@ -271,7 +270,8 @@ def calc_bs(df, e_bat, p_bat, bat_prog='False', P_stc=0):
             BAT_soc=np.asarray(BAT_soc)
             BAT_P_bs=np.asarray(BAT_P_bs)
             P_gs = np.minimum(0.0, (P_diff-BAT_P_bs))
-            P_gf = np.maximum(0.0, (P_diff-BAT_P_bs))
+            print(np.maximum(0.0, np.minimum(P_stc*feed_in_limit*1000,P_diff-BAT_P_bs))[17030:17060])
+            P_gf = np.maximum(0.0, np.minimum(P_stc*feed_in_limit*1000,P_diff-BAT_P_bs))
             P_gf_chp = np.minimum(P_gf, df['p_chp'].values)
             P_gf_pv = np.maximum(0.0, (P_gf-P_gf_chp))
         a=1-((P_gs.mean()*-8.76)/(df['p_el_hh'].mean()*8.76))
