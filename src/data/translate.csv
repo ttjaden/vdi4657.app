@@ -176,6 +176,9 @@ weather_typ_text2, cold year, kaltes Jahr
 weather_typ_text3, warm year, warmes Jahr
 p_bat,Battery C-rate,Batterie C-Rate
 bat_prog,   xxx,   Prognosebasierte Ladung
-feed_in_limit, Feed-in limitation, Einspeisebegrenzung
-feed_in_limit_info, specific feed-in limit in kW/kWp (e.g. 50% feed-in limit of the KfW program), 
+bat_prog_negativ,No forecast-based charging,Keine prognosebasierte Ladung
+bat_prog_positiv,forecast-based charging,Prognosebasierte Ladung
+feed_in_limit,Feed-in limitation,Einspeisebegrenzung
+feed_in_limit_info,"Maximum installed output that is fed into the grid. 100 % = no limitation, 0 % = no feed-in","Maximale installierte Leistung, die ins Netz eingespeist wird. 100 % = keine Begrenzung, 0 % = keine Einspeisung"
+spezifische Einspeisegrenze in kW/kWp
 error_heating_missing,"Please enter at least one heat generator to continue with the design.","Bitte tragen Sie mindestens einen Wärmeerzeuger ein, um mit der Auslegung fortzufahren."

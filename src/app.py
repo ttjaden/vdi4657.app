@@ -406,12 +406,14 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_solar2, n_clicks_ch
                     ),
                     dbc.AccordionItem([
                         dbc.Row([                                
-                                dbc.Col(html.H6(language.loc[language['name']=='feed_in_limit',lang].iloc[0]), width=6),
+                                dbc.Col([html.Span(language.loc[language['name'] == 'feed_in_limit', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='text_feed_in_limit',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})], width=9),
+                                dbc.Tooltip(language.loc[language['name']=='feed_in_limit_info',lang].iloc[0],target="text_feed_in_limit",placement='bottom'),
                                 dbc.Col(dcc.Loading(type="circle",children=html.Div(id="feed_in_limit_text")), width=6),
                                 dbc.Col(dcc.Slider(0,1,0.05,value=0.6,marks=None, tooltip={'placement': 'top', 'always_visible': False}, id='feed_in_limit',persistence='memory'), width=11),
 
-                                dcc.Checklist(options={'True': language.loc[language['name']=='bat_prog',lang].iloc[0]},value=[], id='bat_prog',persistence='memory'),
-                                html.Div(),
+                                dbc.Col(dcc.Checklist(options={'True': language.loc[language['name']=='bat_prog',lang].iloc[0]},value=[], id='bat_prog',persistence='memory'), width='auto'),
+                                dbc.Col([DashIconify(icon='ph:info',width=20,height=20,id='text_feed_in_limit',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})], width=3),
+                                
                                 dbc.Col(html.H6(language.loc[language['name']=='p_bat',lang].iloc[0]), width=6),
                                 dbc.Col(dcc.Loading(type="circle",children=html.Div(id="p_bat_text")), width=6),
                                 dbc.Col(dcc.Slider(0.1,2,0.1,value=0.5,marks=None, tooltip={'placement': 'top', 'always_visible': False}, id='p_bat',persistence='memory'), width=11),
@@ -1828,10 +1830,10 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*2.5,E_pv_kwp*2.5)/5)*5 #TODO: CHP battery sizing?
     if bat_prog == []:
         bat_prog=['']
-        bat_title='Keine prognosebasierte Ladung'
+        bat_title=language.loc[language['name']=='bat_prog_negativ',lang].iloc[0]
     else:
-        bat_title='Prognosebasierte Ladung'
-    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size), p_bat, feed_in_limit, bat_prog[0],P_stc=P_stc)
+        bat_title=language.loc[language['name']=='bat_prog_positiv',lang].iloc[0]
+    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size), p_bat, feed_in_limit, bat_prog[0],P_stc=P_stc, P_chp=P_el_chp)
     if building_name=='efh':
         building_name=language.loc[language['name']=='efh_name',lang].iloc[0]
     elif building_name=='mfh':
