@@ -7,6 +7,7 @@ mfh_name,MFH,MFH
 mfh_tooltip,Simulation of an apartment building based on real measured load profiles - own load profiles can be simulated in the “Other” building,Simulation eines Mehrfamilienhauses auf der Grundlage real gemessener Lastprofile - eigene Lastprofile können im Gebäude „Sonstige“ simuliert werden
 industry_name,Others,Sonstige
 industry_tooltip,"Standard load profiles, real consumption profiles or your own load profiles can be used to simulate other buildings","Für die Simulation sonstiger Gebäude können Standardlastprofile, reale Verbrauchsprofile oder eigene Lastprofile verwendet werden"
+weather_data,Weather data: ,Wetterdaten: 
 location,Location: ,Standort: 
 placeholder_location,ZIP-Code (Germany),Postleitzahl oder Adresse
 building_type,Building type,Gebäudetyp
@@ -92,7 +93,7 @@ bat_feed_lim,Feed in Limit in kW/kWp:,Einspeisegrenze in kW/kWp:
 upload_save,Upload saved project,gespeichertes Projekt laden
 developed,"Developed within the project PIEG-Strom, which was supported by WIPANO - knowledge and technology transfer through patents and standards with funding from the Federal Ministry for Economic Affairs and Energy (BMWi) (FKZ: 03TN0004). The authors would like to thank Projektträger Jülich (PTJ) and BMWi for their support.","Entwickelt innerhalb des Projekts PIEG-Strom, welches durch das Programm WIPANO - Wissens- und Technologietransfer durch Patente und Normen mit Mitteln des Bundesministeriums für Wirtschaft und Klimaschutz (BMWK) (FKZ: 03TN0004) gefördert wurde. Die Autoren danken dem Projektträger Jülich (PTJ) und dem BMWK für die Unterstützung."
 start,"This is a supplementary web tool to VDI 4657-3 "Planning and integration of energy storage systems in building energy systems - Electrical power storage (EPS).","Dies ist ein ergänzendes Webtool zur VDI 4657-3 "Planung und Integration von Energiespeichern in Gebäudeenergiesystemen - Elektrische Stromspeicher (ESS)"
-simulation_info1,"First enter the data in the areas 'Location:', 'Building:', 'Technology:' and 'Electricity storage'. Press the “Start simulation” button to start the simulation.","Geben Sie zunächst die Daten in den Bereichen 'Standort:', 'Gebäude:', 'Technologie:' und 'Stromspeicher:' ein. Drücken Sie die Schaltfläche „Start Simulation“, um die Simulation zu beginnen."
+simulation_info1,"First enter the data in the areas 'Weather data:', 'Building:', 'Technology:' and 'Electricity storage'. Press the “Start simulation” button to start the simulation.","Geben Sie zunächst die Daten in den Bereichen 'Wetterdaten:', 'Gebäude:', 'Technologie:' und 'Stromspeicher:' ein. Drücken Sie die Schaltfläche „Start Simulation“, um die Simulation zu beginnen."
 simulation_info2,"Technical results are presented. For an economic evaluation, change the tab to 'Economy'.","Es werden technische Ergebnisse präsentiert. Für eine wirtschaftliche Bewertung ändern Sie die Registerkarte auf 'Ökonomie'."
 simulation_info3,Check entries,Eigaben überprüfen
 choose_use_case,Selection of the use case for the storage system: ,Im ersten Schritt erfolgt die Auswahl des gewünschten Anwendungsfalls für den Stromspeicher: 
@@ -169,16 +170,25 @@ Open Source – gemeinsam besser:
 Der Quellcode der App ist offen zugänglich und kann unter
 https://github.com/ttjaden/vdi4657.app
 eingesehen, genutzt und weiterentwickelt werden. Beiträge und Feedback aus der Fachcommunity sind herzlich willkommen!" 
+weather_type,Weather scenario: , Wetterszenario:
+weather_year,Climate scenario: , Klimaszenario:
 weather_year_text1, current weather, aktuelles Wetter
 weather_year_text2, future weather, zukünftiges Wetter
 weather_typ_text1, average year, normales Jahr
 weather_typ_text2, cold year, kaltes Jahr
 weather_typ_text3, warm year, warmes Jahr
 p_bat,Battery C-rate,Batterie C-Rate
-bat_prog,   xxx,   Prognosebasierte Ladung
+p_bat_info,"Ratio of charging or discharging power to usable battery capacity.
+A C-rate of 1 means the battery charges or discharges fully within one hour.
+For example, 0.5 C corresponds to a full cycle in two hours.
+Typical residential storage systems operate between 0.3 C and 1 C.","Verhältnis von Lade- oder Entladeleistung zur nutzbaren Speicherkapazität.
+Eine C-Rate von 1 bedeutet, dass die Batterie in einer Stunde vollständig be- oder entladen werden kann.
+Beispiel: Bei 0,5 C dauert eine vollständige Ladung bzw. Entladung zwei Stunden.
+Typische Werte für Heimspeicher liegen zwischen 0,3 C und 1 C."
+bat_prog,   Forecast-based operating strategy,   Prognosebasierte Ladung
+bat_prog_info,"The ‘pv-prog’ algorithm optimizes self-consumption in order to reduce the maximum feed-in power through predictive charging.","Mit dem 'pv-prog‘-Algorithmus wird der Eigenverbrauch optimiert, um die maximale Einspeiseleistung durch vorausschauendes Laden zu verringern."
 bat_prog_negativ,No forecast-based charging,Keine prognosebasierte Ladung
 bat_prog_positiv,forecast-based charging,Prognosebasierte Ladung
-feed_in_limit,Feed-in limitation,Einspeisebegrenzung
-feed_in_limit_info,"Maximum installed output that is fed into the grid. 100 % = no limitation, 0 % = no feed-in","Maximale installierte Leistung, die ins Netz eingespeist wird. 100 % = keine Begrenzung, 0 % = keine Einspeisung"
-spezifische Einspeisegrenze in kW/kWp
+feed_in_limit,Maximum feed-in ratio,Maximaler Einspeiseanteil
+feed_in_limit_info,"Maximum installed output that is fed into the grid. 100 % = no limitation, 0 % = no feed-in","Gibt an, wie viel Prozent der installierten PV-Leistung maximal ins öffentliche Netz eingespeist werden dürfen. 100 % = keine Begrenzung, 60 % = z. B. typische Einspeisegrenze nach EEG, 0 % = vollständige Eigenverbrauchslösung ohne Netzeinspeisung"
 error_heating_missing,"Please enter at least one heat generator to continue with the design.","Bitte tragen Sie mindestens einen Wärmeerzeuger ein, um mit der Auslegung fortzufahren."

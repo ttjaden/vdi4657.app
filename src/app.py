@@ -354,23 +354,65 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_solar2, n_clicks_ch
                 dbc.Accordion([
                     dbc.AccordionItem([
                         dbc.Row([
-                            dbc.Col(dcc.Input(id='standort',placeholder=language.loc[language['name']=='placeholder_location',lang].iloc[0],value=location,persistence='memory',style=dict(width = '100%'))),
-                            dbc.Col([html.Span('DWD Region: '),DashIconify(icon='ph:info',width=20,height=20,id='dwd_info',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'}),dcc.Loading(type="default",children=html.Div(id='region'))],align='start',width=12, lg=7), #xxx
-                            dbc.Tooltip(language.loc[language['name']=='dwd_info',lang].iloc[0],target="dwd_info",placement='bottom'),
-                            dbc.Col(dcc.RadioItems([{'label': language.loc[language['name'] == 'weather_year_text1', lang].iloc[0], 'value': '2015'},
-                                                    {'label': language.loc[language['name'] == 'weather_year_text2', lang].iloc[0], 'value': '2045'}],
-                                                    value='2015',
-                                                    inline=True,
-                                                    id='weather_year',
-                                                    labelStyle={'margin-right': '30px'}  # Abstand zwischen den Items
-                                                    ),width=12, style={'marginTop': '1rem'}),
-                            dbc.Col(dcc.RadioItems([{'label': language.loc[language['name']=='weather_typ_text1',lang].iloc[0], 'value': 'a'},
-                                                    {'label': language.loc[language['name']=='weather_typ_text2',lang].iloc[0], 'value': 'w'},
-                                                    {'label': language.loc[language['name']=='weather_typ_text3',lang].iloc[0], 'value': 's'}], 
-                                                    'a',labelStyle={'margin-right': '20px'}, inline=True, id='weather_typ'), width=12),
+                            dbc.Col(dbc.Accordion([
+                                # Standort
+                                dbc.AccordionItem([
+                                    dbc.Row([
+                                        dbc.Col(dcc.Input(
+                                            id='standort',
+                                            placeholder=language.loc[language['name'] == 'placeholder_location', lang].iloc[0],
+                                            value=location,
+                                            persistence='memory',
+                                            style=dict(width='100%')
+                                        )),
+                                        dbc.Col([
+                                            html.Span('DWD Region: '),
+                                            DashIconify(icon='ph:info', width=20, height=20, id='dwd_info',
+                                                        style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'}),
+                                            dcc.Loading(type="default", children=html.Div(id='region'))
+                                        ], align='start', width=12, lg=7),
+                                        dbc.Tooltip(language.loc[language['name'] == 'dwd_info', lang].iloc[0], target="dwd_info", placement='bottom'),
+                                    ])
+                                ], title=language.loc[language['name'] == 'location', lang].iloc[0], item_id='accordion_location'),
+
+                                # Wetterjahr
+                                dbc.AccordionItem([
+                                    dbc.Row([
+                                        dbc.Col(dcc.RadioItems(
+                                            options=[
+                                                {'label': language.loc[language['name'] == 'weather_year_text1', lang].iloc[0], 'value': '2015'},
+                                                {'label': language.loc[language['name'] == 'weather_year_text2', lang].iloc[0], 'value': '2045'}
+                                            ],
+                                            value='2015',
+                                            inline=True,
+                                            id='weather_year',
+                                            labelStyle={'margin-right': '30px'}
+                                        ))
+                                    ])
+                                ], title=language.loc[language['name'] == "weather_year", lang].iloc[0], item_id='accordion_weather_year'),
+
+                                # Wettertyp
+                                dbc.AccordionItem([
+                                    dbc.Row([
+                                        dbc.Col(dcc.RadioItems(
+                                            options=[
+                                                {'label': language.loc[language['name'] == 'weather_typ_text1', lang].iloc[0], 'value': 'a'},
+                                                {'label': language.loc[language['name'] == 'weather_typ_text2', lang].iloc[0], 'value': 'w'},
+                                                {'label': language.loc[language['name'] == 'weather_typ_text3', lang].iloc[0], 'value': 's'}
+                                            ],
+                                            value='a',
+                                            inline=True,
+                                            id='weather_typ',
+                                            labelStyle={'margin-right': '20px'}
+                                        ))
+                                    ])
+                                ], title=language.loc[language['name'] == "weather_type", lang].iloc[0], item_id='accordion_weather_typ')
+                            ], id='accordion_simulate_weather')
+                            )
+                            
                             ])
                     ],
-                    title=language.loc[language['name']=='location',lang].iloc[0],
+                    title=language.loc[language['name']=='weather_data',lang].iloc[0],
                     id='accordion_simulate_1',
                     ),
                     dbc.AccordionItem([
@@ -406,15 +448,19 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_solar2, n_clicks_ch
                     ),
                     dbc.AccordionItem([
                         dbc.Row([                                
-                                dbc.Col([html.Span(language.loc[language['name'] == 'feed_in_limit', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='text_feed_in_limit',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})], width=9),
+                                dbc.Col([html.Span(language.loc[language['name'] == 'feed_in_limit', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='text_feed_in_limit',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})], width=6),
                                 dbc.Tooltip(language.loc[language['name']=='feed_in_limit_info',lang].iloc[0],target="text_feed_in_limit",placement='bottom'),
-                                dbc.Col(dcc.Loading(type="circle",children=html.Div(id="feed_in_limit_text")), width=6),
+                                dbc.Col(dcc.Loading(type="circle",children=html.Div(id="feed_in_limit_text")), width=3),
                                 dbc.Col(dcc.Slider(0,1,0.05,value=0.6,marks=None, tooltip={'placement': 'top', 'always_visible': False}, id='feed_in_limit',persistence='memory'), width=11),
 
                                 dbc.Col(dcc.Checklist(options={'True': language.loc[language['name']=='bat_prog',lang].iloc[0]},value=[], id='bat_prog',persistence='memory'), width='auto'),
-                                dbc.Col([DashIconify(icon='ph:info',width=20,height=20,id='text_feed_in_limit',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})], width=3),
-                                
-                                dbc.Col(html.H6(language.loc[language['name']=='p_bat',lang].iloc[0]), width=6),
+                                dbc.Col([DashIconify(icon='ph:info',width=20,height=20,id='text_bat_prog',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})], width=6),
+                                dbc.Tooltip(language.loc[language['name']=='bat_prog_info',lang].iloc[0],target="text_bat_prog",placement='bottom'),
+
+                                dbc.Row(html.Div(style={'height': '20px'})),
+
+                                dbc.Col([html.Span(language.loc[language['name'] == 'p_bat', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='text_p_bat',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})], width=6),
+                                dbc.Tooltip(language.loc[language['name']=='p_bat_info',lang].iloc[0],target="text_p_bat",placement='bottom'),
                                 dbc.Col(dcc.Loading(type="circle",children=html.Div(id="p_bat_text")), width=6),
                                 dbc.Col(dcc.Slider(0.1,2,0.1,value=0.5,marks=None, tooltip={'placement': 'top', 'always_visible': False}, id='p_bat',persistence='memory'), width=11),
                         ],align='center'),
@@ -1120,7 +1166,7 @@ def next_Tab(batteries, tab, LSK, upload_data, last_upload, parameter_economy, d
                         dbc.Col([html.Span(language.loc[language['name'] == 'text_imputed_interest_rate', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='tooltip_imputed_interest_rate',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})],width=6),
                         dbc.Col(html.Div(id='text_imputed_interest_rate'), width=4),
                         dbc.Tooltip(language.loc[language['name']=='tooltip_imputed_interest_rate',lang].iloc[0],target="tooltip_imputed_interest_rate",placement='bottom'),
-                        dbc.Col(dcc.Slider(min=0, max=15,step=1,value=0,marks=None,id='imputed_interest_rate',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+                        dbc.Col(dcc.Slider(min=0, max=15,step=1,value=3,marks=None,id='imputed_interest_rate',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
 
                         ]),
                     dbc.Row(
@@ -1575,6 +1621,9 @@ def reset_economy(n):
     Output('price_sell_text', 'children'),
     Output('price_sell', 'value'),
     Output('price_buy', 'value'),
+    Output('price_increase', 'value'),
+    Output('imputed_interest_rate', 'value'),
+    Output('life_exp', 'value'),
     Input('price_buy', 'value'),
     Input('price_increase', 'value'),
     Input('price_sell', 'value'),
@@ -1584,7 +1633,8 @@ def save_price_buy(price_buy,price_increase,price_sell, tabs):
     if ctx.triggered_id=='button_reset_price':
         price_buy=30
         price_sell=6
-    return [price_buy, price_sell], str(price_buy)+ ' ct/kWh',str(price_increase)+' %', str(price_sell)+ ' ct/kWh', price_sell, price_buy
+        price_increase=1.5
+    return [price_buy, price_sell], str(price_buy)+ ' ct/kWh',str(price_increase)+' %', str(price_sell)+ ' ct/kWh', price_sell, price_buy, price_increase, 3, 15
 
 # Save electricity price peak shaving
 @app.callback(
@@ -1794,6 +1844,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             chp_th = None
             chp_el = None
             chp_runtime = None
+            P_el_chp=0
             if hp_active['color']!='white' and (len(heating)==1):
                 tech_title=language.loc[language['name']=='error_heating_missing',lang].iloc[0]
         else:
@@ -1822,18 +1873,18 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
         if (E_chp>0):
             max_battery_size = np.ceil(round(E_el_MWH,0)/5)*5
         else:
-            max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*1.5,E_pv_kwp*1.5)/5)*5
+            max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*2,E_pv_kwp*2)/5)*5
     else:
         if (E_chp>0):
             max_battery_size = np.ceil(round(E_el_MWH,0)*1.5/5)*5#TODO: CHP battery sizing?
         else:
-            max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*2.5,E_pv_kwp*2.5)/5)*5 #TODO: CHP battery sizing?
+            max_battery_size = np.ceil(np.minimum(round(E_el_MWH,0)*2,E_pv_kwp*2)/5)*5 #TODO: CHP battery sizing?
     if bat_prog == []:
         bat_prog=['']
         bat_title=language.loc[language['name']=='bat_prog_negativ',lang].iloc[0]
     else:
         bat_title=language.loc[language['name']=='bat_prog_positiv',lang].iloc[0]
-    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size), p_bat, feed_in_limit, bat_prog[0],P_stc=P_stc, P_chp=P_el_chp)
+    batteries=sim.calc_bs(df, np.maximum(10,max_battery_size), p_bat, feed_in_limit, bat_prog[0],P_stc=P_stc)
     if building_name=='efh':
         building_name=language.loc[language['name']=='efh_name',lang].iloc[0]
     elif building_name=='mfh':
@@ -1847,7 +1898,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
         chp_runtime,
         chp_th,
         chp_el,
-        language.loc[language['name']=='location',lang].iloc[0]+' ' + language.loc[language['name']==str(region),lang].iloc[0], 
+        language.loc[language['name']=='weather_data',lang].iloc[0]+' ' + language.loc[language['name']==str(region),lang].iloc[0], 
         language.loc[language['name']=='choose_building',lang].iloc[0] +' '+building_name+ ' ' + building_type_value, 
         language.loc[language['name']=='choose_technology',lang].iloc[0]+ ' '+tech_title,
         language.loc[language['name']=='battery_storage',lang].iloc[0] + ' ' + str(int(feed_in_limit*100)) + ' %, ' + bat_title,
@@ -1925,6 +1976,10 @@ def bat_results(batteries,tab,results_id, lang):
         return html.Div('Bitte Erzeuger auswählen!')
     batteries=pd.DataFrame.from_dict(batteries)
     batteries['e_bat']=batteries['e_bat'].astype('str')
+    batteries['Gesamter Autarkiegrad'] = (batteries['Autarkiegrad ohne Stromspeicher'] + batteries['Erhöhung der Autarkie durch Stromspeicher']).round(1).astype(str) + ' %'
+    batteries['Gesamter Eigenverbrauchsgrad'] = (batteries['Eigenverbrauch ohne Stromspeicher'] + batteries['Erhöhung des Eigenverbrauchs durch Stromspeicher']).round(1).astype(str) + ' %'
+    batteries['Netzbezug [kWh/a]']=batteries['Netzbezug'].astype(int)
+    batteries['Netzeinspeisung [kWh/a]']=batteries['Netzeinspeisung'].astype(int)
     if lang=='ger':
         if results_id=='Autarkiegrad':
             fig=px.bar(data_frame=batteries,x='e_bat',y=['Autarkiegrad ohne Stromspeicher','Erhöhung der Autarkie durch Stromspeicher'],
@@ -1932,6 +1987,9 @@ def bat_results(batteries,tab,results_id, lang):
                 labels={"e_bat": "nutzbare Speicherkapazität in kWh",
                         "value": "%",
                         'variable': ''
+                        },
+                hover_data={'Gesamter Autarkiegrad': True,
+                        'e_bat': False,  # wenn du die x-Achse im Hover nicht doppelt willst
                         }
                 )
         elif results_id=='Eigenverbrauch':
@@ -1940,23 +1998,32 @@ def bat_results(batteries,tab,results_id, lang):
                 labels={"e_bat": "nutzbare Speicherkapazität in kWh",
                         "value": "%",
                         'variable': ''
+                        },
+                hover_data={'Gesamter Eigenverbrauchsgrad': True,
+                        'e_bat': False,  # wenn du die x-Achse im Hover nicht doppelt willst
                         }
+
                 )
         elif results_id=='Energiebilanz':
-            fig=px.bar(data_frame=batteries,x='e_bat',y=['Netzeinspeisung','Netzbezug'],
-                color_discrete_map={'Netzeinspeisung': '#c8c8c8', 'Netzbezug' : '#646464'},
+            fig=px.bar(data_frame=batteries,x='e_bat',y=['Netzeinspeisung [kWh/a]','Netzbezug [kWh/a]', 'Abregelungsverluste'],
+                color_discrete_map={'Netzeinspeisung [kWh/a]': '#c8c8c8', 'Netzbezug [kWh/a]' : '#646464', 'Abregelungsverluste' : '#000000'},
                 labels={"e_bat": "nutzbare Speicherkapazität in kWh",
-                        "value": "Netzbezug/Netzeinspeisung in kWh/a",
+                        #"value": "Netzbezug/Netzeinspeisung in kWh/a",
                         'variable': ''
+                        },
+                hover_data={
+                        'e_bat': False,  # wenn du die x-Achse im Hover nicht doppelt willst
                         }
                 )
+            fig.update_yaxes(title="Netzbezug/Netzeinspeisung in kWh/a")
     else:
         batteries.rename(columns = {'Autarkiegrad ohne Stromspeicher':'Degree of self-sufficiency without battery',
                                     'Erhöhung der Autarkie durch Stromspeicher':'Increasing self-sufficiency battery',
                                     'Eigenverbrauch ohne Stromspeicher':'Self-consumption without battery',
                                     'Erhöhung des Eigenverbrauchs durch Stromspeicher':'Increase of self-consumption by battery',
                                     'Netzeinspeisung':'Grid feed-in',
-                                    'Netzbezug': 'Grid supply'
+                                    'Netzbezug': 'Grid supply',
+                                    'Abregelungsverluste' : 'curtailment loss'
                                     }, inplace = True)
         if results_id=='Autarkiegrad':
             fig=px.bar(data_frame=batteries,x='e_bat',y=['Degree of self-sufficiency without battery','Increasing self-sufficiency battery'],
@@ -1975,8 +2042,8 @@ def bat_results(batteries,tab,results_id, lang):
                         }
                 )
         elif results_id=='Energiebilanz':
-            fig=px.bar(data_frame=batteries,x='e_bat',y=['Grid feed-in','Grid supply'],
-                color_discrete_map={'Grid feed-in': '#c8c8c8', 'Grid supply' : '#646464'},
+            fig=px.bar(data_frame=batteries,x='e_bat',y=['Grid feed-in','Grid supply', 'curtailment loss'],
+                color_discrete_map={'Grid feed-in': '#c8c8c8', 'Grid supply' : '#646464', 'curtailment loss' : '#000000'},
                 labels={"e_bat": "usable battery size in kWh",
                         "value": "Grid supply/Grid feed-in in kWh/a",
                         'variable': ''

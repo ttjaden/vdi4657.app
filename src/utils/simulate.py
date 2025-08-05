@@ -211,6 +211,7 @@ def calc_bs(df, e_bat, p_bat, feed_in_limit, bat_prog='False', P_stc=0, P_chp=0)
     E_GF=[]
     E_GF_CHP=[]
     E_GF_PV=[]
+    E_gf_loss=[]
     for idx in batteries.index:
         BAT_soc = []
         BAT_P_bs = []
@@ -220,6 +221,7 @@ def calc_bs(df, e_bat, p_bat, feed_in_limit, bat_prog='False', P_stc=0, P_chp=0)
         if batteries['e_bat'][idx] == 0.0:
             P_gs = np.minimum(0.0, P_diff)
             P_gf = np.maximum(0.0, np.minimum(P_diff,(P_stc+P_chp)*feed_in_limit*1000))
+            P_gf_loss = np.maximum(0.0,P_diff)-P_gf
             P_gf_chp = np.minimum(P_gf, df['p_chp'].values)
             P_gf_pv = np.maximum(0.0, (P_gf-P_gf_chp))
             if bat_prog=='True':
@@ -270,8 +272,8 @@ def calc_bs(df, e_bat, p_bat, feed_in_limit, bat_prog='False', P_stc=0, P_chp=0)
             BAT_soc=np.asarray(BAT_soc)
             BAT_P_bs=np.asarray(BAT_P_bs)
             P_gs = np.minimum(0.0, (P_diff-BAT_P_bs))
-            print(np.maximum(0.0, np.minimum((P_stc+P_chp)*feed_in_limit*1000,P_diff-BAT_P_bs))[17030:17060])
             P_gf = np.maximum(0.0, np.minimum((P_stc+P_chp)*feed_in_limit*1000,P_diff-BAT_P_bs))
+            P_gf_loss = np.maximum(0.0,P_diff-BAT_P_bs)-P_gf
             P_gf_chp = np.minimum(P_gf, df['p_chp'].values)
             P_gf_pv = np.maximum(0.0, (P_gf-P_gf_chp))
         a=1-((P_gs.mean()*-8.76)/(df['p_el_hh'].mean()*8.76))
@@ -282,6 +284,7 @@ def calc_bs(df, e_bat, p_bat, feed_in_limit, bat_prog='False', P_stc=0, P_chp=0)
         E_GF.append(P_gf.mean()*8.76)
         E_GF_CHP.append(P_gf_chp.mean()*8.76)
         E_GF_PV.append(P_gf_pv.mean()*8.76)
+        E_gf_loss.append(P_gf_loss.mean()*8.76)
     batteries['Netzeinspeisung']=E_GF
     batteries['Netzeinspeisung_PV']=E_GF_PV
     batteries['Netzeinspeisung_CHP']=E_GF_CHP
@@ -292,6 +295,7 @@ def calc_bs(df, e_bat, p_bat, feed_in_limit, bat_prog='False', P_stc=0, P_chp=0)
     batteries['Eigenverbrauch ohne Stromspeicher']=round((batteries['Eigenverbrauch']*100).values[0],2)
     batteries['Erhöhung der Autarkie durch Stromspeicher']=((batteries['Autarkiegrad']*100)-batteries['Autarkiegrad ohne Stromspeicher']).round(2)
     batteries['Erhöhung des Eigenverbrauchs durch Stromspeicher']=((batteries['Eigenverbrauch']*100)-batteries['Eigenverbrauch ohne Stromspeicher']).round(2)
+    batteries['Abregelungsverluste']=E_gf_loss
     return batteries
 
 # Calculation of heat pump
