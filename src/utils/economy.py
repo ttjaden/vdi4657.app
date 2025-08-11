@@ -12,10 +12,10 @@ def invest_params_fit(x, a, b):
 # chp = combined heat and power
 def invest_params_default(technology='bs'):
     if technology == 'bs':
-        I_0 = 1375
-        exp = -0.200
+        I_0 = 620
+        exp = -0.20
     if technology == 'pv':
-        I_0 = 2100
+        I_0 = 1500
         exp = -0.170
     if technology == 'chp':
         I_0 = 18500
@@ -57,6 +57,7 @@ def cash_flow_self_consumption(invest_costs,
             supply,
             tariff_feedin,
             tariff_supply,
+            price_increase_rate,
             years,
             lifetime):
     # cash flow as list
@@ -78,7 +79,9 @@ def cash_flow_self_consumption(invest_costs,
             residual_value = 0
         # delta from grid supply and grid feedin
         delta_feedin = (feedin - feedin0) * tariff_feedin 
-        delta_supply = -1 * (supply - supply0) * tariff_supply
+
+        factor = (1 + price_increase_rate) ** (y - 1)
+        delta_supply = -1 * (supply - supply0) * tariff_supply * factor
 
         # cashflow array
         cashflow.append(invest+delta_feedin+delta_supply+residual_value)
@@ -147,15 +150,52 @@ def internal_rate_of_return(cashflow):
     return IRR
 
 # Function for amortisation time
-def amortisation(cashflow):
-    t_a = 0
-    value = cashflow[0]
+def amortisation(cashflow, r=0):
+    """
+    Berechnet die (dynamische) Amortisationszeit.
+    
+    Args:
+        cashflow (list of float): 
+            cashflow[0] = negative Investitionsausgabe,
+            cashflow[1:] = jährliche Rückflüsse (positiv).
+        r (float): Diskontierungszinssatz pro Periode (z.B. 0.05 für 5%). 
+                   r=0 → statische Amortisation.
+    
+    Returns:
+        float: Amortisationszeit in Jahren (ggf. mit Dezimalanteil).
+               0, wenn kein Payback eintritt.
+    """
+    # Initialisierung
+    t_a = 0.0
+    # Kumulierte abgezinste Rückflüsse
+    cumulative = 0.0
+    
+    # Iteriere über Jahre 1..n
     for y in range(1, len(cashflow)):
-        value = sum(cashflow[0:y+1])
-        if value > 0 and t_a == 0:
-            t_a = round(y+1 - (value / (value - sum(cashflow[0:y]))),1)  
-        else:
-            pass
+        # abgezinster Rückfluss dieses Jahres
+        discounted = cashflow[y] / ((1 + r) ** y) if r != 0 else cashflow[y]
+        cumulative += discounted
+        
+        # Abgezinste Investitionsausgabe einmalig am t=0
+        initial = cashflow[0]
+        
+        # Prüfen, ob kumulierter Rückfluss die Ausgabe deckt
+        if cumulative + initial >= 0 and t_a == 0:
+            # für dynamische Amortisation: Interpolation innerhalb des Jahres
+            if r != 0:
+                # Wert bis Vorjahr
+                cum_prev = cumulative - discounted
+                # Benötigter Teil des Jahres
+                frac = - (initial + cum_prev) / discounted
+                t_a = round((y - 1) + frac, 1)
+            else:
+                # statisch: wie gehabt
+                cum_prev = sum(cashflow[0:y])
+                total = sum(cashflow[0:y+1])
+                frac = (0 - cum_prev) / cashflow[y]
+                t_a = round((y - 1) + frac, 1)
+            break
+
     return t_a
 
 # Function for levelized cost of storage

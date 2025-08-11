@@ -7,6 +7,9 @@ from pvlib.location import Location
 from pvlib.pvsystem import PVSystem
 from pvlib.modelchain import ModelChain
 from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
+from .pvprog import BatProg
+import math
+
 
 # Relative paths
 PATH = pathlib.Path(__file__).parent
@@ -190,8 +193,7 @@ def calc_pv(trj, year, type, tilt, orientation):
 
 # Calculation of battery storage
 # inverter = 0.5 kW per kWh useable capacity
-def calc_bs(df, e_bat, p_bat):
-    pd.DataFrame(df).to_csv('test_battery.csv')
+def calc_bs(df, e_bat, p_bat, feed_in_limit, bat_prog='False', P_stc=0, P_chp=0):
     # define 5 steps for battery sizes
     batteries = pd.DataFrame([['SG1', 0.0, 0.0],
                             ['SG1', e_bat*1/5,e_bat*1/5*p_bat],
@@ -209,6 +211,7 @@ def calc_bs(df, e_bat, p_bat):
     E_GF=[]
     E_GF_CHP=[]
     E_GF_PV=[]
+    E_gf_loss=[]
     for idx in batteries.index:
         BAT_soc = []
         BAT_P_bs = []
@@ -217,19 +220,60 @@ def calc_bs(df, e_bat, p_bat):
                                     e_bat_custom=batteries['e_bat'][idx])
         if batteries['e_bat'][idx] == 0.0:
             P_gs = np.minimum(0.0, P_diff)
-            P_gf = np.maximum(0.0, P_diff)
+            P_gf = np.maximum(0.0, np.minimum(P_diff,(P_stc+P_chp)*feed_in_limit*1000))
+            P_gf_loss = np.maximum(0.0,P_diff)-P_gf
             P_gf_chp = np.minimum(P_gf, df['p_chp'].values)
             P_gf_pv = np.maximum(0.0, (P_gf-P_gf_chp))
+            if bat_prog=='True':
+                eta_batt=0.95# efficiency of the lithium battery storage (without AC/DC conversion)
+                eta_inv=0.94# efficiency of the battery inverter
+                tf_past=3# Look-back time window of the PV forecast in h 
+                tf_prog=15# Forecast horizon of PV and load forecast in h
+                bat=BatProg(dt, P_stc, 0, 0, feed_in_limit, eta_batt, eta_inv, tf_past, tf_prog)
+                P_pvf=bat.prog4pv(df.index,(df['p_PV']+df['p_chp']).to_numpy())
+                P_ldf,time_f = bat.prog4ld(df.index,df['p_el_hh'])
+                P_df=P_pvf-P_ldf
         else:
-            res = BAT.simulate(p_load=0, soc=0, dt=dt)
-            for p_diff in P_diff:
-                res = BAT.simulate(p_load=p_diff, soc=res[2], dt=dt)
-                BAT_soc.append(res[2])
-                BAT_P_bs.append(res[0])
+            if bat_prog=='True':
+                C_bu=batteries['e_bat'][idx] # usable storage capacity of the battery storage in kWh 
+                P_inv=batteries['p_inv'][idx]# nominal power of the battery inverter in kW
+                bat=BatProg(dt, P_stc, C_bu, P_inv, feed_in_limit, eta_batt, eta_inv, tf_past, tf_prog)
+                BAT_P_bs=np.zeros(len(P_diff))
+                BAT_soc=np.zeros(len(P_diff))          
+                P_bf = 0
+                P_dfsel = 0
+                for t in range(1,len(P_diff)):
+                    t_fsel=math.floor(t*dt/900)
+                    if (sum(df['p_PV'].iloc[t:np.minimum(t+int(900/dt)+1,len(P_diff))])>0) & (df.index[t]==time_f[t_fsel]):
+                        P_bf,P_dfsel=bat.batt_prog(t,P_df,BAT_soc)
+                    BAT_P_bs[t]=bat.err_ctrl(t,P_diff,P_dfsel,P_bf)
+                    BAT_P_bs[t],BAT_soc[t]=bat.batt_sim(BAT_P_bs[t],BAT_soc[t-1])
+                a,v,pf,eb=bat.simu_erg(df['p_PV'].to_numpy(),df['p_el_hh'].to_numpy(),BAT_P_bs)
+                pfm= pd.DataFrame()
+                vars=['P_pv','P_ld','P_du','P_bc','P_bd','P_gf','P_gs','P_ct']
+                minutes = 15
+                for i in range(0,8):
+                    pfm[vars[i]]=np.mean(np.reshape(pf[vars[i]],(int(1440/minutes),365),order='F'),1)
+                pfm['time']=range(1,int(1440/minutes+1))
+                pfm['P_cta']=pfm['P_ct']+pfm['P_du']+pfm['P_bc']+pfm['P_gf']
+                pfm['P_dua']=pfm['P_du']+pfm['P_bc']+pfm['P_gf']
+                pfm['P_bca']=pfm['P_bc']+pfm['P_gf']
+
+
+                pfm['P_gs']=-pfm['P_gs']-pfm['P_bd']-pfm['P_du']
+                pfm['P_bd']=-pfm['P_bd']-pfm['P_du']
+                pfm['P_du']=-pfm['P_du']
+            else:
+                res = BAT.simulate(p_load=0, soc=0, dt=dt)
+                for p_diff in P_diff:
+                    res = BAT.simulate(p_load=p_diff, soc=res[2], dt=dt)
+                    BAT_soc.append(res[2])
+                    BAT_P_bs.append(res[0])
             BAT_soc=np.asarray(BAT_soc)
             BAT_P_bs=np.asarray(BAT_P_bs)
             P_gs = np.minimum(0.0, (P_diff-BAT_P_bs))
-            P_gf = np.maximum(0.0, (P_diff-BAT_P_bs))
+            P_gf = np.maximum(0.0, np.minimum((P_stc+P_chp)*feed_in_limit*1000,P_diff-BAT_P_bs))
+            P_gf_loss = np.maximum(0.0,P_diff-BAT_P_bs)-P_gf
             P_gf_chp = np.minimum(P_gf, df['p_chp'].values)
             P_gf_pv = np.maximum(0.0, (P_gf-P_gf_chp))
         a=1-((P_gs.mean()*-8.76)/(df['p_el_hh'].mean()*8.76))
@@ -240,6 +284,7 @@ def calc_bs(df, e_bat, p_bat):
         E_GF.append(P_gf.mean()*8.76)
         E_GF_CHP.append(P_gf_chp.mean()*8.76)
         E_GF_PV.append(P_gf_pv.mean()*8.76)
+        E_gf_loss.append(P_gf_loss.mean()*8.76)
     batteries['Netzeinspeisung']=E_GF
     batteries['Netzeinspeisung_PV']=E_GF_PV
     batteries['Netzeinspeisung_CHP']=E_GF_CHP
@@ -250,6 +295,7 @@ def calc_bs(df, e_bat, p_bat):
     batteries['Eigenverbrauch ohne Stromspeicher']=round((batteries['Eigenverbrauch']*100).values[0],2)
     batteries['Erhöhung der Autarkie durch Stromspeicher']=((batteries['Autarkiegrad']*100)-batteries['Autarkiegrad ohne Stromspeicher']).round(2)
     batteries['Erhöhung des Eigenverbrauchs durch Stromspeicher']=((batteries['Eigenverbrauch']*100)-batteries['Eigenverbrauch ohne Stromspeicher']).round(2)
+    batteries['Abregelungsverluste']=E_gf_loss
     return batteries
 
 # Calculation of heat pump
