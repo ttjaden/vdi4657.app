@@ -1819,6 +1819,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
         chp_th = None
         chp_el = None
         chp_runtime = None
+        sim_error_info=language.loc[language['name']=='simulation_info2',lang].iloc[0]
     else:
         if building_name=='indu':
             inhabitants=-5
@@ -1867,6 +1868,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             tech_title+='; '+language.loc[language['name']=='hp',lang].iloc[0]+': '+'SJAZ: '+str((round(results_summary['SJAZ'],2)))+ ', ' +str(int(round(results_summary['Energy_consumption_kWh'],0)))+' kWh'
 
         ## CHP
+        sim_error_info=language.loc[language['name']=='simulation_info2',lang].iloc[0]
         if (choosen_chp is None) or chp_active['color']!='white':
             p_chp = 0
             chp_th = None
@@ -1876,7 +1878,6 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             if hp_active['color']!='white' and (len(heating)==1):
                 sim_error_info=language.loc[language['name']=='error_heating_missing',lang].iloc[0]
         else:
-            sim_error_info=language.loc[language['name']=='simulation_info2',lang].iloc[0]
             results_timeseries, _, P_th_chp, P_el_chp, runtime = sim.calc_chp(weather, building,load_dict,choosen_chp/100,chp_to_peak_ratio=chp_max_ratio/100)
             p_chp = results_timeseries['P_chp_h_el'].values
             chp_runtime=html.Div(str(int(round(runtime)))+' '+ language.loc[language['name']=='load_hours',lang].iloc[0])

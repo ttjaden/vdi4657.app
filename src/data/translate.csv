@@ -25,7 +25,7 @@ usage,Consumption usage,Verbrauchskennzahlen
 inhabitants,Number of persons,Bewohneranzahl
 inhabitants_tooltip,Approximately 550 kWh of heat per person per year is assumed,Pro Person werden ca. 550 kWh Wärme pro Jahr angenommen
 energy_cons,Electrical energy consumption,Stromverbrauch
-energy_cons_tooltip,"Annual household electricity consumption, excluding heat pump electricity consumption but including any electricity consumption from electric cars","Jährlicher Stromverbrauch des Haushalts, ohne Wärmepumpen-Stromverbrauch aber mit evtentuellem Stromverbrauch von E-Autos"
+energy_cons_tooltip,"Annual household electricity consumption, excluding heat pump electricity consumption but including any electricity consumption from electric cars","Jährlicher Stromverbrauch des Haushalts, ohne Wärmepumpen-Stromverbrauch aber mit eventuellem Stromverbrauch von E-Autos"
 choose_building,Building:,Gebäude:
 choose_technology,Technology:,Technologie:
 battery_storage,Electricity storage:,Stromspeicher:
@@ -61,7 +61,7 @@ hyd,H2-Storage,H2-Speicher
 housing_units,Number of dwellings,Anzahl Wohneinheiten
 housing_units_tooltip,2 persons and an area of 70 m² are assumed per residential unit,Pro Wohneinheit werden 2 Personen und eine Fläche von 70 m² angenommen
 building_type_industry,Business sector,Geschäftsfeld
-dwd_info,"Assignment of test reference years (TRY, DWD 2017) by region and postal code. Distinction between current and forecast weather, as well as extreme weather scenarios possible (https://www.dwd.de/DE/leistungen/testreferenzjahre/testreferenzjahre.html)","Zuordnung der Testreferenzjahre (TRY, DWD 2017) über Regionen und Postleitzahl. Unterscheidung in aktuelles und prognostiziertes Wetter, sowie Extremwetterszenaien möglich (https://www.dwd.de/DE/leistungen/testreferenzjahre/testreferenzjahre.html)"
+dwd_info,"Assignment of test reference years (TRY, DWD 2017) by region and postal code. Distinction between current and forecast weather, as well as extreme weather scenarios possible (https://www.dwd.de/DE/leistungen/testreferenzjahre/testreferenzjahre.html)","Zuordnung der Testreferenzjahre (TRY, DWD 2017) über Regionen und Postleitzahl. Unterscheidung in aktuelles und prognostiziertes Wetter, sowie Extremwetterszenarien möglich (https://www.dwd.de/DE/leistungen/testreferenzjahre/testreferenzjahre.html)"
 1,North Sea coast,Nordseeküste
 2,Baltic Sea coast,Ostseeküste
 3,Northwest German Lowlands,Nordwestdeutsches Tiefland
