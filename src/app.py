@@ -2014,6 +2014,7 @@ def bat_results(batteries,tab,results_id, lang):
     batteries['Gesamter Eigenverbrauchsgrad'] = (batteries['Eigenverbrauch ohne Stromspeicher'] + batteries['Erhöhung des Eigenverbrauchs durch Stromspeicher']).round(1).astype(str) + ' %'
     batteries['Netzbezug [kWh/a]']=batteries['Netzbezug'].astype(int)
     batteries['Netzeinspeisung [kWh/a]']=batteries['Netzeinspeisung'].astype(int)
+    batteries['Abregelungsverluste']=batteries['Abregelungsverluste'].astype(int)
     # Set axis font size and disable zoom
     axis_font = dict(size=16)
 
@@ -2346,4 +2347,4 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             return [dbc.Col(html.H6(title),width={'offset':2}),dbc.Col(dcc.Graph(figure=fig,config={'displayModeBar': False}),width=12)]
         
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8051)
+    app.run_server(debug=False, port=8050)
