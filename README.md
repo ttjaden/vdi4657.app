@@ -31,4 +31,4 @@ Install dependencies with pip
 
 - `python src/app.py`
 
-Open http://127.0.0.1:8051 in your browser
+Open http://127.0.0.1:8050 in your browser
