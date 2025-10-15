@@ -1,5 +1,7 @@
 # VDI 4657 - Webtool
-Complementary Webtool to guideline VDI 4657 - Planning and integration of energy storage systems in energy building systems - Eletrical storage, see: [https://www.vdi.de/richtlinien/details/vdi-4657-blatt-3-planung-und-integration-von-energiespeichern-in-gebaeudeenergiesystemen-elektrische-stromspeicher-ess](https://www.vdi.de/richtlinien/details/vdi-4657-blatt-3-planung-und-integration-von-energiespeichern-in-gebaeudeenergiesystemen-elektrische-stromspeicher-ess)
+Complementary Webtool to guideline VDI 4657 - Planning and integration of energy storage systems in energy building systems - Eletrical storage, see:
+- Link to guideline: [https://www.vdi.de/richtlinien/details/vdi-4657-blatt-3-planung-und-integration-von-energiespeichern-in-gebaeudeenergiesystemen-elektrische-stromspeicher-ess](https://www.vdi.de/richtlinien/details/vdi-4657-blatt-3-planung-und-integration-von-energiespeichern-in-gebaeudeenergiesystemen-elektrische-stromspeicher-ess)
+- Link to Webtool: [https://www.vdi.de/mitgliedschaft/vdi-richtlinien/unsere-richtlinien-highlights/vdi-4657/vdi-4657-webtool](https://www.vdi.de/mitgliedschaft/vdi-richtlinien/unsere-richtlinien-highlights/vdi-4657/vdi-4657-webtool)
 
 # Production use
 Use as a docker container with preferred webserver as proxy
