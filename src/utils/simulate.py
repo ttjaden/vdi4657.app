@@ -10,7 +10,6 @@ from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
 from .pvprog import BatProg
 import math
 
-
 # Relative paths
 PATH = pathlib.Path(__file__).parent
 DATA_PATH = PATH.joinpath('../data').resolve()
@@ -235,34 +234,92 @@ def calc_bs(df, e_bat, p_bat, feed_in_limit, bat_prog='False', P_stc=0, P_chp=0)
                 P_df=P_pvf-P_ldf
         else:
             if bat_prog=='True':
-                C_bu=batteries['e_bat'][idx] # usable storage capacity of the battery storage in kWh 
-                P_inv=batteries['p_inv'][idx]# nominal power of the battery inverter in kW
-                bat=BatProg(dt, P_stc, C_bu, P_inv, feed_in_limit, eta_batt, eta_inv, tf_past, tf_prog)
-                BAT_P_bs=np.zeros(len(P_diff))
-                BAT_soc=np.zeros(len(P_diff))          
+                C_bu = batteries['e_bat'][idx]
+                P_inv = batteries['p_inv'][idx]
+                bat = BatProg(dt, P_stc, C_bu, P_inv, feed_in_limit, eta_batt, eta_inv, tf_past, tf_prog)
+                
+                # Pre-allocation
+                n = len(P_diff)
+                BAT_P_bs = np.zeros(n)
+                BAT_soc = np.zeros(n)
                 P_bf = 0
                 P_dfsel = 0
-                for t in range(1,len(P_diff)):
-                    t_fsel=math.floor(t*dt/900)
-                    if (sum(df['p_PV'].iloc[t:np.minimum(t+int(900/dt)+1,len(P_diff))])>0) & (df.index[t]==time_f[t_fsel]):
-                        P_bf,P_dfsel=bat.batt_prog(t,P_df,BAT_soc)
-                    BAT_P_bs[t]=bat.err_ctrl(t,P_diff,P_dfsel,P_bf)
-                    BAT_P_bs[t],BAT_soc[t]=bat.batt_sim(BAT_P_bs[t],BAT_soc[t-1])
-                a,v,pf,eb=bat.simu_erg(df['p_PV'].to_numpy(),df['p_el_hh'].to_numpy(),BAT_P_bs)
-                pfm= pd.DataFrame()
-                vars=['P_pv','P_ld','P_du','P_bc','P_bd','P_gf','P_gs','P_ct']
+                
+                # Pre-calculate PV sums for the entire array
+                p_PV_array = df['p_PV'].to_numpy()
+                
+                # Vectorized PV sum calculation
+                if dt < 900:
+                    window_size = int(900/dt) + 1
+                    pv_cumsum = np.cumsum(p_PV_array)
+                    pv_sums = np.zeros(n)
+                    pv_sums[window_size:] = pv_cumsum[window_size:] - pv_cumsum[:-window_size]
+                    for i in range(1, min(window_size, n)):
+                        pv_sums[i] = np.sum(p_PV_array[:i+1])
+                else:
+                    pv_sums = p_PV_array > 0
+                
+                # Pre-calculate time comparisons
+                time_array = df.index
+                time_f_array = np.array(time_f)
+                
+                for t in range(1, n):
+                    t_fsel = math.floor(t * dt / 900)
+                    
+                    if (pv_sums[t] > 0) and (t_fsel < len(time_f_array) and time_array[t] == time_f_array[t_fsel]):
+                        P_bf, P_dfsel = bat.batt_prog(t, P_df, BAT_soc)
+                    
+                    batt_power = bat.err_ctrl(t, P_diff, P_dfsel, P_bf)
+                    BAT_P_bs[t], BAT_soc[t] = bat.batt_sim(batt_power, BAT_soc[t-1])
+                
+                # Simulation results processing - KORREKTUR HIER
+                pv_data = df['p_PV'].to_numpy()
+                load_data = df['p_el_hh'].to_numpy()
+                a, v, pf, eb = bat.simu_erg(pv_data, load_data, BAT_P_bs)
+                
+                # Convert dict to DataFrame if necessary
+                if isinstance(pf, dict):
+                    pf_df = pd.DataFrame(pf)
+                else:
+                    pf_df = pf
+                
+                pfm = pd.DataFrame()
+                vars_list = ['P_pv', 'P_ld', 'P_du', 'P_bc', 'P_bd', 'P_gf', 'P_gs', 'P_ct']
                 minutes = 15
-                for i in range(0,8):
-                    pfm[vars[i]]=np.mean(np.reshape(pf[vars[i]],(int(1440/minutes),365),order='F'),1)
-                pfm['time']=range(1,int(1440/minutes+1))
-                pfm['P_cta']=pfm['P_ct']+pfm['P_du']+pfm['P_bc']+pfm['P_gf']
-                pfm['P_dua']=pfm['P_du']+pfm['P_bc']+pfm['P_gf']
-                pfm['P_bca']=pfm['P_bc']+pfm['P_gf']
-
-
-                pfm['P_gs']=-pfm['P_gs']-pfm['P_bd']-pfm['P_du']
-                pfm['P_bd']=-pfm['P_bd']-pfm['P_du']
-                pfm['P_du']=-pfm['P_du']
+                daily_intervals = int(1440 / minutes)
+                
+                # Process all variables at once
+                for var in vars_list:
+                    if var in pf_df.columns:
+                        data = pf_df[var].to_numpy()
+                        # Ensure divisible length
+                        total_length = daily_intervals * 365
+                        if len(data) >= total_length:
+                            reshaped = data[:total_length].reshape(daily_intervals, 365, order='F')
+                            daily_profile = np.mean(reshaped, axis=1)
+                            pfm[var] = daily_profile
+                        else:
+                            # Padding if needed
+                            padded_data = np.pad(data, (0, total_length - len(data)), mode='edge')
+                            reshaped = padded_data.reshape(daily_intervals, 365, order='F')
+                            daily_profile = np.mean(reshaped, axis=1)
+                            pfm[var] = daily_profile
+                
+                # Vectorized column operations
+                pfm['time'] = range(1, daily_intervals + 1)
+                
+                # Use vectorized operations for all calculations
+                # Sicherstellen, dass alle Spalten existieren
+                for col in ['P_ct', 'P_du', 'P_bc', 'P_gf', 'P_gs', 'P_bd']:
+                    if col not in pfm.columns:
+                        pfm[col] = 0
+                
+                pfm['P_cta'] = pfm['P_ct'] + pfm['P_du'] + pfm['P_bc'] + pfm['P_gf']
+                pfm['P_dua'] = pfm['P_du'] + pfm['P_bc'] + pfm['P_gf'] 
+                pfm['P_bca'] = pfm['P_bc'] + pfm['P_gf']
+                pfm['P_gs'] = -pfm['P_gs'] - pfm['P_bd'] - pfm['P_du']
+                pfm['P_bd'] = -pfm['P_bd'] - pfm['P_du']
+                pfm['P_du'] = -pfm['P_du']
             else:
                 res = BAT.simulate(p_load=0, soc=0, dt=dt)
                 for p_diff in P_diff:

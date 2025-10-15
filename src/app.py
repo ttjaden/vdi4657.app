@@ -2014,6 +2014,7 @@ def bat_results(batteries,tab,results_id, lang):
     batteries['Gesamter Eigenverbrauchsgrad'] = (batteries['Eigenverbrauch ohne Stromspeicher'] + batteries['Erhöhung des Eigenverbrauchs durch Stromspeicher']).round(1).astype(str) + ' %'
     batteries['Netzbezug [kWh/a]']=batteries['Netzbezug'].astype(int)
     batteries['Netzeinspeisung [kWh/a]']=batteries['Netzeinspeisung'].astype(int)
+    batteries['Abregelungsverluste']=batteries['Abregelungsverluste'].astype(int)
     # Set axis font size and disable zoom
     axis_font = dict(size=16)
 
