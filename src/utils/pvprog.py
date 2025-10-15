@@ -165,181 +165,104 @@ class BatProg:
         v = eb['E_ct']/eb['E_pv']
         return (a,v,pf,eb)
 
-    def prog4pv(self,time,p_pv):
-        """Generation of PV forecasts based on the historical measured values of 
-        PV power depending on the forecast horizon and look-back time window.
-
-        Source: J. Bergner, J. Weniger, T. Tjaden, V. Quaschning: Verbesserte
-        Netzintegration von PV-Speichersystemen durch Einbindung lokal
-        erstellter PV- und Lastprognosen. 30. Symposium Photovoltaische
-        Solarenergie. Bad Staffelstein, 2015
-
-        Parameters
-        ----------
-        time : array
-            timestamps in datenum format
-        p_pv : array
-            PV power output in W
-        
-        Returns
-        -------
-        p_pvf : array
-            predicted PV power output in W
-        """
-        # Vorinitialisierung
-        p_pvmax=np.zeros(len(time))
-        KTF=np.zeros(len(time))
-        #get a pv-prognose every 15 min or when bigger every timestep
-        if self.dt>900:
-            p_pvf=np.zeros((np.int64(len(time)),math.ceil(self.tf_prog*3600/self.dt)))
+    def prog4pv(self, time, p_pv):
+        """Optimized: Generation of PV forecasts based on historical measured values."""
+        p_pv = np.asarray(p_pv)
+        n_steps = len(time)
+        day_steps = int(86400 / self.dt)
+        tf_past_steps = self.tf_past * int(3600 / self.dt)
+        tf_prog_steps = int(self.tf_prog * 3600 / self.dt)
+        maxpv = np.max(p_pv)
+        # Preallocate arrays
+        p_pvmax = np.zeros(n_steps)
+        KTF = np.zeros(n_steps)
+        # Efficient rolling window for max PV per day
+        for t in range(day_steps - 1, n_steps - day_steps, day_steps):
+            d_pv = min(math.ceil(t * self.dt / 86400), 10)
+            start = t - d_pv * day_steps + 1
+            p_pvsel = p_pv[start:t + 1]
+            shape = (day_steps, d_pv)
+            if p_pvsel.size == day_steps * d_pv:
+                p_pvmax[t:t + day_steps] = np.max(p_pvsel.reshape(shape, order='F'), axis=1)
+        n = p_pv <= 0
+        p_pv_day = p_pv[~n]
+        pv_max_day = p_pvmax[~n]
+        valid_len = len(p_pv_day)
+        E_pv_past = np.zeros(valid_len)
+        E_max = np.zeros(valid_len)
+        # Use cumulative sum for fast windowed sum
+        cumsum_pv = np.concatenate(([0], np.cumsum(p_pv_day)))
+        cumsum_max = np.concatenate(([0], np.cumsum(pv_max_day)))
+        idx = np.arange(tf_past_steps, valid_len)
+        E_pv_past[idx] = cumsum_pv[idx + 1] - cumsum_pv[idx + 1 - tf_past_steps]
+        E_max[idx] = cumsum_max[idx + 1] - cumsum_max[idx + 1 - tf_past_steps]
+        k_TF = np.divide(E_pv_past, E_max, out=np.zeros_like(E_pv_past), where=E_max != 0)
+        KTF[~n] = k_TF
+        if self.dt < 900:
+            block = int(3600 / self.dt / 4)
+            n_blocks = int(len(time) / block)
+            KTF = np.mean(KTF[:block * n_blocks].reshape((block, n_blocks), order='F'), axis=0)
+            p_pvmax = np.mean(p_pvmax[:block * n_blocks].reshape((block, n_blocks), order='F'), axis=0)
+            p_pvmax = np.tile(p_pvmax, 2)
+            p_pvf = np.zeros((len(KTF), self.tf_prog * 4))
+            for t in range(len(p_pvf)):
+                end = t + self.tf_prog * 4
+                p_pvf[t, :] = np.maximum(0, np.minimum(maxpv, KTF[t] * p_pvmax[t:end]))
         else:
-            p_pvf=np.zeros((np.int64(len(time)*self.dt/900),math.ceil(self.tf_prog*4)))
-        # Tagesverlauf der maximalen PV-Leistungsabgabe aus den Messwerten der
-        # vergangenen 10 Tage bestimmen
-        for t in range(int(86400/self.dt)-1, len(time)-int(86400/self.dt), int(86400/self.dt)):
-            #Anzahl der Tage, die zurückgeguckt wird (max. 10 Tage)
-            d_pv=int(np.minimum(math.ceil(t*self.dt/86400),10))
-            #% spezifische PV-Leistung während des Zeitraums  
-            p_pvsel=p_pv[t-d_pv*int(86400/self.dt)+1:t+1]
-            #maximalen Tagesverlauf der PV-Leistung bestimme
-            p_pvmax[t:t+int(86400/self.dt)]=(np.max(np.reshape(p_pvsel,(int(86400/self.dt),d_pv),order='F'),1))
+            p_pvmax = np.tile(p_pvmax, 2)
+            n_forecast = math.ceil(self.tf_prog * 3600 / self.dt)
+            p_pvf = np.zeros((n_steps, n_forecast))
+            for t in range(n_steps):
+                end = t + n_forecast
+                p_pvf[t, :] = np.maximum(0, np.minimum(maxpv, KTF[t] * p_pvmax[t:end]))
+        p_pvf[np.isnan(p_pvf)] = 0
+        return p_pvf
 
-        #Nachtindikator (Zeitraum ohne PV-Erzeugung) bestimmen
-        n=p_pv<=0
-        #PV-Leistung und max. PV-Leistung für Zeitraum mit PV-Erzeugung
-        p_pv_day=p_pv[~n]
-        pv_max_day=p_pvmax[~n]
-        E_pv_past=np.zeros(sum(~n))
-        E_max=np.zeros(sum(~n))
-        #Aktuelle und maximale PV-Energie im Rückblick-Zeitfenster bestimmen
-        for t in range(self.tf_past*int(3600/self.dt),len(p_pv_day)):
-            E_pv_past[t]=sum(p_pv_day[t-self.tf_past*int(3600/self.dt):t])
-            E_max[t]=sum(pv_max_day[t-self.tf_past*int(3600/self.dt):t])
-        # Verhältnis von aktueller zu maximaler PV-Energie (Wetterlage-Index KTF) im Rückblickzeitfenster berechnen
-        k_TF=np.divide(E_pv_past,E_max)
-        KTF[~n]=k_TF
-        maxpv=max(p_pv)
-        if self.dt<900:
-            KTF=np.mean(np.reshape(KTF,(int(3600/self.dt/4),int(len(time)/(3600/self.dt/4))),order='F'),axis=0)
-            p_pvmax=np.mean(np.reshape(p_pvmax,(int(3600/self.dt/4),int(len(time)/(3600/self.dt/4))),order='F'),axis=0)
-            #Zeitreihe p_pvmax15 zweimal verketten, um zum Ende der Jahressimulation auf die Maximalwerte des Jahresanfangs zurückzugreifen
-            p_pvmax=(np.append(p_pvmax,p_pvmax))
-            #Messwertbasierte PV-Prognose erstellen: Multiplikation des aktuellen KTF15-Wertes mit dem Verlauf der maximalen PV-Leistung des Prognosehorizonts
-            for t in range(0,len(p_pvf)):
-                p_pvf[t,:]=np.maximum(0,np.minimum(maxpv,KTF[t]*(p_pvmax[t:t+self.tf_prog*4])))
+    def prog4ld(self, time, P_ld):
+        """Optimized: Generation of load forecasts based on historical measured values."""
+        P_ld = np.asarray(P_ld)
+        n_steps = len(time)
+        if self.dt < 900:
+            block = int(900 / self.dt)
+            n_blocks = int(n_steps / block)
+            P_ld15 = np.mean(P_ld[:block * n_blocks].reshape((block, n_blocks), order='F'), axis=0)
+            time_f = time[::block]
+            g1 = np.exp(-0.1 * (np.arange(self.tf_prog * 4) + 1)) / np.exp(-0.1)
+            g2 = 1 - g1
+            P_ldf = np.zeros((len(time_f), self.tf_prog * 4))
+            for t in range(96, len(time_f)):
+                P_ldf[t, :] = g1 * P_ld15[t - 1] + g2 * P_ld15[t - 96:t - 96 + self.tf_prog * 4]
         else:
-            p_pvmax=(np.append(p_pvmax,p_pvmax))
-            #Messwertbasierte PV-Prognose erstellen: Multiplikation des aktuellen KTF15-Wertes mit dem Verlauf der maximalen PV-Leistung des Prognosehorizonts
-            for t in range(0,len(p_pvf)):
-                p_pvf[t,:]=np.maximum(0,np.minimum(maxpv,KTF[t]*(p_pvmax[t:t+int(self.tf_prog*3600/self.dt)])))
-        # PV-Prognosen ohne Zahlenwert null setzen
-        p_pvf[np.where(np.isnan(p_pvf))]=0
-        return(p_pvf)
-    
-    def prog4ld(self,time,P_ld):
-        """
-        Generation of load forecasts based on the historical measured values of 
-        the load. The average value of the past 15 min (current persistence) 
-        and the load profile of the previous day (daily persistence) are weighted 
-        differently over the forecast horizon.
+            n_forecast = math.ceil(self.tf_prog * 3600 / self.dt)
+            P_ldf = np.zeros((n_steps, n_forecast))
+            time_f = time
+            g1 = np.exp(-0.1 * (np.arange(n_forecast) + 1)) / np.exp(-0.1)
+            g2 = 1 - g1
+            for t in range(int(86400 / self.dt), n_steps):
+                P_ldf[t, :] = g1 * P_ld[t - 1] + g2 * P_ld[t - int(86400 / self.dt):t - int(86400 / self.dt) + n_forecast]
+        return P_ldf, time_f
 
-        Source: J. Bergner, J. Weniger, T. Tjaden, V. Quaschning: Verbesserte
-        Netzintegration von PV-Speichersystemen durch Einbindung lokal
-        erstellter PV- und Lastprognosen. 30. Symposium Photovoltaische
-        Solarenergie. Bad Staffelstein, 2015
-        
-        Parameters
-        ----------
-        time : array
-            timestamps in datenum format
-        P_ld : array
-            household electrical load (load demand) in W
-        
-        Returns
-        -------
-        P_ldf : array
-            predicted houshold electrical load in W
-        time_f: array 
-            array like time with value every 15 min.
-        """
-        if self.dt<900:
-            #% Vorinitialisierung
-            P_ldf=np.zeros((int(len(time)*self.dt/900),(self.tf_prog*4)))
-
-            # 15 min-Zeitstempel für die Prognosen
-            time_f=time[range(0,len(time)-int(900/self.dt)+1,int(900/self.dt))]
-            # Lastprofil in 15-minütiger Auflösung ermitteln
-            P_ld15=np.mean(np.reshape(P_ld,(int(900/self.dt),int(len(time)/int(900/self.dt))),order='F'),axis=0)
-            #Gewichtungsfaktoren für die aktuelle Persistenz und Tagespersistenz über den Prognosehorizont variieren
-            g1=1/math.exp(-0.1)*np.exp(-0.1*(np.arange(self.tf_prog*4)+1))#aktuelle Persistenz
-            g2=1-g1#Tagespersistenz
-            #Messwertbasierte Lastprognose erstellen: Variable Gewichtung von aktueller Persistenz und Tagespersistenz über den Prognosehorizont
-            for t in range(96,len(time_f)):
-                P_ldf[t,:]=g1*np.full(int(self.tf_prog*4),P_ld15[t-1])+g2*P_ld15[t-96:t-96+int(self.tf_prog*4)]
-        else:
-            #% Vorinitialisierung
-            P_ldf=np.zeros((np.int64(len(time)),math.ceil(self.tf_prog*3600/self.dt)))
-            time_f=time
-            g1=1/math.exp(-0.1)*np.exp(-0.1*(np.arange(int(self.tf_prog*3600/self.dt))+1))#aktuelle Persistenz
-            g2=1-g1#Tagespersistenz
-            for t in range(int(86400/self.dt),len(time_f)):
-                P_ldf[t,:]=g1*np.full(int(self.tf_prog*3600/self.dt),P_ld[t-1])+g2*P_ld[t-int(86400/self.dt):t-int(86400/self.dt)+int(self.tf_prog*3600/self.dt)]
-        return (P_ldf,time_f)
-
-    def batt_prog(self,t,P_df,soc):
-        """ 
-        Creation of a schedule for the battery power over the forecast horizon of the 
-        PV and load forecast. For this purpose, the virtual feed-in limit for the 
-        period under consideration is minimized to such an extent that the excess PV 
-        energy above this limit charges the battery storage as completely as possible. 
-        
-        Source: J. Weniger, V. Quaschning: Begrenzung der Einspeiseleistung von
-        netzgekoppelten Photovoltaiksystemen mit Batteriespeichern. In: 28.
-        Symposium Photovoltaische Solarenergie. Bad Staffelstein, 2013
-
-        Further information on forecast-based battery charge planning:
-        J. Bergner: Untersuchungen zu prognosebasierten Betriebsstrategien für
-        PV-Speichersysteme. Berlin, Hochschule für Technik und Wirtschaft
-        Berlin, Bachelorthesis, 2014 
-        
-        Parameters
-        ----------
-        t : numeric
-            Time step
-        P_df : array
-            forecast of differential power in W (P_pvf-P_ldf)
-        soc : array
-            Battery state of charge
-
-        Returns
-        -------
-        P_bf : array
-            forcast power of battery for the next timesteps(positiv: charge, negativ: discharge)
-        P_dfsel : array
-            forcast of differential Power at this timestep
-        
-        """
-        #aktueller Prognosezeitschritt
-        t_fsel=math.floor(t*self.dt/900)
-        # aktuelle Differenzleistungsprognose auswählen
-        P_dfsel=P_df[t_fsel,:]
-        # Batterieladezustand und Batterieinhalt im Zeitschritt zuvor
-        soc_0=soc[t-1]
-        E_b0=soc_0*self.C_bu*1000
-        # Vorbereitung der Bestimmung der aktuellen virtuellen Einspeisegrenze durch Variation der virtuellen Einspeisegrenze in 0,01 kW/kWp-Schritten
-        p_gflvir=np.reshape(np.repeat(np.arange(0,self.p_gfl+0.01,0.01),len(P_dfsel),0),[int(self.tf_prog*4),int(self.p_gfl*100+1)],order='F')
-        # Prognostizierte überschüssige PV-Leistung
-        P_sf=np.reshape(np.repeat(np.maximum(0,P_dfsel),p_gflvir.shape[1],0),p_gflvir.shape)
-        # Idendifikation der minimalen virtuellen Einspeisegrenze, die über den Prognosehorizont eingehalten werden soll: Dabei soll die Energiemenge 
-        #oberhalb dieser Grenze ausreichend sein, um den Batteriespeicher über den Prognosehorizont möglichst vollständig zu laden.
-        value=(abs(np.sum(np.maximum(0,(P_sf-p_gflvir*self.P_stc*1000))*self.eta_batt*self.eta_inv*self.dt*900/self.dt/3600,axis=0)-(self.C_bu*1000-E_b0)))
-        idx=np.where(value==np.min(value))[0][0]
-        p_gflvir=p_gflvir[0,idx]
-        # Batterieladeleistung über Prognosehorizont aus virtueller Einspeisegrenze ableiten
-        P_bcf=np.maximum(0,P_dfsel-p_gflvir*self.P_stc*1000)
-        # Batterieleistung aus Batterieladeleistung und Differenzleistung über Prognosehorizont bestimmen
-        P_bf=np.round(np.minimum(P_bcf,P_dfsel))
-        return (P_bf,P_dfsel)
+    def batt_prog(self, t, P_df, soc):
+        """Optimized: Creation of a schedule for the battery power over the forecast horizon."""
+        t_fsel = math.floor(t * self.dt / 900)
+        P_dfsel = P_df[t_fsel, :]
+        soc_0 = soc[t - 1]
+        E_b0 = soc_0 * self.C_bu * 1000
+        n = int(self.tf_prog * 4)
+        p_gfl_steps = int(self.p_gfl * 100 + 1)
+        p_gflvir = np.arange(0, self.p_gfl + 0.01, 0.01)
+        P_sf = np.maximum(0, P_dfsel)
+        # Vectorized computation for all p_gflvir
+        P_sf_mat = np.tile(P_sf, (p_gfl_steps, 1)).T
+        p_gflvir_mat = np.tile(p_gflvir * self.P_stc * 1000, (n, 1))
+        excess = np.maximum(0, P_sf_mat - p_gflvir_mat)
+        energy = np.sum(excess * self.eta_batt * self.eta_inv * self.dt * 900 / self.dt / 3600, axis=0)
+        value = np.abs(energy - (self.C_bu * 1000 - E_b0))
+        idx = np.argmin(value)
+        p_gflvir_sel = p_gflvir[idx]
+        P_bcf = np.maximum(0, P_dfsel - p_gflvir_sel * self.P_stc * 1000)
+        P_bf = np.round(np.minimum(P_bcf, P_dfsel))
+        return P_bf, P_dfsel
         
     def err_ctrl(self,t,P_d,P_dfsel,P_bf):
         """
