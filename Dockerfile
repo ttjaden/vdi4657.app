@@ -18,4 +18,4 @@ RUN useradd -m appUser
 USER appUser
 
 # Run locally
-CMD gunicorn -b 0.0.0.0:8051 app:server
+CMD gunicorn -b 0.0.0.0:8050 app:server
