@@ -209,8 +209,8 @@ content = dbc.Container([
         dbc.Col(html.Div(id='scroll',children=[
             dcc.Tabs(id='tabs',value='tab_info',mobile_breakpoint=400),
             html.Div(id='tab-content'),
-            ]
-            ), width=12,xs=12, sm=12, md=12, lg=4, xl=4, xxl=4),
+            ]), 
+            width=12,xs=12, sm=12, md=12, lg=12, xl=12, xxl=4),
         dbc.Col(html.Div(
             children=[html.Div(id='bat_results'),
                 html.Div(id='bat_results_LSK'),
