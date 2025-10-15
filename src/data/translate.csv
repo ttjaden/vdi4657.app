@@ -2,9 +2,9 @@ name,eng,ger
 lang,Language,Sprache
 header_p,Sizing of electrical storage systems,Auslegung von Stromspeichern
 efh_name,SFH,EFH
-efh_tooltip,Simulation of a single-family house based on a real measured load profile - own load profiles can be simulated in the “Other” building,Simulation eines Einfamilienhauses auf der Grundlage eines real gemessenen Lastprofils - eigene Lastprofile können im Gebäude „Sonstige“ simuliert werden 
+efh_tooltip,Simulation of a single-family house based on a real measured load profile - own load profiles can be simulated in the “Other” building,Simulation eines Einfamilienhauses auf der Grundlage repräsentativer Lastprofile - eigene Lastprofile können im Gebäude „Sonstige“ simuliert werden 
 mfh_name,MFH,MFH
-mfh_tooltip,Simulation of an apartment building based on real measured load profiles - own load profiles can be simulated in the “Other” building,Simulation eines Mehrfamilienhauses auf der Grundlage real gemessener Lastprofile - eigene Lastprofile können im Gebäude „Sonstige“ simuliert werden
+mfh_tooltip,Simulation of an apartment building based on real measured load profiles - own load profiles can be simulated in the “Other” building,Simulation eines Mehrfamilienhauses auf der Grundlage repräsentativer Lastprofile - eigene Lastprofile können im Gebäude „Sonstige“ simuliert werden
 industry_name,Others,Sonstige
 industry_tooltip,"Standard load profiles, real consumption profiles or your own load profiles can be used to simulate other buildings","Für die Simulation sonstiger Gebäude können Standardlastprofile, reale Verbrauchsprofile oder eigene Lastprofile verwendet werden"
 weather_data,Weather data: ,Wetterdaten: 
@@ -14,10 +14,10 @@ building_type,Building type,Gebäudetyp
 building_type_tooltip,"Transmission heat losses 
 Existing building, unrenovated: 2.6 W/(m²K)
 Existing building, renovated: 1.6 W/(m²K)
-New building, after 2016: 0.8 W/(m²K)","Transmissionswärmeverluste 
-Bestand, unsaniert: 2,6 W/(m²K)
-Bestand, saniert: 1,6 W/(m²K)
-Neubau, nach 2016: 0,8 W/(m²K)"
+New building, after 2016: 0.8 W/(m²K)","Gebäudehüllenklasse: 
+Bestand, unsaniert: Energieeffizienzklasse G-H;
+Bestand, saniert: Energieeffizienzklasse D-E;
+Neubau, nach 2016: Energieeffizienzklasse A-B"
 building_size,Living area,Wohnfläche
 building_size_tooltip,Net floor area of the building,Nettogrundfläche des Gebäudes
 heating_temperature,Flow / return temperature,Vorlauf-/Rücklauftemperatur
@@ -25,7 +25,7 @@ usage,Consumption usage,Verbrauchskennzahlen
 inhabitants,Number of persons,Bewohneranzahl
 inhabitants_tooltip,Approximately 550 kWh of heat per person per year is assumed,Pro Person werden ca. 550 kWh Wärme pro Jahr angenommen
 energy_cons,Electrical energy consumption,Stromverbrauch
-energy_cons_tooltip,Annual electricity demand of the household,Jährlicher Strombedarf des Haushaltes 
+energy_cons_tooltip,"Annual household electricity consumption, excluding heat pump electricity consumption but including any electricity consumption from electric cars","Jährlicher Stromverbrauch des Haushalts, ohne Wärmepumpen-Stromverbrauch aber mit eventuellem Stromverbrauch von E-Autos"
 choose_building,Building:,Gebäude:
 choose_technology,Technology:,Technologie:
 battery_storage,Electricity storage:,Stromspeicher:
@@ -54,13 +54,14 @@ chp_electric_number_tooltip,Ratio of electricity generated to heat generated in 
 hp,HP,WP
 heatpump, Heat pump: , Wärmepumpe: 
 hp_tooltip,Heat pump - only possible for simulation with heating system,Wärmepumpe - nur bei Simulation mit Wärmesystem möglich
+hp_text,Monovalent heat pump design of medium efficiency (from the hplib repository),Monovalente Wärmepumpenauslegung mittlerer Effizienz (aus dem repository hplib)
 gas,Gas heater,Gasheizung
 bat,Battery,Batterie
 hyd,H2-Storage,H2-Speicher
 housing_units,Number of dwellings,Anzahl Wohneinheiten
 housing_units_tooltip,2 persons and an area of 70 m² are assumed per residential unit,Pro Wohneinheit werden 2 Personen und eine Fläche von 70 m² angenommen
 building_type_industry,Business sector,Geschäftsfeld
-dwd_info,"The data set contains the updated test reference years (TRY) of the German Weather Service (DWD). By subdividing into 15 TRY regions, each postcode area can be assigned a representative weather data set. It should be emphasized that in addition to a mean, current test reference year for a region, there is also a year with extreme summer and extreme winter weather. To take climate change into account, there is then a time series for the year 2045 for each test reference year based on the IPCC climate models.","Der Datensatz enthält die aktualisierten Testreferenzjahre (TRY) des Deutschen Wetterdienstes (DWD). Durch die Unterteilung in 15 TRY-Regionen kann jedem Postleitzahlengebiet ein repräsentativer Wetterdatensatz zugeordnet werden. Hervorzuheben ist, dass es neben einem mittleren, aktuellen Testreferenzjahr für eine Region auch ein Jahr mit extremem Sommer- und extremem Winterwetter gibt. Um den Klimawandel zu berücksichtigen, gibt es dann für jedes Testreferenzjahr eine Zeitreihe für das Jahr 2045 auf Basis der IPCC-Klimamodelle."
+dwd_info,"Assignment of test reference years (TRY, DWD 2017) by region and postal code. Distinction between current and forecast weather, as well as extreme weather scenarios possible (https://www.dwd.de/DE/leistungen/testreferenzjahre/testreferenzjahre.html)","Zuordnung der Testreferenzjahre (TRY, DWD 2017) über Regionen und Postleitzahl. Unterscheidung in aktuelles und prognostiziertes Wetter, sowie Extremwetterszenarien möglich (https://www.dwd.de/DE/leistungen/testreferenzjahre/testreferenzjahre.html)"
 1,North Sea coast,Nordseeküste
 2,Baltic Sea coast,Ostseeküste
 3,Northwest German Lowlands,Nordwestdeutsches Tiefland
@@ -95,7 +96,7 @@ developed,"Developed within the project PIEG-Strom, which was supported by WIPAN
 start,"This is a supplementary web tool to VDI 4657-3 "Planning and integration of energy storage systems in building energy systems - Electrical power storage (EPS).","Dies ist ein ergänzendes Webtool zur VDI 4657-3 "Planung und Integration von Energiespeichern in Gebäudeenergiesystemen - Elektrische Stromspeicher (ESS)"
 simulation_info1,"First enter the data in the areas 'Weather data:', 'Building:', 'Technology:' and 'Electricity storage'. Press the “Start simulation” button to start the simulation.","Geben Sie zunächst die Daten in den Bereichen 'Wetterdaten:', 'Gebäude:', 'Technologie:' und 'Stromspeicher:' ein. Drücken Sie die Schaltfläche „Start Simulation“, um die Simulation zu beginnen."
 simulation_info2,"Technical results are presented. For an economic evaluation, change the tab to 'Economy'.","Es werden technische Ergebnisse präsentiert. Für eine wirtschaftliche Bewertung ändern Sie die Registerkarte auf 'Ökonomie'."
-simulation_info3,Check entries,Eigaben überprüfen
+simulation_info3,Check entries,Eingaben überprüfen
 choose_use_case,Selection of the use case for the storage system: ,Im ersten Schritt erfolgt die Auswahl des gewünschten Anwendungsfalls für den Stromspeicher: 
 use_case,Use case,Anwendung
 choose_building_type,Choose a building type,Einen Gebäudetyp wählen

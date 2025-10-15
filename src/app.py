@@ -102,6 +102,14 @@ options_building_type_eng=[
     {"label": 'Existing building, renovated', "value": '[1.6,14]'},
     {"label": 'New building, after 2016', "value": '[0.8,12]'},
     ]
+options_heatpump_ger=[
+    {"label": 'Luft/Wasser (mittl. Effizienz)', "value": 'Luft/Wasser (mittl. Effizienz)'},
+    {"label": 'Sole/Wasser (mittl. Effizienz)', "value": 'Sole/Wasser (mittl. Effizienz)'},
+    ]
+options_heatpump_eng=[
+    {"label": 'Air/Water (average efficiency)', "value": 'Luft/Wdasser (mittl. Effizienz)'},
+    {"label": 'Brine/water (average efficiency)', "value": 'Sole/Wasser (mittl. Effizienz)'},
+    ]
 options_slp_ger = [
     {"label": 'Eigenes Lastprofil', "value": "own_loadprofile"},
     {"label": 'G0: Gewerbe allgemein', "value": "LP_G0.csv"},
@@ -578,7 +586,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
         options_building_type=options_building_type_ger
     if (efh_click>mfh_click) and (efh_click>industry_click):
         if (heating is None) or (len(heating)==0): # for simulating without heating
-            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=[], id='include_heating',persistence='memory'),
+            return (html.Div(dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=[], id='include_heating',persistence='memory'),style={'textAlign': 'center','marginTop': '5px', 'marginBottom': '0px'}),
                         [   
                         dbc.Row([
                             dbc.Col([html.Span(language.loc[language['name'] == 'energy_cons', lang].iloc[0]),
@@ -596,7 +604,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                     {'background-color': 'white','color': 'black'},
                     {'background-color': 'white','color': 'black'},'efh')
         else: # efh with heating system
-            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=['True'], id='include_heating',persistence='memory'),
+            return (html.Div(dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=['True'], id='include_heating',persistence='memory'),style={'textAlign': 'center','marginTop': '5px', 'marginBottom': '0px'}),
                         [
                             dbc.Row(
                                 [
@@ -654,7 +662,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                     {'background-color': 'white','color': 'black'},'efh')
     if (mfh_click>efh_click) and (mfh_click>industry_click): #mfh
         if (heating is None) or (len(heating)==0): # mfh for simulating without heating
-            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=[], id='include_heating',persistence='memory'),
+            return (html.Div(dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=[], id='include_heating',persistence='memory'),style={'textAlign': 'center','marginTop': '5px', 'marginBottom': '0px'}),
                         [
                             dbc.Row(
                                 [
@@ -680,7 +688,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                     {'background-color': '#003da7','color': 'white',},
                     {'background-color': 'white','color': 'black'},'mfh')
         else: #mfh with heating
-            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=['True'], id='include_heating',persistence='memory'),
+            return (html.Div(dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=['True'], id='include_heating',persistence='memory'),style={'textAlign': 'center','marginTop': '5px', 'marginBottom': '0px'}),
                         [
                             dbc.Row(
                                 [
@@ -732,7 +740,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
         else:
             options_slp=options_slp_ger
         if (heating is None) or (len(heating)==0): # for simulating without heating
-            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=[], id='include_heating',persistence='memory'),
+            return (html.Div(dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0][0:15]},value=[], id='include_heating',persistence='memory'),style={'textAlign': 'center','marginTop': '5px', 'marginBottom': '0px'}),
                 [
                 dbc.Row(
                     [
@@ -749,7 +757,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                 {'background-color': 'white','color': 'black'},
                 {'background-color': '#003da7','color': 'white',},'indu')
         else: #industry with heating
-            return (dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0]},value=['True'], id='include_heating',persistence='memory'),
+            return (html.Div(dcc.Checklist(options={'True': language.loc[language['name']=='heating',lang].iloc[0][0:15]},value=['True'], id='include_heating',persistence='memory'),style={'textAlign': 'center','marginTop': '5px', 'marginBottom': '0px'}),
                 [
                 dbc.Row(
                     [
@@ -805,7 +813,7 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
     Input('last_triggered_building','data'),
     )
 def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
-    pv_value=10
+    pv_value=10.0
     chp_max_power=30
     chp_electric_heat_ratio=100
     hp_technology=''
@@ -827,7 +835,7 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                 dbc.Col([html.H6(language.loc[language['name'] == 'photovoltaik', lang].iloc[0],style={'display': 'inline-block', 'margin': 0}),DashIconify(icon='ph:info',width=20,height=20,id='photovoltaik_text',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})]),
                                 dbc.Tooltip(language.loc[language['name']=='photovoltaik_tooltip',lang].iloc[0], target="photovoltaik_text", placement='bottom'),
                                 dbc.Col(html.Div(id='pv_slider_value'), width=4),
-                                dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
+                                dbc.Col(dcc.Slider(min=0,max=20,step=0.1,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
                                 dbc.Col([html.Span(language.loc[language['name'] == 'pv_tilt', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='pv_tilt_text',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})]),
                                 dbc.Tooltip(language.loc[language['name']=='pv_tilt_tooltip',lang].iloc[0], target="pv_tilt_text", placement='bottom'),
                                 dbc.Col(html.Div(), width=4),
@@ -838,9 +846,9 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                 dbc.Tooltip(language.loc[language['name']=='pv_orientation_tooltip',lang].iloc[0], target="azimut_text", placement='bottom'),
                                 dbc.Col(dcc.Slider(
                                     id='pv1_azimut',
-                                    min=45,
+                                    min=0,
                                     max=315,
-                                    marks={45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
+                                    marks={0:'Nord',45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
                                     step=None,  # Setze step auf None für diskrete Werte
                                     value=180,  # Standardwert
                                     persistence='memory'), width=12),
@@ -860,7 +868,7 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                 dbc.Col([html.H6(language.loc[language['name'] == 'photovoltaik', lang].iloc[0],style={'display': 'inline-block', 'margin': 0}),DashIconify(icon='ph:info',width=20,height=20,id='photovoltaik_text2',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})]),
                                 dbc.Tooltip(language.loc[language['name']=='photovoltaik_tooltip',lang].iloc[0], target="photovoltaik_text2", placement='bottom'),
                                 dbc.Col(html.Div(id='pv2_slider_value'), width=4),
-                                dbc.Col(dcc.Slider(min=0,max=20,step=1,marks=None, id='pv2_slider',value=0, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
+                                dbc.Col(dcc.Slider(min=0,max=20,step=0.1,marks=None, id='pv2_slider',value=0.0, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
                                 dbc.Col([html.Span(language.loc[language['name'] == 'pv_tilt', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='pv_tilt_text2',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})]),
                                 dbc.Tooltip(language.loc[language['name']=='pv_tilt_tooltip',lang].iloc[0], target="pv_tilt_text2", placement='bottom'),
                                 dbc.Col(html.Div(), width=4),
@@ -871,9 +879,9 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                 dbc.Tooltip(language.loc[language['name']=='pv_orientation_tooltip',lang].iloc[0], target="azimut_text2", placement='bottom'),
                                 dbc.Col(dcc.Slider(
                                     id='pv2_azimut',
-                                    min=45,
+                                    min=0,
                                     max=315,
-                                    marks={45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
+                                    marks={0:'Nord',45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
                                     step=None,  # Setze step auf None für diskrete Werte
                                     value=180,  # Standardwert
                                     persistence='memory'), width=12),
@@ -910,9 +918,9 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                 dbc.Tooltip(language.loc[language['name']=='pv_orientation_tooltip',lang].iloc[0], target="azimut_text", placement='bottom'),
                                 dbc.Col(dcc.Slider(
                                     id='pv1_azimut',
-                                    min=45,
+                                    min=0,
                                     max=315,
-                                    marks={45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
+                                    marks={0:'Nord',45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
                                     step=None,  # Setze step auf None für diskrete Werte
                                     value=180,  # Standardwert
                                     persistence='memory'), width=12),
@@ -947,9 +955,9 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                 dbc.Tooltip(language.loc[language['name']=='pv_orientation_tooltip',lang].iloc[0], target="azimut_text2", placement='bottom'),
                                 dbc.Col(dcc.Slider(
                                     id='pv2_azimut',
-                                    min=45,
+                                    min=0,
                                     max=315,
-                                    marks={45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
+                                    marks={0:'Nord',45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
                                     step=None,  # Setze step auf None für diskrete Werte
                                     value=180,  # Standardwert
                                     persistence='memory'), width=12),
@@ -990,12 +998,17 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
             html.Div([html.Div(id='chp_technology'),html.Div(id='chp_technology_value'),html.Div(id='chp_technology_value2'), html.Div(id='chp_load_hours')])
         )
     if n_hp['color']=='white':
+        if lang=='eng':
+            options_hp_technology=options_heatpump_eng
+        else:
+            options_hp_technology=options_heatpump_ger
         technology_list.append(
                             dbc.Row(
                                 [
-                                dbc.Col(html.H6(language.loc[language['name']=='heatpump',lang].iloc[0]), width=6),
+                                dbc.Col([html.Span(language.loc[language['name'] == 'heatpump', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='hp_text',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})],width=6),
+                                dbc.Tooltip(language.loc[language['name']=='hp_text',lang].iloc[0], target="hp_text", placement='bottom'),
                                 dbc.Col(dcc.Loading(type="circle",children=html.Div(id="hp_technology_value")), width=6),
-                                dbc.Col(dcc.Dropdown(['Luft/Wasser (mittl. Effizienz)','Sole/Wasser (mittl. Effizienz)'],value=hp_technology, id='hp_technology',persistence='memory', optionHeight=50), width=11),
+                                dbc.Col(dcc.Dropdown(options_hp_technology,value=hp_technology, id='hp_technology',persistence='memory', optionHeight=50), width=11),
                                 ],
                             align='center',
                             )
@@ -1016,7 +1029,7 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
     State('parameter_use','data')
     )
 def next_Tab(autarkie, LSK, tab, parameter_use):
-    changed_id = [p['prop_id'] for p in callback_context.triggered][0]#TODO
+    changed_id = [p['prop_id'] for p in callback_context.triggered][0]
     if (autarkie==0) & (LSK==0):
         return tab,parameter_use
     elif changed_id.startswith('aut'):
@@ -1261,23 +1274,38 @@ def get_p_el_hh(e_hh, tab):
 @app.callback(
     Output('n_solar', 'style'),
     Output('n_clicks_pv', 'data'),
-    Input('n_solar', 'n_clicks'),
-    )
-def change_solar_style(n_clicks):
-    if (n_clicks%2)==1:
-        return {'background-color': '#003da7','color': 'white',},1
-    else:
-        return {'background-color': 'white','color': 'black'},0
-@app.callback(
-    Output('n_solar2', 'style'), 
+    Output('n_solar2', 'style'),
     Output('n_clicks_pv2', 'data'),
+    Input('n_solar', 'n_clicks'),
     Input('n_solar2', 'n_clicks'),
-    )
-def change_solar2_style(n_clicks):
-    if (n_clicks%2)==1:
-        return {'background-color': '#003da7','color': 'white',},1
+)
+def change_solar_style(n_solar_clicks, n_solar2_clicks):
+    ctx_id = ctx.triggered_id if hasattr(ctx, "triggered_id") else None
+
+    # Default values if None
+    n_solar_clicks = n_solar_clicks or 0
+    n_solar2_clicks = n_solar2_clicks or 0
+
+    # Determine styles and states
+    if ctx_id == 'n_solar2':
+        # If n_solar2 is triggered, set both to blue if odd
+        if n_solar2_clicks % 2 == 1:
+            return (
+                {'background-color': '#003da7', 'color': 'white'}, 1,
+                {'background-color': '#003da7', 'color': 'white'}, 1
+            )
+        else:
+            return (
+                {'background-color': '#003da7', 'color': 'white'}, 1,
+                {'background-color': 'white', 'color': 'black'}, 0
+            )
     else:
-        return {'background-color': 'white','color': 'black'},0
+        # n_solar triggered or initial
+        n_solar_style = {'background-color': '#003da7', 'color': 'white'} if n_solar_clicks % 2 == 1 else {'background-color': 'white', 'color': 'black'}
+        n_solar2_style = {'background-color': '#003da7', 'color': 'white'} if n_solar2_clicks % 2 == 1 else {'background-color': 'white', 'color': 'black'}
+        n_clicks_pv = 1 if n_solar_clicks % 2 == 1 else 0
+        n_clicks_pv2 = 1 if n_solar2_clicks % 2 == 1 else 0
+        return n_solar_style, n_clicks_pv, n_solar2_style, n_clicks_pv2
 @app.callback(
     Output('n_chp', 'style'),
     Output('n_chp','n_clicks'), 
@@ -1782,7 +1810,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
     else:
         p_pv=0
     ## heating system
-    if (heating is None) or (region is None) or ((Area is None) and (building_name!='indu')) or(building is None):
+    if (heating is None) or (heating==[]) or (region is None) or ((Area is None) and (building_name!='indu')) or(building is None):
         p_hp = 0
         p_chp = 0
         hp_summary=None
@@ -1791,6 +1819,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
         chp_th = None
         chp_el = None
         chp_runtime = None
+        sim_error_info=language.loc[language['name']=='simulation_info2',lang].iloc[0]
     else:
         if building_name=='indu':
             inhabitants=-5
@@ -1839,6 +1868,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             tech_title+='; '+language.loc[language['name']=='hp',lang].iloc[0]+': '+'SJAZ: '+str((round(results_summary['SJAZ'],2)))+ ', ' +str(int(round(results_summary['Energy_consumption_kWh'],0)))+' kWh'
 
         ## CHP
+        sim_error_info=language.loc[language['name']=='simulation_info2',lang].iloc[0]
         if (choosen_chp is None) or chp_active['color']!='white':
             p_chp = 0
             chp_th = None
@@ -1846,7 +1876,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
             chp_runtime = None
             P_el_chp=0
             if hp_active['color']!='white' and (len(heating)==1):
-                tech_title=language.loc[language['name']=='error_heating_missing',lang].iloc[0]
+                sim_error_info=language.loc[language['name']=='error_heating_missing',lang].iloc[0]
         else:
             results_timeseries, _, P_th_chp, P_el_chp, runtime = sim.calc_chp(weather, building,load_dict,choosen_chp/100,chp_to_peak_ratio=chp_max_ratio/100)
             p_chp = results_timeseries['P_chp_h_el'].values
@@ -1902,7 +1932,7 @@ def calc_bat_results(e_hh,building_name,building_type, heating,region,Area,build
         language.loc[language['name']=='choose_building',lang].iloc[0] +' '+building_name+ ' ' + building_type_value, 
         language.loc[language['name']=='choose_technology',lang].iloc[0]+ ' '+tech_title,
         language.loc[language['name']=='battery_storage',lang].iloc[0] + ' ' + str(int(feed_in_limit*100)) + ' %, ' + bat_title,
-        language.loc[language['name']=='simulation_info2',lang].iloc[0])
+        sim_error_info)
 
 # Show selection for different graphs (self sufficiency, self consumption or energy balance)
 @app.callback(
@@ -1976,10 +2006,17 @@ def bat_results(batteries,tab,results_id, lang):
         return html.Div('Bitte Erzeuger auswählen!')
     batteries=pd.DataFrame.from_dict(batteries)
     batteries['e_bat']=batteries['e_bat'].astype('str')
-    batteries['Gesamter Autarkiegrad'] = (batteries['Autarkiegrad ohne Stromspeicher'] + batteries['Erhöhung der Autarkie durch Stromspeicher']).round(1).astype(str) + ' %'
+    batteries['Autarkiegrad ohne Stromspeicher'] = batteries['Autarkiegrad ohne Stromspeicher'].round(0).astype(int)
+    batteries['Erhöhung der Autarkie durch Stromspeicher'] = batteries['Erhöhung der Autarkie durch Stromspeicher'].round(0).astype(int)
+    batteries['Eigenverbrauch ohne Stromspeicher'] = batteries['Eigenverbrauch ohne Stromspeicher'].round(0).astype(int)
+    batteries['Erhöhung des Eigenverbrauchs durch Stromspeicher'] = batteries['Erhöhung des Eigenverbrauchs durch Stromspeicher'].round(0).astype(int)
+    batteries['Gesamter Autarkiegrad'] = (batteries['Autarkiegrad ohne Stromspeicher'] + batteries['Erhöhung der Autarkie durch Stromspeicher']).astype(str) + ' %'
     batteries['Gesamter Eigenverbrauchsgrad'] = (batteries['Eigenverbrauch ohne Stromspeicher'] + batteries['Erhöhung des Eigenverbrauchs durch Stromspeicher']).round(1).astype(str) + ' %'
     batteries['Netzbezug [kWh/a]']=batteries['Netzbezug'].astype(int)
     batteries['Netzeinspeisung [kWh/a]']=batteries['Netzeinspeisung'].astype(int)
+    # Set axis font size and disable zoom
+    axis_font = dict(size=16)
+
     if lang=='ger':
         if results_id=='Autarkiegrad':
             fig=px.bar(data_frame=batteries,x='e_bat',y=['Autarkiegrad ohne Stromspeicher','Erhöhung der Autarkie durch Stromspeicher'],
@@ -2049,14 +2086,21 @@ def bat_results(batteries,tab,results_id, lang):
                         'variable': ''
                         }
             )
-    fig.update_layout(legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=1.02,
-        xanchor="right",
-        x=1
-        ))
-    fig.update_layout(margin=dict(l=20, r=20, b=20),)
+    fig.update_layout(
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            font=dict(size=16)  # Set legend font size larger
+        ),
+        margin=dict(l=20, r=20, b=20),
+        xaxis=dict(title_font=axis_font, tickfont=axis_font),
+        yaxis=dict(title_font=axis_font, tickfont=axis_font),
+        dragmode=False  # disables zoom and pan
+    )
+    # Also disable scroll/zoom via config
     return dcc.Graph(figure=fig, config={'displayModeBar': False})
 
 # Show selection for different graphs (economy tab)
@@ -2200,7 +2244,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             InternalRateOfReturn_max=max(InternalRateOfReturn)
             best_value_battery = batteries['e_bat'].values[InternalRateOfReturn.index(InternalRateOfReturn_max)]
             if InternalRateOfReturn_max>0:
-                title = language.loc[language['name']=='eco_text_9',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_10',lang].iloc[0] + str(round(InternalRateOfReturn_max*100,2)) + ' %.'
+                title = language.loc[language['name']=='eco_text_9',lang].iloc[0] + best_value_battery + language.loc[language['name']=='eco_text_10',lang].iloc[0] + str(round(InternalRateOfReturn_max*100,1)) + ' %.'
             else:
                 title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
             fig=px.bar(data_frame=batteries, x='e_bat', y='InternalRateOfReturn', hover_data=['Investitionskosten'],
@@ -2290,7 +2334,7 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
             InternalRateOfReturn_max=max(InternalRateOfReturn)
             best_value_battery = df[language.loc[language['name']=='usable_battery_size',lang].iloc[0]].values[InternalRateOfReturn.index(InternalRateOfReturn_max)]
             if InternalRateOfReturn_max>0:
-                title = language.loc[language['name']=='eco_text_9',lang].iloc[0] + str(round(best_value_battery,1)) + language.loc[language['name']=='eco_text_10',lang].iloc[0] + str(round(InternalRateOfReturn_max*100,2)) + ' %.'
+                title = language.loc[language['name']=='eco_text_9',lang].iloc[0] + str(round(best_value_battery,1)) + language.loc[language['name']=='eco_text_10',lang].iloc[0] + str(round(InternalRateOfReturn_max*100,1)) + ' %.'
             else:
                 title = language.loc[language['name']=='eco_text_8',lang].iloc[0]
             fig=px.line(data_frame=df, x=language.loc[language['name']=='usable_battery_size',lang].iloc[0], y='InternalRateOfReturn', hover_data=[language.loc[language['name']=='invest_cost',lang].iloc[0]],
