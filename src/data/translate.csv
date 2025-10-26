@@ -18,6 +18,7 @@ New building, after 2016: 0.8 W/(m²K)","Gebäudehüllenklasse:
 Bestand, unsaniert: Energieeffizienzklasse G-H;
 Bestand, saniert: Energieeffizienzklasse D-E;
 Neubau, nach 2016: Energieeffizienzklasse A-B"
+building_type_industry_tooltip,Standard load profiles of the German Association of Energy and Water Industries (BDEW),Standardlastprofile des Bundesverband der Energie- und Wasserwirtschaft (BDEW)
 building_size,Living area,Wohnfläche
 building_size_tooltip,Net floor area of the building,Nettogrundfläche des Gebäudes
 heating_temperature,Flow / return temperature,Vorlauf-/Rücklauftemperatur

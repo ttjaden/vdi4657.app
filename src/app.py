@@ -209,15 +209,16 @@ content = dbc.Container([
         dbc.Col(html.Div(id='scroll',children=[
             dcc.Tabs(id='tabs',value='tab_info',mobile_breakpoint=400),
             html.Div(id='tab-content'),
-            ]), 
+            ], style={'marginLeft': '-20px','marginRight':'0px'}), 
             width=12,xs=12, sm=12, md=12, lg=12, xl=12, xxl=4),
         dbc.Col(html.Div(
             children=[html.Div(id='bat_results'),
                 html.Div(id='bat_results_LSK'),
                 html.Div(id='cost_result'),
-                ]
+                ], style={'marginLeft': '-20px','marginRight':'-20px'}
             )),
         ],style={'padding': '15px'}),
+    dcc.Store(id='screen_width', storage_type='memory'),
     dcc.Store(id='last_triggered_building', storage_type='memory'),                                     # welches Gebäude ausgewählt war-> df                                     
     dcc.Store(id='n_clicks_pv', storage_type='memory'),                                                 # ob PV ausgewählt war -> df                         
     dcc.Store(id='n_clicks_pv2', storage_type='memory'),                                                 # ob PV ausgewählt war -> df                         
@@ -246,7 +247,7 @@ content = dbc.Container([
     dcc.Store('show_bat_results', storage_type='memory'),                                               # ausgeählten Graphen                             
     dcc.Loading(type='default',children=dcc.Store(id='parameter_peak_shaving', storage_type='memory')), #                                                                         
     dcc.Store(id='parameter_economoy', storage_type='memory'),                                          #                                 
-    ],fluid=True)
+    ],style={'marginLeft': '0px'},fluid=True)
 
 # Create layout
 layout = html.Div(id='app-page-content',children=[header,content])
@@ -256,6 +257,22 @@ app.layout=layout
 ###################################################
 # Callbacks #######################################
 ###################################################
+
+# --- Clientseitige Callback: erkennt Bildschirmbreite bei Resize ---
+app.clientside_callback(
+    """
+    function(_) {
+        function reportSize() {
+            window.dash_clientside.triggerStore('screen_width', window.innerWidth);
+        }
+        window.addEventListener('resize', reportSize);
+        // Initialwert zurückgeben
+        return window.innerWidth;
+    }
+    """,
+    Output('screen_width', 'data'),
+    Input('tabs', 'id')  # Dummy Input, damit Callback einmal beim Start läuft
+)
 
 # Create tabs and change language
 @app.callback(
@@ -440,15 +457,15 @@ def render_tab_content(tab,LSK,lang,n_clicks_solar, n_clicks_solar2, n_clicks_ch
                     ),
                     dbc.AccordionItem([
                         dbc.Row([
-                            dbc.Col(html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv1',lang].iloc[0]],style={'width':'80px'}),id='n_solar',n_clicks=n_clicks_solar),width=3),
+                            dbc.Col(html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=45,height=50,),html.Br(),language.loc[language['name']=='pv1',lang].iloc[0]],style={'width':'70px'}),id='n_solar',n_clicks=n_clicks_solar),width=3),
                             dbc.Tooltip(language.loc[language['name']=='pv_tooltip',lang].iloc[0],target="n_solar",placement='bottom'),
-                            dbc.Col(html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=50,height=50,),html.Br(),language.loc[language['name']=='pv2',lang].iloc[0]],style={'width':'80px'}),id='n_solar2',n_clicks=n_clicks_solar2),width=3),
+                            dbc.Col(html.Button(html.Div([DashIconify(icon='fa-solid:solar-panel',width=45,height=50,),html.Br(),language.loc[language['name']=='pv2',lang].iloc[0]],style={'width':'70px'}),id='n_solar2',n_clicks=n_clicks_solar2),width=3),
                             dbc.Tooltip(language.loc[language['name']=='pv_tooltip',lang].iloc[0],target="n_solar2",placement='bottom'),
-                            dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=50,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'80px'}),id='n_chp',n_clicks=n_clicks_chp),width=3),
+                            dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:gas-burner',width=45,height=50,),html.Br(),language.loc[language['name']=='chp',lang].iloc[0]],style={'width':'70px'}),id='n_chp',n_clicks=n_clicks_chp),width=3),
                             dbc.Tooltip(language.loc[language['name']=='chp_tooltip',lang].iloc[0],target="n_chp",placement='bottom'),
-                            dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=50,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'80px'}),id='n_hp',n_clicks=n_clicks_hp),width=3),
+                            dbc.Col(html.Button(html.Div([DashIconify(icon='mdi:heat-pump-outline',width=45,height=50,),html.Br(),language.loc[language['name']=='hp',lang].iloc[0]],style={'width':'70px'}),id='n_hp',n_clicks=n_clicks_hp),width=3),
                             dbc.Tooltip(language.loc[language['name']=='hp_tooltip',lang].iloc[0],target="n_hp",placement='bottom'),
-                        ]),
+                        ], style={'marginLeft': '-20px'}),
                         dbc.Container(html.Div([html.Div(id='hp_technology'),html.Div(id='chp_technology'),html.Div(id='hp_technology_value'),html.Div(id='chp_technology_value'), html.Div(id='chp_max_power'), html.Div(id='chp_load_hours')],id='technology'),fluid=True)
                     ],
                     title=language.loc[language['name']=='choose_technology',lang].iloc[0],
@@ -744,7 +761,8 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                 [
                 dbc.Row(
                     [
-                    dbc.Col(language.loc[language['name']=='building_type_industry',lang].iloc[0], width=12, style={'marginTop': '1rem'}),
+                    dbc.Col([html.Span(language.loc[language['name'] == 'building_type_industry', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='text_building_type',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})], style={'marginTop': '1rem'}),
+                    dbc.Tooltip(language.loc[language['name']=='building_type_industry_tooltip',lang].iloc[0],target="text_building_type",placement='bottom'),
                     dbc.Col(dcc.Dropdown(options_slp,id='industry_type',persistence='memory', optionHeight=100,maxHeight=400), width=11),
                     ],
                 align='center',
@@ -761,7 +779,8 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
                 [
                 dbc.Row(
                     [
-                    dbc.Col(language.loc[language['name']=='building_type_industry',lang].iloc[0], width=12),
+                    dbc.Col([html.Span(language.loc[language['name'] == 'building_type_industry', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='text_building_type',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})], style={'marginTop': '1rem'}),
+                    dbc.Tooltip(language.loc[language['name']=='building_type_industry_tooltip',lang].iloc[0],target="text_building_type",placement='bottom'),
                     dbc.Col(dcc.Dropdown(options_slp,id='industry_type',persistence='memory', optionHeight=100,maxHeight=400), width=11),
                     ],
                 
@@ -811,8 +830,13 @@ def getcontainer(efh_click,mfh_click,industry_click,choosebuilding,heating,lang)
     Input('n_hp', 'style'),
     Input('button_language','value'),
     Input('last_triggered_building','data'),
+    State('screen_width','data')
     )
-def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
+def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building, screen_width):
+    if screen_width<1000:
+        marks_azimut={0:'Nord',45: '',90: 'Ost', 135: '', 180: 'Süd', 225: '', 270: 'West', 315: ''}
+    else:
+        marks_azimut={0:'Nord',45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'}
     pv_value=10.0
     chp_max_power=30
     chp_electric_heat_ratio=100
@@ -848,7 +872,7 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                     id='pv1_azimut',
                                     min=0,
                                     max=315,
-                                    marks={0:'Nord',45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
+                                    marks=marks_azimut,
                                     step=None,  # Setze step auf None für diskrete Werte
                                     value=180,  # Standardwert
                                     persistence='memory'), width=12),
@@ -881,7 +905,7 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                     id='pv2_azimut',
                                     min=0,
                                     max=315,
-                                    marks={0:'Nord',45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
+                                    marks=marks_azimut,
                                     step=None,  # Setze step auf None für diskrete Werte
                                     value=180,  # Standardwert
                                     persistence='memory'), width=12),
@@ -901,13 +925,17 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                 
                                 ]))
         else:
+            if (building=='indu'):
+                pv_max=500
+            else:
+                pv_max=200
             technology_list.append(
                             dbc.Row(
                                 [
                                 dbc.Col([html.H6(language.loc[language['name'] == 'photovoltaik', lang].iloc[0],style={'display': 'inline-block', 'margin': 0}),DashIconify(icon='ph:info',width=20,height=20,id='photovoltaik_text',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})]),
                                 dbc.Tooltip(language.loc[language['name']=='photovoltaik_tooltip',lang].iloc[0], target="photovoltaik_text", placement='bottom'),
                                 dbc.Col(html.Div(id='pv_slider_value'), width=4),
-                                dbc.Col(dcc.Slider(min=0,max=200,step=1,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
+                                dbc.Col(dcc.Slider(min=0,max=pv_max,step=1,marks=None, id='pv_slider',value=pv_value, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
                                 dbc.Col([html.Span(language.loc[language['name'] == 'pv_tilt', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='pv_tilt_text',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})]),
                                 dbc.Tooltip(language.loc[language['name']=='pv_tilt_tooltip',lang].iloc[0], target="pv_tilt_text", placement='bottom'),
                                 dbc.Col(html.Div(), width=4),
@@ -920,7 +948,7 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                     id='pv1_azimut',
                                     min=0,
                                     max=315,
-                                    marks={0:'Nord',45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
+                                    marks=marks_azimut,
                                     step=None,  # Setze step auf None für diskrete Werte
                                     value=180,  # Standardwert
                                     persistence='memory'), width=12),
@@ -944,7 +972,7 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                 dbc.Col([html.H6(language.loc[language['name'] == 'photovoltaik', lang].iloc[0],style={'display': 'inline-block', 'margin': 0}),DashIconify(icon='ph:info',width=20,height=20,id='photovoltaik_text2',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})]),
                                 dbc.Tooltip(language.loc[language['name']=='photovoltaik_tooltip',lang].iloc[0], target="photovoltaik_text2", placement='bottom'),
                                 dbc.Col(html.Div(id='pv2_slider_value'), width=4),
-                                dbc.Col(dcc.Slider(min=0,max=200,step=1,marks=None, id='pv2_slider',value=0, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
+                                dbc.Col(dcc.Slider(min=0,max=pv_max,step=1,marks=None, id='pv2_slider',value=0, tooltip={'placement': 'top', 'always_visible': False}, persistence='memory'), width=12),
                                 dbc.Col([html.Span(language.loc[language['name'] == 'pv_tilt', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='pv_tilt_text2',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})]),
                                 dbc.Tooltip(language.loc[language['name']=='pv_tilt_tooltip',lang].iloc[0], target="pv_tilt_text2", placement='bottom'),
                                 dbc.Col(html.Div(), width=4),
@@ -957,7 +985,7 @@ def built_technology(n_solar, n_solar2,n_chp,n_hp,lang,building):
                                     id='pv2_azimut',
                                     min=0,
                                     max=315,
-                                    marks={0:'Nord',45: 'Nord-Ost',90: 'Ost', 135: 'Süd-Ost', 180: 'Süd', 225: 'Süd-West', 270: 'West', 315: 'Nord-West'},
+                                    marks=marks_azimut,
                                     step=None,  # Setze step auf None für diskrete Werte
                                     value=180,  # Standardwert
                                     persistence='memory'), width=12),
@@ -1245,7 +1273,7 @@ def standorttoregion(region, weather_year, weather_typ,lang):
     Input('stromverbrauch', 'value'),
     Input('tabs','value'))
 def get_p_el_hh(e_hh, tab):
-    return str(e_hh) + ' kWh'
+    return f"{e_hh:,}".replace(",", ".") + ' kWh/a'
 
 # Electric load profile information
 @app.callback(
@@ -1418,9 +1446,10 @@ def save_parameter_chp_max_power(industry_type, lang):
                         'margin': '10px'
                     },
                 ), html.Div(id='kpi_LSK'), dcc.Store('stromverbrauch'), dcc.Store(id='building_type_value')
-    return [dbc.Col(language.loc[language['name']=='energy_cons',lang].iloc[0], width=6,style={'marginTop': '1rem'}),
+    return [dbc.Col([html.Span(language.loc[language['name'] == 'energy_cons', lang].iloc[0]),DashIconify(icon='ph:info',width=20,height=20,id='text_energy_cons',style={'marginLeft': '8px', 'cursor': 'pointer', 'verticalAlign': 'middle'})],style={'marginTop': '1rem'}),
+            dbc.Tooltip(language.loc[language['name']=='energy_cons_tooltip',lang].iloc[0],target="text_energy_cons",placement='bottom'),
             dbc.Col(html.Div(id='stromverbrauch_value'), width=4, style={'marginTop': '1rem'}),
-            dbc.Col(dcc.Slider(min=5_000,max=200_000,step=1000,marks=None,value=50_000,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
+            dbc.Col(dcc.Slider(min=10_000,max=2_000_000,step=10000,marks=None,value=50_000,id='stromverbrauch',tooltip={'placement': 'top', 'always_visible': False},persistence='memory'), width=12),
             dcc.Store(id='building_type_value', storage_type='memory')]
 @app.callback(
     Output('chp_max_power_data', 'data'),
@@ -2094,9 +2123,9 @@ def bat_results(batteries,tab,results_id, lang):
             y=1.02,
             xanchor="right",
             x=1,
-            font=dict(size=16)  # Set legend font size larger
+            font=dict(size=14)  # Set legend font size larger
         ),
-        margin=dict(l=20, r=20, b=20),
+        margin=dict(l=0, r=5, b=0),
         xaxis=dict(title_font=axis_font, tickfont=axis_font),
         yaxis=dict(title_font=axis_font, tickfont=axis_font),
         dragmode=False  # disables zoom and pan
