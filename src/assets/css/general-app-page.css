@@ -10,3 +10,10 @@
 #gh-link {
     white-space: nowrap;
 }
+
+.accordion-button {
+    flex-direction: row;       /* Überschriften nebeneinander */
+    align-items: center;
+    text-align: center;
+    justify-content: space-between; /* optional */
+  }
