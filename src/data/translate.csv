@@ -188,7 +188,7 @@ Eine C-Rate von 1 bedeutet, dass die Batterie in einer Stunde vollständig be- o
 Beispiel: Bei 0,5 C dauert eine vollständige Ladung bzw. Entladung zwei Stunden.
 Typische Werte für Heimspeicher liegen zwischen 0,3 C und 1 C."
 bat_prog,   Forecast-based operating strategy,   Prognosebasierte Ladung
-bat_prog_info,"The ‘pv-prog’ algorithm optimizes self-consumption in order to reduce the maximum feed-in power through predictive charging.","Mit dem 'pv-prog‘-Algorithmus wird der Eigenverbrauch optimiert, um die maximale Einspeiseleistung durch vorausschauendes Laden zu verringern."
+bat_prog_info,"The ‘pv-prog’ algorithm optimizes self-consumption in order to reduce the maximum feed-in power through predictive charging. Please note: The calculation will take longer.","Mit dem 'pv-prog‘-Algorithmus wird der Eigenverbrauch optimiert, um die maximale Einspeiseleistung durch vorausschauendes Laden zu verringern. Achtung: Die Berechnung dauert länger."
 bat_prog_negativ,No forecast-based charging,Keine prognosebasierte Ladung
 bat_prog_positiv,forecast-based charging,Prognosebasierte Ladung
 feed_in_limit,Maximum feed-in ratio,Maximaler Einspeiseanteil
