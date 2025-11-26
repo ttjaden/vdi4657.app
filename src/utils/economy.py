@@ -194,6 +194,8 @@ def amortisation(cashflow, r=0):
                 total = sum(cashflow[0:y+1])
                 frac = (0 - cum_prev) / cashflow[y]
                 t_a = round((y - 1) + frac, 1)
+            if t_a<=0:
+                t_a=0.1
             break
 
     return t_a

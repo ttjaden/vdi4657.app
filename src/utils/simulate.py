@@ -9,6 +9,7 @@ from pvlib.modelchain import ModelChain
 from pvlib.temperature import TEMPERATURE_MODEL_PARAMETERS
 from .pvprog import BatProg
 import math
+from numba import njit
 
 # Relative paths
 PATH = pathlib.Path(__file__).parent
@@ -43,122 +44,227 @@ def calc_gs_kpi(P_gs):
 
 # Calculation of rated power and capacity for peak shaving
 def calc_bs_peakshaving(P_gs0):
-    # Start KPIs
+    """
+    Wrapper-Funktion. Konvertiert Eingaben, ruft die beschleunigte Simulation
+    für verschiedene Peak-Shaving-Stufen auf und sammelt Ergebnisse in einem
+    DataFrame.
+    """
+    # Start KPIs (verwende dieselbe Hilfsfunktion wie im Original)
     E_gs0, P_gs_max0, t_util0 = calc_gs_kpi(P_gs0)
-    # General Parameters
-    dt = 900
-    eta_bat=0.95
+
+    # Parameter
+    dt = 0.25
+    eta_bat = 0.95
     eta_bat2ac = 0.95
     eta_ac2bat = 0.95
-    # DataFrames
-    df = pd.DataFrame({'P_bs_discharge_max': [],
-                        'P_bs_charge_max': [],
-                        'C_bs': [],
-                        'E_gs': [],
-                        'P_gs_max': [],
-                        'delta_P_gs': [],
-                        't_util': [],
-                        'E_rate': [],
-                        'E_bs_charge_ac': [],
-                        'E_bs_discharge_ac': [],
-                        'N_full_cylces': []})
-    df.loc[0] = [0, 0, 0, E_gs0, P_gs_max0, 0, t_util0, 0, 0, 0, 0]
-    # Start values
-    delta_P_gs_rel = 0
-    E_rate = 5
-    j = 0
-    # Iteration
-    while E_rate >= 0.20:
-        j = j + 1
-        # add 1% of peak shaving 
-        delta_P_gs_rel = delta_P_gs_rel + 0.01     # %
-        delta_P_gs = P_gs_max0 * delta_P_gs_rel     # kW
-        P_gs_max = P_gs_max0 - delta_P_gs           # kW
-        # calculate battery discharge and grid supply
-        P_bs_discharge = P_gs0 - P_gs_max           # kW
-        P_bs_discharge[P_bs_discharge < 0] = 0      # kW
-        P_bs_charge = P_gs_max - P_gs0              # kW
-        P_bs_charge[P_bs_charge < 0] = 0            # kW
-        P_bs_set = P_bs_discharge - P_bs_charge
-        # Energies
-        E_bs_discharge = [int(P_bs_discharge.iloc[0])]   # kWh
-        for i in range(1,len(P_bs_discharge)):
-            if P_bs_discharge[i] == 0:
-                if E_bs_discharge[i-1]>0:
-                    E_bs_discharge.append(E_bs_discharge[i-1] - np.minimum(P_bs_charge[i],delta_P_gs)*0.25*eta_ac2bat*eta_bat2ac*eta_bat)
-                else:
-                    E_bs_discharge.append(0)
-            else:
-                if E_bs_discharge[i-1]<0:
-                    E_bs_discharge.append(P_bs_discharge[i] * 0.25)
-                else:
-                    E_bs_discharge.append(E_bs_discharge[i-1] + P_bs_discharge[i] * 0.25)
-        # Find maximum discharge period in year
-        E_bs_discharge_max = max(E_bs_discharge)
-        # Calculate battery capacity and KPIs
-        C_bs = E_bs_discharge_max / ((eta_bat+((1-eta_bat)/2))*eta_bat2ac*0.8)
-        E_rate = (delta_P_gs / eta_bat2ac) / (C_bs)
-        # Calculate battery charge and soc
-        P_bs = [0]
-        P_bat = [0]
-        SOC = [1]
-        for i in range(1,len(P_bs_set)):
-            if P_bs_set[i] >= 0 and SOC[i-1] > 0.2: # Entladen
-                P_bs.append(P_bs_set[i])
-                P_bat.append(P_bs[i] / ((eta_bat+((1-eta_bat)/2))*eta_bat2ac))
-                SOC.append(SOC[i-1] - (P_bat[i] * 0.25 / C_bs))
-            elif P_bs_set[i] < 0 and SOC[i-1] < 1:  # Laden
-                P_bs.append((max(P_bs_set[i], delta_P_gs*-1)))
-                P_bat.append(P_bs[i] * ((eta_bat+((1-eta_bat)/2))*eta_ac2bat))
-                SOC.append(SOC[i-1] - (P_bat[i] * 0.25 / C_bs))
-            else:
-                P_bs.append(0)
-                P_bat.append(0)
-                SOC.append(SOC[i-1])
-            if SOC[i] > 1:                          # soc correction overload
-                delta_SOC = SOC[i] - 1
-                delta_P = delta_SOC * C_bs / 0.25
-                P_bs[i] = P_bs[i] + delta_P
-                P_bat[i] = P_bs[i] * ((eta_bat+((1-eta_bat)/2))*eta_ac2bat)
-                SOC[i] = 1
-            if SOC[i] < 0.2:                        # soc correction deep discharge
-                delta_SOC = 0.2 - SOC[i]
-                delta_P = delta_SOC * C_bs / 0.25
-                P_bs[i] = P_bs[i] - delta_P
-                P_bat[i] = P_bs[i] / ((eta_bat+((1-eta_bat)/2))*eta_bat2ac)
-                SOC[i] = 0.2
-        # Grid supply
-        P_gs = P_gs0 - P_bs
-        E_gs, P_gs_max, t_util = calc_gs_kpi(P_gs)
-        # Battery
-        data = pd.DataFrame()
-        data['P_bs_charge'] = P_bs
-        data['P_bs_charge'][data['P_bs_charge']>0] = 0
-        E_bs_charge = data['P_bs_charge'].abs().mean()*8760
-        data['P_bs_discharge'] = P_bs
-        data['P_bs_discharge'][data['P_bs_discharge']<0] = 0
-        E_bs_discharge = data['P_bs_discharge'].mean()*8760
-        data['P_bs_charge_dc'] = P_bat
-        data['P_bs_charge_dc'][data['P_bs_charge_dc']>0] = 0
-        E_bs_charge_dc = data['P_bs_charge_dc'].abs().mean()*8760
-        data['P_bs_discharge_dc'] = P_bat
-        data['P_bs_discharge_dc'][data['P_bs_discharge_dc']<0] = 0
-        E_bs_discharge_dc = data['P_bs_discharge_dc'].mean()*8760
-        N_full_cylces = (E_bs_charge_dc + E_bs_discharge_dc)/(2*C_bs) 
 
-        df.loc[j] = [round(max(P_bs),1), 
-                    round(-1*min(P_bs),1),
-                    round(C_bs,1), 
-                    round(E_gs,0), 
-                    round(P_gs_max,1), 
-                    round(P_gs_max0-P_gs_max,1), 
-                    round(t_util,0), 
-                    round(E_rate,2),
-                    round(E_bs_charge,1),
-                    round(E_bs_discharge,1),
-                    round(N_full_cylces,1)
-                    ]
+    # Prepare results DF
+    df = pd.DataFrame(columns=[
+        'P_bs_discharge_max', 'P_bs_charge_max', 'C_bs', 'E_gs', 'P_gs_max',
+        'delta_P_gs', 't_util', 'E_rate', 'E_bs_charge', 'E_bs_discharge',
+        'N_full_cycles'
+    ])
+    df.loc[0] = [0, 0, 0, E_gs0, P_gs_max0, 0, t_util0, 0, 0, 0, 0]
+
+    # Convert P_gs0 to numpy array for numba
+    if isinstance(P_gs0, pd.Series):
+        P = P_gs0.values.astype(np.float64)
+    elif isinstance(P_gs0, np.ndarray):
+        P = P_gs0.astype(np.float64)
+    else:
+        P = np.array(P_gs0, dtype=np.float64)
+
+    delta_P_gs_rel = 0.0
+    E_rate = 5.0
+    j = 0
+
+    # Iteration: 1% steps until E_rate < 0.2 or max iter
+    for it in range(1, 71):  # safety cap 70 iter
+        if E_rate < 0.20:
+            break
+        j += 1
+        delta_P_gs_rel += 0.01
+        delta_P_gs = P_gs_max0 * delta_P_gs_rel
+        P_gs_max = P_gs_max0 - delta_P_gs
+
+        # Rufe die Numba-optimierte Simulation auf
+        res = _simulate_one_case_numba(P, P_gs_max, dt, eta_bat, eta_bat2ac, eta_ac2bat, delta_P_gs)
+
+        (P_bs_max, P_bs_min, C_bs, E_bs_charge, E_bs_discharge,
+         E_bs_charge_dc, E_bs_discharge_dc, E_rate, P_bs_arr) = res
+
+        # N_full_cycles
+        N_full_cycles = (E_bs_charge_dc + E_bs_discharge_dc) / (2.0 * C_bs) if C_bs > 0 else 0.0
+
+        # Grid supply and KPIs
+        P_gs = P - P_bs_arr
+        # calc_gs_kpi erwartet vermutlich Series → wandel zurück
+        E_gs, P_gs_max_new, t_util = calc_gs_kpi(pd.Series(P_gs))
+
+        df.loc[j] = [
+            round(P_bs_max, 1),
+            round(-P_bs_min, 1),
+            round(C_bs, 1),
+            round(E_gs, 0),
+            round(P_gs_max_new, 1),
+            round(P_gs_max0 - P_gs_max_new, 1),
+            round(t_util, 0),
+            round(E_rate, 2),
+            round(E_bs_charge, 1),
+            round(E_bs_discharge, 1),
+            round(N_full_cycles, 1)
+        ]
+
     return df
+
+@njit
+def _simulate_one_case_numba(P, P_gs_max, dt, eta_bat, eta_bat2ac, eta_ac2bat, delta_P_gs):
+    """Numba-optimierte Version der Simulation."""
+    n = len(P)
+    P_bs_dis = np.empty(n, dtype=np.float64)
+    P_bs_cha = np.empty(n, dtype=np.float64)
+    P_bs_set = np.empty(n, dtype=np.float64)
+    for i in range(n):
+        p = P[i]
+        if p - P_gs_max > 0.0:
+            P_bs_dis[i] = p - P_gs_max
+        else:
+            P_bs_dis[i] = 0.0
+        if P_gs_max - p > 0.0:
+            P_bs_cha[i] = P_gs_max - p
+        else:
+            P_bs_cha[i] = 0.0
+        P_bs_set[i] = P_bs_dis[i] - P_bs_cha[i]
+
+    # E_bs_discharge rekursiv
+    E_bs_discharge = np.empty(n, dtype=np.float64)
+    E_bs_discharge[0] = float(int(P_bs_dis[0]))
+    for i in range(1, n):
+        if P_bs_dis[i] == 0.0:
+            if E_bs_discharge[i-1] > 0.0:
+                tmp = P_bs_cha[i]
+                if tmp > delta_P_gs:
+                    tmp2 = delta_P_gs
+                else:
+                    tmp2 = tmp
+                E_bs_discharge[i] = E_bs_discharge[i-1] - tmp2 * dt * eta_ac2bat * eta_bat2ac * eta_bat
+            else:
+                E_bs_discharge[i] = 0.0
+        else:
+            if E_bs_discharge[i-1] < 0.0:
+                E_bs_discharge[i] = P_bs_dis[i] * dt
+            else:
+                E_bs_discharge[i] = E_bs_discharge[i-1] + P_bs_dis[i] * dt
+
+    # max
+    E_bs_dis_max = E_bs_discharge[0]
+    for i in range(1, n):
+        if E_bs_discharge[i] > E_bs_dis_max:
+            E_bs_dis_max = E_bs_discharge[i]
+
+    denom = ((eta_bat + ((1.0 - eta_bat) / 2.0)) * eta_bat2ac * 0.8)
+    C_bs = E_bs_dis_max / denom if denom != 0.0 else 0.0
+
+    E_rate = (delta_P_gs / eta_bat2ac) / C_bs if C_bs > 0.0 else 9999.0
+
+    # SOC loops
+    P_bs = np.zeros(n, dtype=np.float64)
+    P_bat = np.zeros(n, dtype=np.float64)
+    SOC = np.zeros(n, dtype=np.float64)
+    SOC[0] = 1.0
+
+    for i in range(1, n):
+        if P_bs_set[i] >= 0.0 and SOC[i-1] > 0.2:
+            P_bs[i] = P_bs_set[i]
+            denom2 = ((eta_bat + ((1.0 - eta_bat) / 2.0)) * eta_bat2ac)
+            if denom2 != 0.0:
+                P_bat[i] = P_bs[i] / denom2
+            else:
+                P_bat[i] = 0.0
+            if C_bs > 0.0:
+                SOC[i] = SOC[i-1] - (P_bat[i] * dt / C_bs)
+            else:
+                SOC[i] = SOC[i-1]
+
+        elif P_bs_set[i] < 0.0 and SOC[i-1] < 1.0:
+            # Laden
+            tmp = P_bs_set[i]
+            limit = -delta_P_gs
+            if tmp < limit:
+                tmp2 = limit
+            else:
+                tmp2 = tmp
+            P_bs[i] = tmp2
+            denom3 = ((eta_bat + ((1.0 - eta_bat) / 2.0)) * eta_ac2bat)
+            P_bat[i] = P_bs[i] * denom3
+            if C_bs > 0.0:
+                SOC[i] = SOC[i-1] - (P_bat[i] * dt / C_bs)
+            else:
+                SOC[i] = SOC[i-1]
+
+        else:
+            P_bs[i] = 0.0
+            P_bat[i] = 0.0
+            SOC[i] = SOC[i-1]
+
+        # Corrections
+        if SOC[i] > 1.0:
+            delta_SOC = SOC[i] - 1.0
+            delta_P = delta_SOC * C_bs / dt
+            P_bs[i] = P_bs[i] + delta_P
+            denom4 = ((eta_bat + ((1.0 - eta_bat) / 2.0)) * eta_ac2bat)
+            P_bat[i] = P_bs[i] * denom4
+            SOC[i] = 1.0
+
+        if SOC[i] < 0.2:
+            delta_SOC = 0.2 - SOC[i]
+            delta_P = delta_SOC * C_bs / dt
+            P_bs[i] = P_bs[i] - delta_P
+            denom5 = ((eta_bat + ((1.0 - eta_bat) / 2.0)) * eta_bat2ac)
+            if denom5 != 0.0:
+                P_bat[i] = P_bs[i] / denom5
+            else:
+                P_bat[i] = 0.0
+            SOC[i] = 0.2
+
+    # Jahresenergien
+    sum_charge = 0.0
+    sum_dis = 0.0
+    sum_charge_dc = 0.0
+    sum_dis_dc = 0.0
+    for i in range(n):
+        v = P_bs[i]
+        if v < 0.0:
+            sum_charge += -v
+        else:
+            sum_dis += v
+        vb = P_bat[i]
+        if vb < 0.0:
+            sum_charge_dc += -vb
+        else:
+            sum_dis_dc += vb
+
+    mean_charge = sum_charge / n if n > 0 else 0.0
+    mean_dis = sum_dis / n if n > 0 else 0.0
+    mean_charge_dc = sum_charge_dc / n if n > 0 else 0.0
+    mean_dis_dc = sum_dis_dc / n if n > 0 else 0.0
+
+    E_bs_charge = mean_charge * 8760.0
+    E_bs_discharge = mean_dis * 8760.0
+    E_bs_charge_dc = mean_charge_dc * 8760.0
+    E_bs_discharge_dc = mean_dis_dc * 8760.0
+
+    P_bs_max = -1e99
+    P_bs_min = 1e99
+    for i in range(n):
+        if P_bs[i] > P_bs_max:
+            P_bs_max = P_bs[i]
+        if P_bs[i] < P_bs_min:
+            P_bs_min = P_bs[i]
+
+    return (P_bs_max, P_bs_min, C_bs, E_bs_charge, E_bs_discharge,
+            E_bs_charge_dc, E_bs_discharge_dc, E_rate, P_bs)
+
 
 # Calculation of photovoltaic ac power time series
 # normalized to 1 kWp with 1 kW inverter
