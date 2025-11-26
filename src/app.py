@@ -2288,11 +2288,11 @@ def economic_results_graph(batteries,batteries_peak,electricity_price,electricit
     else:
         df=pd.DataFrame().from_dict(batteries_peak)
         try:
-            df=(df.loc[(df['Entladerate']>0.5) &  (df['Entladerate']<2.5)])
+            df=(df.loc[(df['Entladerate']>0) &  (df['Entladerate']<2.5)])
             capacity_bat_small=round(df['nutzbare Speicherkapazität in kWh'].values[0],1)
             capacity_bat_big=round(df['nutzbare Speicherkapazität in kWh'].values[-1],1)
         except:
-            df=(df.loc[(df['Discharge rate']>0.5) &  (df['Discharge rate']<2.5)])
+            df=(df.loc[(df['Discharge rate']>0) &  (df['Discharge rate']<2.5)])
             capacity_bat_small=round(df['Usable storage capacity in kWh'].values[0],1)
             capacity_bat_big=round(df['Usable storage capacity in kWh'].values[-1],1)
         years=lifetime
